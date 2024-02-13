@@ -21,12 +21,11 @@ export default function App() {
 
     return (
         <>
-            <Center className={styles.page_container}>
+            <Center p={3} className={styles.page_container}>
                 <Skeleton
                     className={styles.camera_container}
                     borderRadius={10}
-                    pt={3}
-                    pb={3}
+                    mr={3}
                     isLoaded={showVideo}
                 >
                     <Image
@@ -41,6 +40,7 @@ export default function App() {
                 <Center
                     className={`${styles.container} ${styles.main_menu_container}`}
                     padding="6"
+                    borderRadius={10}
                     boxShadow="lg"
                 >
                     <SkeletonCircle isLoaded={showVideo} size="100">
@@ -54,13 +54,7 @@ export default function App() {
                         spacing="4"
                         skeletonHeight="5"
                     >
-                        <Container>
-                            {showVideo ? (
-                                <Text variant="heading">Labret</Text>
-                            ) : (
-                                <></>
-                            )}
-                        </Container>
+                        Labret
                     </SkeletonText>
                 </Center>
             </Center>
