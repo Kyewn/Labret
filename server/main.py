@@ -1,5 +1,4 @@
 from flask import Flask, Response
-import cv2 as cv
 from camera import VideoCapture
 
 app = Flask(__name__) 
