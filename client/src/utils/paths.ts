@@ -3,6 +3,7 @@ export const paths = {
 	rent: '/rent',
 	return: '/return',
 	userHistory: '/user-history',
+	userHistorySpecificRecord: '/user-history/:recordId',
 	publicHistory: '/public-history',
 	itemAvailability: '/item-availability',
 	renterSignup: '/renter-signup',

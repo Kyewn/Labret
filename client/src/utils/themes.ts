@@ -2,7 +2,7 @@ import {inputAnatomy, menuAnatomy} from '@chakra-ui/anatomy';
 import {
 	createMultiStyleConfigHelpers,
 	defineStyleConfig,
-	extendBaseTheme,
+	extendTheme,
 	theme
 } from '@chakra-ui/react';
 
@@ -55,6 +55,12 @@ const Button = defineStyleConfig({
 		},
 		outline: {
 			border: '2px solid'
+		},
+		iconButton: {
+			minWidth: '50px',
+			_hover: {
+				backgroundColor: 'grey.200'
+			}
 		},
 		tableHeader: {
 			background: 'none',
@@ -112,39 +118,9 @@ const Menu = createMultiStyleConfigHelpers(menuAnatomy.keys).defineMultiStyleCon
 	}
 });
 
-/* const Table = createMultiStyleConfigHelpers(tableAnatomy.keys).defineMultiStyleConfig({
-	variants: {
-		simple: {
-			tr: {
-				borderBottom: '2px solid',
-				borderColor: 'asGrey.100',
-				':not(:has(th)):not(.tr-no-data)': {
-					_hover: {
-						cursor: 'pointer',
-						backgroundColor: 'asBlue.100'
-					}
-				},
-				':has(th)': {
-					backgroundColor: 'asBlue.400'
-				}
-			},
-			th: {
-				color: 'white',
-				maxWidth: '400px'
-			},
-			td: {
-				maxWidth: '400px',
-				overflow: 'hidden',
-				textOverflow: 'ellipsis'
-			}
-		}
-	}
-});
- */
-
 // Ascending value = lighter -> darker
 // Semantic tokens switch between color modes, default light mode
-export const themes = extendBaseTheme({
+export const themes = extendTheme({
 	semanticTokens: {
 		colors: {
 			asBlue: {
@@ -181,9 +157,9 @@ export const themes = extendBaseTheme({
 					_dark: '#005C7B'
 				}
 			},
-			asGrey: {
+			grey: {
 				100: '#D9D9D9',
-				200: '#EEEEED',
+				200: '#EEEEEE',
 				300: '#D4D0C8'
 			}
 		}

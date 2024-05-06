@@ -1,10 +1,10 @@
 import '@/App.css';
 import {Outlet} from 'react-router-dom';
 
-function LeftContentLayout() {
+function SubPageLayout() {
 	return (
 		<div className='site-container'>
-			{/* <Sidebar /> */}
+			<MainHeader />
 			<div className='page-container'>
 				<Outlet />
 			</div>
@@ -12,4 +12,4 @@ function LeftContentLayout() {
 	);
 }
 
-export default LeftContentLayout;
+export default SubPageLayout;

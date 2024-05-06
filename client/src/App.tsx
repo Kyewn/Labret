@@ -1,9 +1,8 @@
-import {FullPageLayout} from '@/layout/FullPageLayout';
-import LeftContentLayout from '@/layout/LeftContentLayout';
-import {RightContentLayout} from '@/layout/RightContentLayout';
+import MainPageLayout from '@/pages/layout/MainPageLayout';
+import SubPageLayout from '@/pages/layout/SubPageLayout';
 import {paths} from '@/utils/paths';
 import {themes} from '@/utils/themes';
-import {ChakraBaseProvider} from '@chakra-ui/react';
+import {ChakraProvider} from '@chakra-ui/react';
 import {
 	Route,
 	RouterProvider,
@@ -15,16 +14,15 @@ import './App.css';
 const router = createBrowserRouter(
 	createRoutesFromElements(
 		<>
-			<Route element={<LeftContentLayout />}>
+			<Route element={<MainPageLayout />}>
 				<Route index /*element={}*/ />
 				<Route path={paths.menu} /*element={}*/ />
-			</Route>
-			<Route element={<RightContentLayout />}>
 				<Route path={paths.rent} /*element={}*/ />
 				<Route path={paths.return} /*element={}*/ />
-			</Route>
-			<Route element={<FullPageLayout />}>
 				<Route path={paths.userHistory} /*element={}*/ />
+			</Route>
+			<Route element={<SubPageLayout />}>
+				<Route path={paths.userHistorySpecificRecord} /*element={}*/ />
 				<Route path={paths.publicHistory} /*element={}*/ />
 				<Route path={paths.itemAvailability} /*element={}*/ />
 				<Route path={paths.renterSignup} /*element={}*/ />
@@ -40,9 +38,9 @@ const router = createBrowserRouter(
 
 function App() {
 	return (
-		<ChakraBaseProvider theme={themes}>
+		<ChakraProvider theme={themes}>
 			<RouterProvider router={router} />
-		</ChakraBaseProvider>
+		</ChakraProvider>
 	);
 }
 
