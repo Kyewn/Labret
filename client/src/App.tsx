@@ -1,3 +1,4 @@
+import {MainMenu} from '@/pages/MainMenu';
 import MainPageLayout from '@/pages/layout/MainPageLayout';
 import SubPageLayout from '@/pages/layout/SubPageLayout';
 import {paths} from '@/utils/paths';
@@ -15,7 +16,7 @@ const router = createBrowserRouter(
 	createRoutesFromElements(
 		<>
 			<Route element={<MainPageLayout />}>
-				<Route index /*element={}*/ />
+				<Route index element={<MainMenu />} />
 				<Route path={paths.menu} /*element={}*/ />
 				<Route path={paths.rent} /*element={}*/ />
 				<Route path={paths.return} /*element={}*/ />
