@@ -28,7 +28,7 @@ function MainHeader() {
 					<DrawerBody>{<p>Pee pee poo poo</p>}</DrawerBody>
 				</DrawerContent>
 			</Drawer>
-			<Flex paddingX={5} paddingY={2} boxShadow={'md'}>
+			<Flex paddingX={5} paddingY={2} boxShadow={'0 0 10px 0 var(--chakra-colors-grey-200)'}>
 				<LabretIcon w={150} h={'100%'} fill={colorMode == 'dark' ? 'white' : 'black'} />
 				<Spacer />
 				<HStack spacing={'5'}>

@@ -1,11 +1,14 @@
-import {Box, Center, Skeleton, useToast} from '@chakra-ui/react';
+import {Box, Center, Heading, Skeleton, useToast} from '@chakra-ui/react';
+import '@fontsource/fredoka-one/400.css';
+import '@fontsource/roboto/400.css';
 import {useEffect, useRef, useState} from 'react';
 import './camera.css';
 
-export const FaceCamera: React.FC = () => {
+export const FaceCamera: React.FC<{mode: string}> = ({mode}) => {
 	const [videoState, setVideoState] = useState(true);
 	const [pc, setPC] = useState<RTCPeerConnection>();
 	const [dc, setDC] = useState<RTCDataChannel>();
+	const [mediaStreams, setMediaStreams] = useState<MediaStream[]>([]);
 	const [loading, setLoading] = useState(false);
 	const isInit = useRef(false);
 	const toast = useToast();
@@ -14,14 +17,22 @@ export const FaceCamera: React.FC = () => {
 		const peerConnection = new RTCPeerConnection();
 
 		peerConnection.addEventListener('track', (event) => {
-			const video = document.getElementById('faceCamera') as HTMLVideoElement;
-			const stream = event.streams[0];
+			const processedMediaStream = event.streams[0];
+			const videoTracks = processedMediaStream.getVideoTracks();
+			const normalMediaStream = new MediaStream();
+			normalMediaStream.addTrack(videoTracks[1]);
+			setMediaStreams([processedMediaStream, normalMediaStream]);
 
-			if (!stream) {
+			setVideoState(true);
+		});
+
+		peerConnection.addEventListener('connectionstatechange', () => {
+			if (
+				peerConnection.connectionState == 'disconnected' ||
+				peerConnection.connectionState == 'failed' ||
+				peerConnection.connectionState == 'closed'
+			) {
 				setVideoState(false);
-			} else {
-				setVideoState(true);
-				video.srcObject = event.streams[0];
 			}
 		});
 
@@ -57,7 +68,7 @@ export const FaceCamera: React.FC = () => {
 				body: JSON.stringify({
 					sdp: localDescription?.sdp,
 					type: localDescription?.type,
-					mode: 'face'
+					mode
 				})
 			});
 			const remoteAnswer = await response.json();
@@ -78,7 +89,10 @@ export const FaceCamera: React.FC = () => {
 		setLoading(true);
 		const peerConnection = await createPeerConnection();
 		setPC(peerConnection);
-		const dataChannel = peerConnection.createDataChannel('faceData', {ordered: true});
+		const dataChannel = peerConnection.createDataChannel('faceData', {
+			ordered: true,
+			maxPacketLifeTime: 0
+		});
 
 		dataChannel.onmessage = (event) => {
 			// TODO handle detected data sent from the server
@@ -93,7 +107,12 @@ export const FaceCamera: React.FC = () => {
 					height: {ideal: 720}
 				}
 			});
-			mediaStream.getTracks().forEach((track) => peerConnection.addTrack(track, mediaStream));
+			mediaStream.getTracks().forEach((track) => {
+				// Add main processed video track
+				peerConnection.addTrack(track, mediaStream);
+			});
+			// Add receiver for normal video track
+			peerConnection.addTransceiver('video', {direction: 'recvonly'});
 			negotiate(peerConnection);
 		} catch {
 			toast({
@@ -112,6 +131,7 @@ export const FaceCamera: React.FC = () => {
 			isInit.current = true;
 			initializeCameraRTC();
 		}
+
 		return () => {
 			if (dc) {
 				dc.close();
@@ -136,6 +156,18 @@ export const FaceCamera: React.FC = () => {
 		};
 	}, []);
 
+	useEffect(() => {
+		const video = document.getElementById('faceCamera') as HTMLVideoElement;
+
+		if (!video) return;
+
+		if (mediaStreams.length && mode == 'normal') {
+			video.srcObject = mediaStreams[1];
+		} else {
+			video.srcObject = mediaStreams[0];
+		}
+	}, [mediaStreams, mode]);
+
 	if (loading) {
 		return (
 			<Center p={6} flex={0.7}>
@@ -149,10 +181,10 @@ export const FaceCamera: React.FC = () => {
 			{videoState ? (
 				<video id='faceCamera' autoPlay playsInline />
 			) : (
-				<Box>
-					<Box>Face Camera is not available.</Box>
-					<Box>Make sure you have a camera connected to your device.</Box>
-				</Box>
+				<Center flexDirection={'column'} height={'100%'}>
+					<Heading as={'h6'}>Facecam is unavailable</Heading>
+					<Box>Make sure that a camera connected to your device and the server is running.</Box>
+				</Center>
 			)}
 		</Box>
 	);

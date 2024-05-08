@@ -1,9 +1,11 @@
 import {MainMenu} from '@/pages/MainMenu';
 import MainPageLayout from '@/pages/layout/MainPageLayout';
 import SubPageLayout from '@/pages/layout/SubPageLayout';
+import {AppContext, appContextInitialState, appContextReducer} from '@/utils/context/AppContext';
 import {paths} from '@/utils/paths';
 import {themes} from '@/utils/themes';
 import {ChakraProvider} from '@chakra-ui/react';
+import {useReducer} from 'react';
 import {
 	Route,
 	RouterProvider,
@@ -38,10 +40,14 @@ const router = createBrowserRouter(
 );
 
 function App() {
+	const [appState, appDispatch] = useReducer(appContextReducer, appContextInitialState);
+
 	return (
-		<ChakraProvider theme={themes}>
-			<RouterProvider router={router} />
-		</ChakraProvider>
+		<AppContext.Provider value={{appState, appDispatch}}>
+			<ChakraProvider theme={themes}>
+				<RouterProvider router={router} />
+			</ChakraProvider>
+		</AppContext.Provider>
 	);
 }
 

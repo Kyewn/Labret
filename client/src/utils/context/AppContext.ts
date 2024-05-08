@@ -1,10 +1,10 @@
 import {Dispatch, createContext} from 'react';
 
 type AppContextState = {
-	showToast: boolean;
+	user: string | null;
 };
-type AppContextActionType = 'SHOW_TOAST';
-type AppContextActionPayload = boolean;
+type AppContextActionType = 'SET_USER';
+type AppContextActionPayload = string | null;
 type AppContextAction = {
 	type: AppContextActionType;
 	payload: AppContextActionPayload;
@@ -12,12 +12,12 @@ type AppContextAction = {
 type AppContextValue = {appState: AppContextState; appDispatch: Dispatch<AppContextAction>};
 
 export const appContextInitialState: AppContextState = {
-	showToast: false
+	user: null
 };
 export const appContextReducer = (state: AppContextState, action: AppContextAction) => {
 	switch (action.type) {
-		case 'SHOW_TOAST':
-			return {...state, showToast: action.payload};
+		case 'SET_USER':
+			return {...state, user: action.payload};
 	}
 };
 export const AppContext = createContext<AppContextValue>({

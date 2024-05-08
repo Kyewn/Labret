@@ -13,6 +13,8 @@
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@fontsource/fredoka-one": "^5.0.5",
+    "@fontsource/roboto": "^5.0.13",
     "@material-design-icons/svg": "^0.14.13",
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-slot": "^1.0.2",

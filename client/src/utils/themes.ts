@@ -59,7 +59,10 @@ const Button = defineStyleConfig({
 		iconButton: {
 			minWidth: '50px',
 			_hover: {
-				backgroundColor: 'grey.200'
+				backgroundColor: 'grey.100',
+				svg: {
+					stroke: 'black'
+				}
 			}
 		},
 		tableHeader: {
@@ -158,11 +161,15 @@ export const themes = extendTheme({
 				}
 			},
 			grey: {
-				100: '#D9D9D9',
-				200: '#EEEEEE',
+				100: '#EEEEEE',
+				200: '#D9D9D9',
 				300: '#D4D0C8'
 			}
 		}
+	},
+	fonts: {
+		heading: `'Fredoka One', sans-seif`,
+		body: `'Roboto', sans-serif`
 	},
 	components: {
 		Button,
