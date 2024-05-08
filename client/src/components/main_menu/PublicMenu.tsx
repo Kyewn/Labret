@@ -1,4 +1,5 @@
 import {Button, Heading, VStack} from '@chakra-ui/react';
+import {History, Microscope} from 'lucide-react';
 
 export const PublicMenu: React.FC = () => {
 	return (
@@ -7,8 +8,12 @@ export const PublicMenu: React.FC = () => {
 				Public Menu
 			</Heading>
 			<VStack w={'100%'} spacing={3} alignItems={'stretch'}>
-				<Button variant={'outline'}>Public History</Button>
-				<Button variant={'outline'}>Equipment Availability</Button>
+				<Button variant={'outline'} leftIcon={<History />}>
+					Public History
+				</Button>
+				<Button variant={'outline'} leftIcon={<Microscope />}>
+					Equipment Availability
+				</Button>
 			</VStack>
 		</VStack>
 	);

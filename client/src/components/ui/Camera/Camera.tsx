@@ -1,15 +1,19 @@
 import {useAppContext} from '@/utils/context/AppContext';
-import {Box, Center, Heading, Skeleton, useToast} from '@chakra-ui/react';
+import {Center, Heading, Icon, Skeleton, Text, useToast} from '@chakra-ui/react';
 import '@fontsource/fredoka-one/400.css';
 import '@fontsource/roboto/400.css';
-import {useEffect, useRef, useState} from 'react';
+import {Unplug} from 'lucide-react';
+import React, {useEffect, useRef, useState} from 'react';
 import './camera.css';
 
-export const Camera: React.FC<{mode: string}> = ({mode}) => {
+export const Camera: React.FC<{
+	mode: string;
+	mediaStreams: MediaStream[];
+	setMediaStreams: React.Dispatch<React.SetStateAction<MediaStream[]>>;
+}> = ({mode, mediaStreams, setMediaStreams}) => {
 	const [videoState, setVideoState] = useState(true);
 	const [pc, setPC] = useState<RTCPeerConnection>();
 	const [dc, setDC] = useState<RTCDataChannel>();
-	const [mediaStreams, setMediaStreams] = useState<MediaStream[]>([]);
 	const isInit = useRef(false);
 	const toast = useToast();
 	const {appState, appDispatch} = useAppContext();
@@ -76,6 +80,7 @@ export const Camera: React.FC<{mode: string}> = ({mode}) => {
 			const remoteAnswer = await response.json();
 			return peerConnection.setRemoteDescription(remoteAnswer);
 		} catch (error) {
+			setVideoState(false);
 			toast({
 				title: 'Error',
 				description:
@@ -117,6 +122,7 @@ export const Camera: React.FC<{mode: string}> = ({mode}) => {
 			peerConnection.addTransceiver('video', {direction: 'recvonly'});
 			negotiate(peerConnection);
 		} catch {
+			setVideoState(false);
 			toast({
 				title: 'Camera permissions denied',
 				description: 'Please enable browser permissions for camera and try again.',
@@ -171,23 +177,22 @@ export const Camera: React.FC<{mode: string}> = ({mode}) => {
 	}, [mediaStreams, mode]);
 
 	if (videoLoading) {
-		return (
-			<Center p={6} flex={0.7}>
-				<Skeleton w={'100%'} h={'100%'} rounded={5} />
-			</Center>
-		);
+		return <Skeleton w={'100%'} h={'100%'} rounded={5} />;
 	}
 
 	return (
-		<Box flex={0.7}>
+		<>
 			{videoState ? (
 				<video id='faceCamera' autoPlay playsInline />
 			) : (
 				<Center flexDirection={'column'} height={'100%'}>
+					<Icon as={Unplug} w={75} h={75} mb={5} />
 					<Heading as={'h6'}>Facecam is unavailable</Heading>
-					<Box>Make sure that a camera connected to your device and the server is running.</Box>
+					<Text>
+						Make sure that a camera is connected to your device and the server is running.
+					</Text>
 				</Center>
 			)}
-		</Box>
+		</>
 	);
 };

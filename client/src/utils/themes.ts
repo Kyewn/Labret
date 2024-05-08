@@ -1,4 +1,4 @@
-import {inputAnatomy, menuAnatomy} from '@chakra-ui/anatomy';
+import {inputAnatomy, listAnatomy, menuAnatomy} from '@chakra-ui/anatomy';
 import {
 	createMultiStyleConfigHelpers,
 	defineStyleConfig,
@@ -13,24 +13,27 @@ const Button = defineStyleConfig({
 	},
 	variants: {
 		solid: {
-			backgroundColor: 'lrBrown.600',
-			color: 'white',
+			backgroundColor: 'lrBrown.700',
+			color: 'contrastWhite',
 			minWidth: '100px',
 			_hover: {
-				borderColor: 'lrBrown.300',
-				backgroundColor: 'lrBrown.300',
+				borderColor: 'lrBrown.600',
+				backgroundColor: 'lrBrown.600',
 				_disabled: {
-					opacity: 0.4,
-					backgroundColor: 'lrBrown.600'
+					opacity: 0.4
+					// backgroundColor: 'lrBrown.600'
 				}
+			},
+			_active: {
+				backgroundColor: 'lrBrown.400'
 			},
 			_focus: {
 				outline: 'none'
-			},
-			_disabled: {
-				opacity: 0.4,
-				backgroundColor: 'lrBrown.600'
 			}
+			// _disabled: {
+			// 	opacity: 0.4,
+			// 	backgroundColor: 'lrBrown.600'
+			// }
 		},
 		secondary: {
 			backgroundColor: 'none',
@@ -52,11 +55,28 @@ const Button = defineStyleConfig({
 		},
 		outline: {
 			border: '2px solid',
-			borderColor: 'lrBrown.600',
-			color: 'lrBrown.600',
+			borderColor: 'lrBrown.700',
+			color: 'lrBrown.700',
 			_hover: {
-				backgroundColor: 'lrBrown.600',
+				backgroundColor: 'lrBrown.700',
 				color: 'contrastWhite'
+			},
+			_active: {
+				backgroundColor: 'lrBrown.400',
+				borderColor: 'lrBrown.400'
+			}
+		},
+		criticalOutline: {
+			border: '2px solid',
+			borderColor: 'lrRed.300',
+			color: 'lrRed.300',
+			_hover: {
+				backgroundColor: 'lrRed.300',
+				color: 'contrastWhite'
+			},
+			_active: {
+				backgroundColor: 'lrRed.100',
+				borderColor: 'lrRed.100'
 			}
 		},
 		iconButton: {
@@ -120,6 +140,26 @@ const Input = createMultiStyleConfigHelpers(inputAnatomy.keys).defineMultiStyleC
 	}
 });
 
+const List = createMultiStyleConfigHelpers(listAnatomy.keys).defineMultiStyleConfig({
+	baseStyle: {
+		item: {
+			paddingX: 10,
+			paddingY: 5,
+			cursor: 'pointer',
+			_hover: {
+				backgroundColor: 'lrBrown.700',
+				color: 'contrastWhite'
+			},
+			_active: {
+				backgroundColor: 'lrBrown.400'
+			},
+			_focus: {
+				outline: 'none'
+			}
+		}
+	}
+});
+
 const Menu = createMultiStyleConfigHelpers(menuAnatomy.keys).defineMultiStyleConfig({
 	baseStyle: {
 		list: {
@@ -153,16 +193,21 @@ export const themes = extendTheme({
 				},
 				500: {
 					default: '#8F857D',
-					_dark: '#8F857D'
+					_dark: '#E5D1D0'
 				},
 				600: {
 					default: '#5C5552',
-					_dark: '#DECBB7'
+					_dark: '#F5E4D7'
 				},
 				700: {
 					default: '#433633',
-					_dark: '#433633'
+					_dark: '#DECBB7'
 				}
+			},
+			lrRed: {
+				100: '#FF7676',
+				200: '#FF5757',
+				300: '#FF4040'
 			},
 			contrastWhite: {
 				default: '#FFFFFF',
@@ -191,7 +236,8 @@ export const themes = extendTheme({
 	components: {
 		Button,
 		Input,
-		Menu
+		Menu,
+		List
 		// Table,
 	}
 });
