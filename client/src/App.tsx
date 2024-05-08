@@ -1,4 +1,3 @@
-import {MainMenu} from '@/pages/MainMenu';
 import MainPageLayout from '@/pages/layout/MainPageLayout';
 import SubPageLayout from '@/pages/layout/SubPageLayout';
 import {AppContext, appContextInitialState, appContextReducer} from '@/utils/context/AppContext';
@@ -13,6 +12,7 @@ import {
 	createRoutesFromElements
 } from 'react-router-dom';
 import './App.css';
+import {MainMenu} from './pages/MainMenu';
 
 const router = createBrowserRouter(
 	createRoutesFromElements(

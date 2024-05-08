@@ -1,17 +1,19 @@
+import {useAppContext} from '@/utils/context/AppContext';
 import {Box, Center, Heading, Skeleton, useToast} from '@chakra-ui/react';
 import '@fontsource/fredoka-one/400.css';
 import '@fontsource/roboto/400.css';
 import {useEffect, useRef, useState} from 'react';
 import './camera.css';
 
-export const FaceCamera: React.FC<{mode: string}> = ({mode}) => {
+export const Camera: React.FC<{mode: string}> = ({mode}) => {
 	const [videoState, setVideoState] = useState(true);
 	const [pc, setPC] = useState<RTCPeerConnection>();
 	const [dc, setDC] = useState<RTCDataChannel>();
 	const [mediaStreams, setMediaStreams] = useState<MediaStream[]>([]);
-	const [loading, setLoading] = useState(false);
 	const isInit = useRef(false);
 	const toast = useToast();
+	const {appState, appDispatch} = useAppContext();
+	const {videoLoading} = appState;
 
 	const createPeerConnection = async () => {
 		const peerConnection = new RTCPeerConnection();
@@ -86,7 +88,7 @@ export const FaceCamera: React.FC<{mode: string}> = ({mode}) => {
 	};
 
 	const initializeCameraRTC = async () => {
-		setLoading(true);
+		appDispatch({type: 'SET_VIDEO_LOADING', payload: true});
 		const peerConnection = await createPeerConnection();
 		setPC(peerConnection);
 		const dataChannel = peerConnection.createDataChannel('faceData', {
@@ -123,7 +125,7 @@ export const FaceCamera: React.FC<{mode: string}> = ({mode}) => {
 				isClosable: true
 			});
 		}
-		setLoading(false);
+		appDispatch({type: 'SET_VIDEO_LOADING', payload: false});
 	};
 
 	useEffect(() => {
@@ -168,10 +170,10 @@ export const FaceCamera: React.FC<{mode: string}> = ({mode}) => {
 		}
 	}, [mediaStreams, mode]);
 
-	if (loading) {
+	if (videoLoading) {
 		return (
 			<Center p={6} flex={0.7}>
-				<Skeleton w={'100%'} h={'100%'} />
+				<Skeleton w={'100%'} h={'100%'} rounded={5} />
 			</Center>
 		);
 	}
