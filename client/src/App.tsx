@@ -19,7 +19,7 @@ const router = createBrowserRouter(
 		<>
 			<Route element={<MainPageLayout />}>
 				<Route index element={<MainMenu />} />
-				<Route path={paths.menu} /*element={}*/ />
+				{/* <Route path={paths.menu} /> */}
 				<Route path={paths.rent} /*element={}*/ />
 				<Route path={paths.return} /*element={}*/ />
 				<Route path={paths.userHistory} /*element={}*/ />
@@ -27,10 +27,10 @@ const router = createBrowserRouter(
 			<Route element={<SubPageLayout />}>
 				<Route path={paths.userHistorySpecificRecord} /*element={}*/ />
 				<Route path={paths.publicHistory} /*element={}*/ />
-				<Route path={paths.itemAvailability} /*element={}*/ />
-				<Route path={paths.renterSignup} /*element={}*/ />
-				<Route path={paths.adminSignup} /*element={}*/ />
-				<Route path={paths.profile} /*element={}*/ />
+				<Route path={paths.equipmentAvailability} /*element={}*/ />
+				<Route path={paths.register} /*element={}*/ />
+				<Route path={paths.registerAdmin} /*element={}*/ />
+				<Route path={paths.users} /*element={}*/ />
 				<Route path={paths.admins} /*element={}*/ />
 				<Route path={paths.equipment} /*element={}*/ />
 				<Route path={paths.verifications} /*element={}*/ />

@@ -1,3 +1,4 @@
+import '@/App.css';
 import {LabretIcon} from '@/assets/LabretIcon';
 import {paths} from '@/utils/paths';
 import {
@@ -18,7 +19,7 @@ import {
 	useColorMode,
 	useDisclosure
 } from '@chakra-ui/react';
-import {BookUser, Github, Glasses, Menu, Moon, Sun, User} from 'lucide-react';
+import {BookUser, Github, Glasses, Menu, Moon, Sun, User, UserCog2} from 'lucide-react';
 import {Link} from 'react-router-dom';
 
 const MainHeader: React.FC = () => {
@@ -35,11 +36,29 @@ const MainHeader: React.FC = () => {
 					<DrawerCloseButton position={'relative'} alignSelf={'flex-end'} />
 					<DrawerBody display={'flex'} paddingX={0}>
 						<List display={'flex'} flex={1} flexDirection={'column'}>
-							<Link to={paths.renterSignup}>
+							<Link to={paths.register}>
 								<ListItem>
 									<ListIcon as={User} w={5} h={5} />
 									<Text display={'inline-block'} fontWeight={700}>
-										Register New Renter
+										Register
+									</Text>
+								</ListItem>
+							</Link>
+							{/* FIXME Only when user is admin */}
+							<Link to={paths.registerAdmin}>
+								<ListItem>
+									<ListIcon as={UserCog2} w={5} h={5} />
+									<Text display={'inline-block'} fontWeight={700}>
+										Register Admin
+									</Text>
+								</ListItem>
+							</Link>
+							{/* FIXME Only when user is locked in */}
+							<Link to={paths.users}>
+								<ListItem>
+									<ListIcon as={BookUser} w={5} h={5} />
+									<Text display={'inline-block'} fontWeight={700}>
+										View Users
 									</Text>
 								</ListItem>
 							</Link>
@@ -52,23 +71,18 @@ const MainHeader: React.FC = () => {
 									</Text>
 								</ListItem>
 							</Link>
-							{/* FIXME Only when user is locked in */}
-							<Link to={paths.profile}>
+							<Link
+								to={'https://github.com/Kyewn/Labret/'}
+								target='_blank'
+								style={{marginTop: 'auto'}}
+							>
 								<ListItem>
-									<ListIcon as={BookUser} w={5} h={5} />
-									<Text display={'inline-block'} fontWeight={700}>
-										View Profile
-									</Text>
-								</ListItem>
-							</Link>
-							<ListItem mt={'auto'}>
-								<Link to={'https://github.com/Kyewn/Labret/'} target='_blank'>
 									<ListIcon as={Github} w={5} h={5} />
 									<Text display={'inline-block'} fontWeight={700}>
 										Visit Project on GitHub
 									</Text>
-								</Link>
-							</ListItem>
+								</ListItem>
+							</Link>
 						</List>
 					</DrawerBody>
 				</DrawerContent>
@@ -82,7 +96,7 @@ const MainHeader: React.FC = () => {
 						: '0 0 8px 0 var(--chakra-colors-gray-500)'
 				}
 			>
-				<LabretIcon w={150} h={'100%'} fill={colorMode == 'dark' ? 'white' : 'black'} />
+				<LabretIcon w={150} h={'unset'} fill={colorMode == 'dark' ? 'white' : 'black'} />
 				<Spacer />
 				<HStack spacing={'5'}>
 					<Tooltip label={colorMode == 'dark' ? 'Toggle Light Mode' : 'Toggle Night Mode'} hasArrow>

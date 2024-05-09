@@ -3,3 +3,9 @@
 	height: 100vh;
 	overflow: hidden;
 }
+
+a {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}

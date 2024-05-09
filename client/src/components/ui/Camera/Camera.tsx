@@ -101,6 +101,8 @@ export const Camera: React.FC<{
 			maxPacketLifeTime: 0
 		});
 
+		dataChannel.onerror = (error) => console.log(error);
+		dataChannel.onbufferedamountlow = (ev) => console.log(ev);
 		dataChannel.onmessage = (event) => {
 			// TODO handle detected data sent from the server
 			console.log(event.data);

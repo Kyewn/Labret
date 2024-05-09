@@ -12,7 +12,7 @@ import {
 import {ScanFace, SearchCheck} from 'lucide-react';
 
 export const FaceLogin: React.FC = () => {
-	const {appState} = useAppContext();
+	const {appState, appDispatch} = useAppContext();
 	const {detectedUser, videoLoading} = appState;
 
 	if (videoLoading) {
@@ -23,6 +23,9 @@ export const FaceLogin: React.FC = () => {
 		);
 	}
 
+	const handleRescan = () => appDispatch({type: 'SET_DETECTED_USER', payload: null});
+	const handleConfirmIdentity = () => appDispatch({type: 'SET_USER', payload: detectedUser});
+
 	return detectedUser ? (
 		<Flex flexDirection={'column'} justifyContent={'center'} flex={0.7}>
 			<VStack paddingY={5} alignItems={'flex-start'}>
@@ -32,10 +35,15 @@ export const FaceLogin: React.FC = () => {
 				{/* TODO: Replace with user name*/}
 				<Heading size={'lg'}>Brian</Heading>
 				<ButtonGroup width={'100%'}>
-					<Button flex={1} leftIcon={<SearchCheck />}>
+					<Button flex={1} leftIcon={<SearchCheck />} onClick={handleConfirmIdentity}>
 						Confirm Identity
 					</Button>
-					<Button flex={1} variant={'criticalOutline'} leftIcon={<ScanFace />}>
+					<Button
+						flex={1}
+						variant={'criticalOutline'}
+						leftIcon={<ScanFace />}
+						onClick={handleRescan}
+					>
 						That's Not Me
 					</Button>
 				</ButtonGroup>
