@@ -59,7 +59,6 @@ async def offer(request):
                 global local_video
                 local_video = CameraTrack(relay.subscribe(track), params["mode"])
                 pc.addTrack(local_video)
-                pc.addTrack(relay.subscribe(track))
                 
         @pc.on("datachannel")
         def on_datachannel(channel):

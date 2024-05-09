@@ -1,4 +1,4 @@
-import {inputAnatomy, listAnatomy, menuAnatomy} from '@chakra-ui/anatomy';
+import {inputAnatomy, listAnatomy, menuAnatomy, stepperAnatomy} from '@chakra-ui/anatomy';
 import {
 	createMultiStyleConfigHelpers,
 	defineStyleConfig,
@@ -58,12 +58,12 @@ const Button = defineStyleConfig({
 			borderColor: 'lrBrown.700',
 			color: 'lrBrown.700',
 			_hover: {
-				backgroundColor: 'lrBrown.700',
-				color: 'contrastWhite'
+				backgroundColor: 'lrBrown.400'
 			},
 			_active: {
-				backgroundColor: 'lrBrown.400',
-				borderColor: 'lrBrown.400'
+				backgroundColor: 'lrBrown.700',
+				color: 'contrastWhite',
+				borderColor: 'lrBrown.700'
 			}
 		},
 		criticalOutline: {
@@ -169,6 +169,35 @@ const Menu = createMultiStyleConfigHelpers(menuAnatomy.keys).defineMultiStyleCon
 	}
 });
 
+const Stepper = createMultiStyleConfigHelpers(stepperAnatomy.keys).defineMultiStyleConfig({
+	baseStyle: {
+		indicator: {
+			'&[data-status=active]': {
+				borderColor: 'lrBrown.700'
+			},
+			'&[data-status=incomplete]': {
+				borderColor: 'lrBrown.400'
+			},
+			'&[data-status=complete]': {
+				backgroundColor: 'lrBrown.700'
+			}
+		},
+		number: {
+			'&[data-status=active]': {
+				color: 'lrBrown.700'
+			},
+			'&[data-status=incomplete]': {
+				color: 'lrBrown.400'
+			}
+		},
+		separator: {
+			'&[data-status=complete]': {
+				backgroundColor: 'lrBrown.700'
+			}
+		}
+	}
+});
+
 // Ascending value = lighter -> darker
 // Semantic tokens switch between color modes, default light mode
 export const themes = extendTheme({
@@ -237,7 +266,8 @@ export const themes = extendTheme({
 		Button,
 		Input,
 		Menu,
-		List
+		List,
+		Stepper
 		// Table,
 	}
 });

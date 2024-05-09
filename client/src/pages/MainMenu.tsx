@@ -17,7 +17,12 @@ export function MainMenu() {
 		<>
 			{/* <Button onClick={() => handleClick()} /> */}
 			<Box flex={0.7} p={6}>
-				<Camera mode={mode} mediaStreams={mediaStreams} setMediaStreams={setMediaStreams} />
+				<Camera
+					videoId='mainMenuCamera'
+					mode={mode}
+					mediaStreams={mediaStreams}
+					setMediaStreams={setMediaStreams}
+				/>
 			</Box>
 			<Flex flexDirection={'column'} flex={0.3} pr={6} paddingY={5}>
 				{/* TODO: IF logic toggle face login -> user menu */}

@@ -1,3 +1,4 @@
+import {Register} from '@/pages/Register';
 import MainPageLayout from '@/pages/layout/MainPageLayout';
 import SubPageLayout from '@/pages/layout/SubPageLayout';
 import {AppContext, appContextInitialState, appContextReducer} from '@/utils/context/AppContext';
@@ -28,7 +29,7 @@ const router = createBrowserRouter(
 				<Route path={paths.userHistorySpecificRecord} /*element={}*/ />
 				<Route path={paths.publicHistory} /*element={}*/ />
 				<Route path={paths.equipmentAvailability} /*element={}*/ />
-				<Route path={paths.register} /*element={}*/ />
+				<Route path={paths.register} element={<Register />} />
 				<Route path={paths.registerAdmin} /*element={}*/ />
 				<Route path={paths.users} /*element={}*/ />
 				<Route path={paths.admins} /*element={}*/ />

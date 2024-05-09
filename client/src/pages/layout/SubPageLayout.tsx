@@ -1,15 +1,16 @@
 import '@/App.css';
 import SubHeader from '@/components/ui/SubHeader';
+import {Flex} from '@chakra-ui/react';
 import {Outlet} from 'react-router-dom';
 
 function SubPageLayout() {
 	return (
-		<div className='site-container'>
+		<Flex w={'100%'} h={'100%'} flexDirection={'column'}>
 			<SubHeader />
-			<div className='page-container'>
+			<Flex flex={1} flexDirection={'column'}>
 				<Outlet />
-			</div>
-		</div>
+			</Flex>
+		</Flex>
 	);
 }
 

@@ -6,11 +6,26 @@ import {Unplug} from 'lucide-react';
 import React, {useEffect, useRef, useState} from 'react';
 import './camera.css';
 
+// Normal mode: [NormalStream]
+// AI mode: [NormalStream, ProcessedStream]
+
 export const Camera: React.FC<{
-	mode: string;
-	mediaStreams: MediaStream[];
+	videoId: string;
+	mode?: string;
+	mediaStreams: MediaStream[] | [];
 	setMediaStreams: React.Dispatch<React.SetStateAction<MediaStream[]>>;
-}> = ({mode, mediaStreams, setMediaStreams}) => {
+	useNormalMode?: boolean;
+	normalModeResolution?: MediaTrackConstraints;
+	className?: string;
+}> = ({
+	videoId,
+	mode,
+	mediaStreams,
+	setMediaStreams,
+	useNormalMode,
+	normalModeResolution,
+	className
+}) => {
 	const [videoState, setVideoState] = useState(true);
 	const [pc, setPC] = useState<RTCPeerConnection>();
 	const [dc, setDC] = useState<RTCDataChannel>();
@@ -23,12 +38,10 @@ export const Camera: React.FC<{
 		const peerConnection = new RTCPeerConnection();
 
 		peerConnection.addEventListener('track', (event) => {
+			// Get processed video stream from server
 			const processedMediaStream = event.streams[0];
-			const videoTracks = processedMediaStream.getVideoTracks();
-			const normalMediaStream = new MediaStream();
-			normalMediaStream.addTrack(videoTracks[1]);
-			setMediaStreams([processedMediaStream, normalMediaStream]);
-
+			// Add processed video stream after original stream
+			setMediaStreams((prev) => [...prev, processedMediaStream]);
 			setVideoState(true);
 		});
 
@@ -109,6 +122,7 @@ export const Camera: React.FC<{
 		};
 		setDC(dataChannel);
 
+		mediaStreams[0]?.getTracks().forEach((track) => track.enabled && track.stop());
 		try {
 			const mediaStream = await navigator.mediaDevices.getUserMedia({
 				video: {
@@ -116,12 +130,12 @@ export const Camera: React.FC<{
 					height: {ideal: 720}
 				}
 			});
+			// First set original stream
+			setMediaStreams([mediaStream]);
 			mediaStream.getTracks().forEach((track) => {
-				// Add main processed video track
+				// Add main processed video track for processing in server
 				peerConnection.addTrack(track, mediaStream);
 			});
-			// Add receiver for normal video track
-			peerConnection.addTransceiver('video', {direction: 'recvonly'});
 			negotiate(peerConnection);
 		} catch {
 			setVideoState(false);
@@ -137,6 +151,8 @@ export const Camera: React.FC<{
 	};
 
 	useEffect(() => {
+		if (useNormalMode) return;
+
 		if (!isInit.current) {
 			isInit.current = true;
 			initializeCameraRTC();
@@ -167,16 +183,42 @@ export const Camera: React.FC<{
 	}, []);
 
 	useEffect(() => {
-		const video = document.getElementById('faceCamera') as HTMLVideoElement;
+		if (useNormalMode) return;
+
+		const video = document.getElementById(videoId) as HTMLVideoElement;
 
 		if (!video) return;
 
 		if (mediaStreams.length && mode == 'normal') {
-			video.srcObject = mediaStreams[1];
-		} else {
 			video.srcObject = mediaStreams[0];
+		} else {
+			video.srcObject = mediaStreams[1];
 		}
 	}, [mediaStreams, mode]);
+
+	useEffect(() => {
+		if (!useNormalMode) return;
+
+		appDispatch({type: 'SET_VIDEO_LOADING', payload: true});
+
+		mediaStreams[0]?.getTracks().forEach((track) => track.enabled && track.stop());
+
+		const video = document.getElementById(videoId) as HTMLVideoElement;
+		if (!video) return;
+
+		navigator.mediaDevices
+			.getUserMedia({
+				video: normalModeResolution || {
+					width: {ideal: 1280},
+					height: {ideal: 720}
+				}
+			})
+			.then((stream) => {
+				setMediaStreams([stream]);
+				video.srcObject = stream;
+			});
+		appDispatch({type: 'SET_VIDEO_LOADING', payload: false});
+	}, []);
 
 	if (videoLoading) {
 		return <Skeleton w={'100%'} h={'100%'} rounded={5} />;
@@ -185,7 +227,7 @@ export const Camera: React.FC<{
 	return (
 		<>
 			{videoState ? (
-				<video id='faceCamera' autoPlay playsInline />
+				<video id={videoId} className={className || undefined} autoPlay playsInline />
 			) : (
 				<Center flexDirection={'column'} height={'100%'}>
 					<Icon as={Unplug} w={75} h={75} mb={5} />
