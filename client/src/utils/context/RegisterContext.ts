@@ -15,11 +15,19 @@ export const useInitialRegisterContext = () => {
 	const formDataState = useState<FormData>(new FormData());
 	const {activeStep} = useSteps({count: steps.length});
 
-	return {imagesState, formDataState, activeStep, steps};
+	const [images, setImages] = imagesState;
+
+	const handleRemoveImage = (index: number) => {
+		const newImages = images.filter((_, i) => i !== index);
+		setImages(newImages);
+	};
+
+	return {imagesState, formDataState, activeStep, steps, handleRemoveImage};
 };
 
 export const RegisterContext = createContext<
 	ReturnType<typeof useInitialRegisterContext> | undefined
 >(undefined);
 
-export const useRegisterContext = () => useContext(RegisterContext);
+export const useRegisterContext = () =>
+	useContext(RegisterContext) as ReturnType<typeof useInitialRegisterContext>;

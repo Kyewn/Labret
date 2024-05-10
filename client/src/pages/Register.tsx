@@ -1,4 +1,4 @@
-import RenterImageCollector from '@/components/register/AcquireImageStep';
+import AcquireImageStep from '@/components/register/AcquireImageStep';
 import {useAppContext} from '@/utils/context/AppContext';
 import {RegisterContext, useInitialRegisterContext} from '@/utils/context/RegisterContext';
 import {
@@ -56,7 +56,7 @@ export function Register() {
 					))}
 				</Stepper>
 			</Flex>
-			<RenterImageCollector />
+			<AcquireImageStep />
 		</RegisterContext.Provider>
 	);
 }
