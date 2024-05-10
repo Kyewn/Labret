@@ -1,13 +1,9 @@
-import {Camera} from '@/components/ui/Camera/Camera';
+import RenterImageCollector from '@/components/register/AcquireImageStep';
 import {useAppContext} from '@/utils/context/AppContext';
+import {RegisterContext, useInitialRegisterContext} from '@/utils/context/RegisterContext';
 import {
 	Box,
-	Button,
-	ButtonGroup,
 	Flex,
-	HStack,
-	Heading,
-	Icon,
 	Step,
 	StepIcon,
 	StepIndicator,
@@ -15,31 +11,15 @@ import {
 	StepSeparator,
 	StepStatus,
 	StepTitle,
-	Stepper,
-	Text,
-	Tooltip,
-	useSteps
+	Stepper
 } from '@chakra-ui/react';
-import {Info} from 'lucide-react';
 import {useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 
-const steps = [
-	{
-		title: 'Acquire Image'
-	},
-	{
-		title: 'Register Form'
-	}
-];
-
 export function Register() {
-	const {activeStep} = useSteps({count: steps.length});
-	const resolution = {
-		width: {ideal: 640},
-		height: {ideal: 480}
-	};
 	const {appState, appDispatch} = useAppContext();
+	const initialRegisterContext = useInitialRegisterContext();
+	const {activeStep, steps} = initialRegisterContext;
 	const {handleCloseNormalCamera} = appState;
 	const navigate = useNavigate();
 
@@ -54,7 +34,7 @@ export function Register() {
 	}, [handleCloseNormalCamera]);
 
 	return (
-		<>
+		<RegisterContext.Provider value={initialRegisterContext}>
 			<Flex flex={0.1} justifyContent={'center'} p={5}>
 				<Stepper index={activeStep} flex={0.3}>
 					{steps.map((step, index) => (
@@ -76,33 +56,7 @@ export function Register() {
 					))}
 				</Stepper>
 			</Flex>
-			<Flex flex={0.9} paddingX={10}>
-				<Flex flex={0.5} height={'100%'} flexDirection={'column'}>
-					<Flex justifyContent={'flex-end'} w={'100%'} h={'100%'} p={5}>
-						{/* FIXME: Break on changing resolution, needs stopping main menu track / renego */}
-						<Camera videoId={'registerCamera'} useNormalMode mediaResolution={resolution} />
-					</Flex>
-				</Flex>
-				<Flex flex={0.5} p={5} height={'100%'} flexDirection={'column'}>
-					<Box>
-						<HStack alignContent={'center'}>
-							<Heading size={'md'}>User image</Heading>
-							<Tooltip
-								placement='right-start'
-								hasArrow
-								label={`Please be aware that these images will be used for training the system's facial recognition model, so images should be as meaningful for identifying the user. You need to take at least 5 images to continue to the next section.`}
-							>
-								<Icon as={Info} />
-							</Tooltip>
-						</HStack>
-						<Text>Look directly into the camera and take pictures using the buttons.</Text>
-						<ButtonGroup marginY={5}>
-							<Button>Take image</Button>
-							<Button variant={'outline'}>Upload images</Button>
-						</ButtonGroup>
-					</Box>
-				</Flex>
-			</Flex>
-		</>
+			<RenterImageCollector />
+		</RegisterContext.Provider>
 	);
 }
