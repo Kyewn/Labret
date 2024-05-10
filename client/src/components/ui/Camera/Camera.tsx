@@ -151,7 +151,6 @@ export const Camera: React.FC<{
 
 			appDispatch({type: 'SET_CLOSE_EXISTING_PEER_CONNECTION', payload: handleClosePC});
 		} catch (error) {
-			console.log(error);
 			setVideoState(false);
 			toast({
 				title: 'Camera permissions denied',
