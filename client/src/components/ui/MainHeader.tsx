@@ -1,5 +1,6 @@
 import '@/App.css';
 import {LabretIcon} from '@/assets/LabretIcon';
+import {useAppContext} from '@/utils/context/AppContext';
 import {paths} from '@/utils/paths';
 import {
 	Drawer,
@@ -25,8 +26,12 @@ import {Link} from 'react-router-dom';
 const MainHeader: React.FC = () => {
 	const {isOpen, onClose, onOpen} = useDisclosure();
 	const {colorMode, toggleColorMode} = useColorMode();
-	// const {appState} = useAppContext();
-	// const {user} = appState;
+	const {appState} = useAppContext();
+	const {handleCloseExistingPeerConnection} = appState;
+
+	const handleCloseMainMenuCamera = () => {
+		handleCloseExistingPeerConnection?.();
+	};
 
 	return (
 		<>
@@ -36,7 +41,7 @@ const MainHeader: React.FC = () => {
 					<DrawerCloseButton position={'relative'} alignSelf={'flex-end'} />
 					<DrawerBody display={'flex'} paddingX={0}>
 						<List display={'flex'} flex={1} flexDirection={'column'}>
-							<Link to={paths.register}>
+							<Link to={paths.sub.register} onClick={handleCloseMainMenuCamera}>
 								<ListItem>
 									<ListIcon as={User} w={5} h={5} />
 									<Text display={'inline-block'} fontWeight={700}>
@@ -45,7 +50,7 @@ const MainHeader: React.FC = () => {
 								</ListItem>
 							</Link>
 							{/* FIXME Only when user is admin */}
-							<Link to={paths.registerAdmin}>
+							<Link to={paths.sub.registerAdmin} onClick={handleCloseMainMenuCamera}>
 								<ListItem>
 									<ListIcon as={UserCog2} w={5} h={5} />
 									<Text display={'inline-block'} fontWeight={700}>
@@ -54,7 +59,7 @@ const MainHeader: React.FC = () => {
 								</ListItem>
 							</Link>
 							{/* FIXME Only when user is locked in */}
-							<Link to={paths.users}>
+							<Link to={paths.sub.users}>
 								<ListItem>
 									<ListIcon as={BookUser} w={5} h={5} />
 									<Text display={'inline-block'} fontWeight={700}>
@@ -63,7 +68,7 @@ const MainHeader: React.FC = () => {
 								</ListItem>
 							</Link>
 							{/* FIXME Only when user is admin */}
-							<Link to={paths.admins}>
+							<Link to={paths.sub.admins}>
 								<ListItem>
 									<ListIcon as={Glasses} w={5} h={5} />
 									<Text display={'inline-block'} fontWeight={700}>

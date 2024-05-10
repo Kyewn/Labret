@@ -21,7 +21,7 @@ import {
 	useSteps
 } from '@chakra-ui/react';
 import {Info} from 'lucide-react';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 
 const steps = [
@@ -35,19 +35,23 @@ const steps = [
 
 export function Register() {
 	const {activeStep} = useSteps({count: steps.length});
-	const [mediaStreams, setMediaStreams] = useState<MediaStream[]>([]);
-	const {appDispatch} = useAppContext();
+	const resolution = {
+		width: {ideal: 640},
+		height: {ideal: 480}
+	};
+	const {appState, appDispatch} = useAppContext();
+	const {handleCloseNormalCamera} = appState;
 	const navigate = useNavigate();
 
 	useEffect(() => {
 		appDispatch({
 			type: 'SET_HANDLE_SUBHEADER_BACK',
 			payload: () => {
-				mediaStreams[0]?.getTracks().forEach((track) => track.enabled && track.stop());
+				handleCloseNormalCamera();
 				navigate(-1);
 			}
 		});
-	}, []);
+	}, [handleCloseNormalCamera]);
 
 	return (
 		<>
@@ -74,14 +78,9 @@ export function Register() {
 			</Flex>
 			<Flex flex={0.9} paddingX={10}>
 				<Flex flex={0.5} height={'100%'} flexDirection={'column'}>
-					<Flex justifyContent={'flex-end'} width={'100%'} p={5}>
+					<Flex justifyContent={'flex-end'} w={'100%'} h={'100%'} p={5}>
 						{/* FIXME: Break on changing resolution, needs stopping main menu track / renego */}
-						<Camera
-							videoId='registerCamera'
-							useNormalMode
-							mediaStreams={mediaStreams}
-							setMediaStreams={setMediaStreams}
-						/>
+						<Camera videoId={'registerCamera'} useNormalMode mediaResolution={resolution} />
 					</Flex>
 				</Flex>
 				<Flex flex={0.5} p={5} height={'100%'} flexDirection={'column'}>

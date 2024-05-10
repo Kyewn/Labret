@@ -6,7 +6,6 @@ import {useState} from 'react';
 
 export function MainMenu() {
 	const [mode, setMode] = useState('face');
-	const [mediaStreams, setMediaStreams] = useState<MediaStream[]>([]);
 
 	// function handleClick() {
 	// 	if (mode == 'face') setMode('normal');
@@ -17,12 +16,7 @@ export function MainMenu() {
 		<>
 			{/* <Button onClick={() => handleClick()} /> */}
 			<Box flex={0.7} p={6}>
-				<Camera
-					videoId='mainMenuCamera'
-					mode={mode}
-					mediaStreams={mediaStreams}
-					setMediaStreams={setMediaStreams}
-				/>
+				<Camera videoId='mainMenuCamera' mode={mode} />
 			</Box>
 			<Flex flexDirection={'column'} flex={0.3} pr={6} paddingY={5}>
 				{/* TODO: IF logic toggle face login -> user menu */}

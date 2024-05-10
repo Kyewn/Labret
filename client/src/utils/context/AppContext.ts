@@ -3,26 +3,39 @@ import {Dispatch, createContext, useContext} from 'react';
 type AppContextState = {
 	user: string | null;
 	detectedUser: string | null;
-	videoLoading: boolean;
 	handleSubHeaderBack: () => void;
+	// Video camera states
+	mediaStreams: MediaStream[] | null;
+	videoLoading: boolean;
+	handleCloseExistingPeerConnection: () => void;
+	handleCloseNormalCamera: () => void;
 };
 type AppContextActionType =
 	| 'SET_USER'
 	| 'SET_DETECTED_USER'
+	| 'SET_HANDLE_SUBHEADER_BACK'
+	// Video camera states
 	| 'SET_VIDEO_LOADING'
-	| 'SET_HANDLE_SUBHEADER_BACK';
-type AppContextActionPayload = string | boolean | (() => void) | null;
+	| 'SET_MEDIA_STREAMS'
+	| 'ADD_MEDIA_STREAM'
+	| 'SET_CLOSE_EXISTING_PEER_CONNECTION'
+	| 'SET_CLOSE_NORMAL_CAMERA';
+type AppContextActionPayload = string | boolean | MediaStream | MediaStream[] | (() => void) | null;
 type AppContextAction = {
 	type: AppContextActionType;
-	payload: AppContextActionPayload;
+	payload?: AppContextActionPayload;
 };
 type AppContextValue = {appState: AppContextState; appDispatch: Dispatch<AppContextAction>};
 
 export const appContextInitialState: AppContextState = {
 	user: null,
 	detectedUser: null,
+	handleSubHeaderBack: () => {},
+	// Video camera states
+	mediaStreams: null,
 	videoLoading: false,
-	handleSubHeaderBack: () => {}
+	handleCloseExistingPeerConnection: () => {},
+	handleCloseNormalCamera: () => {}
 };
 export const appContextReducer = (
 	state: AppContextState,
@@ -33,10 +46,26 @@ export const appContextReducer = (
 			return {...state, user: action.payload as string | null};
 		case 'SET_DETECTED_USER':
 			return {...state, detectedUser: action.payload as string | null};
-		case 'SET_VIDEO_LOADING':
-			return {...state, videoLoading: action.payload as boolean};
 		case 'SET_HANDLE_SUBHEADER_BACK':
 			return {...state, handleSubHeaderBack: action.payload as () => void};
+		// MEDIA STREAMS & VIDEO CAMERA CONTEXT SWITCHING
+		case 'SET_VIDEO_LOADING':
+			return {...state, videoLoading: action.payload as boolean};
+		case 'SET_MEDIA_STREAMS':
+			return {...state, mediaStreams: action.payload as MediaStream[] | null};
+		case 'ADD_MEDIA_STREAM':
+			return {
+				...state,
+				mediaStreams: [...(state.mediaStreams || []), action.payload as MediaStream]
+			};
+		case 'SET_CLOSE_EXISTING_PEER_CONNECTION':
+			return {...state, handleCloseExistingPeerConnection: action.payload as () => void};
+		case 'SET_CLOSE_NORMAL_CAMERA':
+			return {
+				...state,
+				handleCloseNormalCamera: action.payload as () => void
+			};
+
 		default:
 			return state;
 	}

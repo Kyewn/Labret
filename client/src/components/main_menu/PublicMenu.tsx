@@ -11,12 +11,12 @@ export const PublicMenu: React.FC = () => {
 				Public Menu
 			</Heading>
 			<VStack w={'100%'} spacing={3}>
-				<Link to={paths.publicHistory}>
+				<Link to={paths.sub.publicHistory}>
 					<Button variant={'outline'} leftIcon={<History />}>
 						Public History
 					</Button>
 				</Link>
-				<Link to={paths.equipmentAvailability}>
+				<Link to={paths.sub.equipmentAvailability}>
 					<Button variant={'outline'} leftIcon={<Microscope />}>
 						Equipment Availability
 					</Button>

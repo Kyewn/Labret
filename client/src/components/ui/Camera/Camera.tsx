@@ -12,27 +12,15 @@ import './camera.css';
 export const Camera: React.FC<{
 	videoId: string;
 	mode?: string;
-	mediaStreams: MediaStream[] | [];
-	setMediaStreams: React.Dispatch<React.SetStateAction<MediaStream[]>>;
 	useNormalMode?: boolean;
-	normalModeResolution?: MediaTrackConstraints;
+	mediaResolution?: MediaTrackConstraints;
 	className?: string;
-}> = ({
-	videoId,
-	mode,
-	mediaStreams,
-	setMediaStreams,
-	useNormalMode,
-	normalModeResolution,
-	className
-}) => {
+}> = ({videoId, mode, useNormalMode, mediaResolution, className}) => {
 	const [videoState, setVideoState] = useState(true);
-	const [pc, setPC] = useState<RTCPeerConnection>();
-	const [dc, setDC] = useState<RTCDataChannel>();
 	const isInit = useRef(false);
 	const toast = useToast();
 	const {appState, appDispatch} = useAppContext();
-	const {videoLoading} = appState;
+	const {mediaStreams, videoLoading} = appState;
 
 	const createPeerConnection = async () => {
 		const peerConnection = new RTCPeerConnection();
@@ -41,7 +29,7 @@ export const Camera: React.FC<{
 			// Get processed video stream from server
 			const processedMediaStream = event.streams[0];
 			// Add processed video stream after original stream
-			setMediaStreams((prev) => [...prev, processedMediaStream]);
+			appDispatch({type: 'ADD_MEDIA_STREAM', payload: processedMediaStream});
 			setVideoState(true);
 		});
 
@@ -108,7 +96,6 @@ export const Camera: React.FC<{
 	const initializeCameraRTC = async () => {
 		appDispatch({type: 'SET_VIDEO_LOADING', payload: true});
 		const peerConnection = await createPeerConnection();
-		setPC(peerConnection);
 		const dataChannel = peerConnection.createDataChannel('faceData', {
 			ordered: true,
 			maxPacketLifeTime: 0
@@ -120,9 +107,7 @@ export const Camera: React.FC<{
 			// TODO handle detected data sent from the server
 			console.log(event.data);
 		};
-		setDC(dataChannel);
 
-		mediaStreams[0]?.getTracks().forEach((track) => track.enabled && track.stop());
 		try {
 			const mediaStream = await navigator.mediaDevices.getUserMedia({
 				video: {
@@ -130,14 +115,43 @@ export const Camera: React.FC<{
 					height: {ideal: 720}
 				}
 			});
+
 			// First set original stream
-			setMediaStreams([mediaStream]);
+			appDispatch({type: 'SET_MEDIA_STREAMS', payload: [mediaStream]});
 			mediaStream.getTracks().forEach((track) => {
 				// Add main processed video track for processing in server
 				peerConnection.addTrack(track, mediaStream);
 			});
+
 			negotiate(peerConnection);
-		} catch {
+
+			const handleClosePC = () => {
+				// Close peer connection associations
+				if (dataChannel) {
+					// Close data channel
+					dataChannel.close();
+				}
+
+				// close transceivers
+				if (peerConnection.getTransceivers) {
+					peerConnection.getTransceivers().forEach(function (transceiver) {
+						if (transceiver.stop) {
+							transceiver.stop();
+						}
+					});
+				}
+
+				// close local audio / video
+				peerConnection?.getSenders().forEach(function (sender) {
+					sender.track?.stop();
+				});
+				// close peer connection
+				peerConnection.close();
+			};
+
+			appDispatch({type: 'SET_CLOSE_EXISTING_PEER_CONNECTION', payload: handleClosePC});
+		} catch (error) {
+			console.log(error);
 			setVideoState(false);
 			toast({
 				title: 'Camera permissions denied',
@@ -157,29 +171,6 @@ export const Camera: React.FC<{
 			isInit.current = true;
 			initializeCameraRTC();
 		}
-
-		return () => {
-			if (dc) {
-				dc.close();
-			}
-
-			// close transceivers
-			if (pc?.getTransceivers) {
-				pc.getTransceivers().forEach(function (transceiver) {
-					if (transceiver.stop) {
-						transceiver.stop();
-					}
-				});
-			}
-
-			// close local audio / video
-			pc?.getSenders().forEach(function (sender) {
-				sender.track?.stop();
-			});
-
-			// close peer connection
-			pc?.close();
-		};
 	}, []);
 
 	useEffect(() => {
@@ -187,9 +178,9 @@ export const Camera: React.FC<{
 
 		const video = document.getElementById(videoId) as HTMLVideoElement;
 
-		if (!video) return;
+		if (!video || !mediaStreams) return;
 
-		if (mediaStreams.length && mode == 'normal') {
+		if (mediaStreams.length && useNormalMode) {
 			video.srcObject = mediaStreams[0];
 		} else {
 			video.srcObject = mediaStreams[1];
@@ -199,25 +190,33 @@ export const Camera: React.FC<{
 	useEffect(() => {
 		if (!useNormalMode) return;
 
-		appDispatch({type: 'SET_VIDEO_LOADING', payload: true});
-
-		mediaStreams[0]?.getTracks().forEach((track) => track.enabled && track.stop());
-
 		const video = document.getElementById(videoId) as HTMLVideoElement;
 		if (!video) return;
 
-		navigator.mediaDevices
-			.getUserMedia({
-				video: normalModeResolution || {
-					width: {ideal: 1280},
-					height: {ideal: 720}
-				}
-			})
-			.then((stream) => {
-				setMediaStreams([stream]);
-				video.srcObject = stream;
-			});
-		appDispatch({type: 'SET_VIDEO_LOADING', payload: false});
+		if (!isInit.current) {
+			isInit.current = true;
+
+			appDispatch({type: 'SET_VIDEO_LOADING', payload: true});
+			navigator.mediaDevices
+				.getUserMedia({
+					video: mediaResolution || {
+						width: {ideal: 1280},
+						height: {ideal: 720}
+					}
+				})
+				.then((stream) => {
+					const handleCloseCamera = () => {
+						stream.getTracks().forEach((track) => {
+							track.stop();
+						});
+					};
+					appDispatch({type: 'SET_MEDIA_STREAMS', payload: [stream]});
+					appDispatch({type: 'SET_CLOSE_NORMAL_CAMERA', payload: handleCloseCamera});
+
+					video.srcObject = stream;
+				});
+			appDispatch({type: 'SET_VIDEO_LOADING', payload: false});
+		}
 	}, []);
 
 	if (videoLoading) {

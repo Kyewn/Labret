@@ -21,20 +21,20 @@ const router = createBrowserRouter(
 			<Route element={<MainPageLayout />}>
 				<Route index element={<MainMenu />} />
 				{/* <Route path={paths.menu} /> */}
-				<Route path={paths.rent} /*element={}*/ />
-				<Route path={paths.return} /*element={}*/ />
-				<Route path={paths.userHistory} /*element={}*/ />
+				<Route path={paths.main.rent} /*element={}*/ />
+				<Route path={paths.main.return} /*element={}*/ />
 			</Route>
 			<Route element={<SubPageLayout />}>
-				<Route path={paths.userHistorySpecificRecord} /*element={}*/ />
-				<Route path={paths.publicHistory} /*element={}*/ />
-				<Route path={paths.equipmentAvailability} /*element={}*/ />
-				<Route path={paths.register} element={<Register />} />
-				<Route path={paths.registerAdmin} /*element={}*/ />
-				<Route path={paths.users} /*element={}*/ />
-				<Route path={paths.admins} /*element={}*/ />
-				<Route path={paths.equipment} /*element={}*/ />
-				<Route path={paths.verifications} /*element={}*/ />
+				<Route path={paths.sub.userHistory} /*element={}*/ />
+				<Route path={paths.sub.userHistorySpecificRecord} /*element={}*/ />
+				<Route path={paths.sub.publicHistory} /*element={}*/ />
+				<Route path={paths.sub.equipmentAvailability} /*element={}*/ />
+				<Route path={paths.sub.register} element={<Register />} />
+				<Route path={paths.sub.registerAdmin} /*element={}*/ />
+				<Route path={paths.sub.users} /*element={}*/ />
+				<Route path={paths.sub.admins} /*element={}*/ />
+				<Route path={paths.sub.equipment} /*element={}*/ />
+				<Route path={paths.sub.verifications} /*element={}*/ />
 			</Route>
 		</>
 	)
