@@ -33,7 +33,7 @@ const SubHeader: React.FC = () => {
 				}
 			>
 				<HStack>
-					<Tooltip label={'Back'} hasArrow>
+					<Tooltip label={'Back'}>
 						<IconButton
 							aria-label={'Back'}
 							variant={'iconButton'}
@@ -45,7 +45,7 @@ const SubHeader: React.FC = () => {
 					<LabretIcon w={100} h={'unset'} fill={colorMode == 'dark' ? 'white' : 'black'} />
 				</HStack>
 				<Spacer />
-				<Tooltip label={colorMode == 'dark' ? 'Toggle Light Mode' : 'Toggle Night Mode'} hasArrow>
+				<Tooltip label={colorMode == 'dark' ? 'Toggle Light Mode' : 'Toggle Night Mode'}>
 					<IconButton
 						aria-label={'Night Mode'}
 						variant={'iconButton'}

@@ -13,7 +13,7 @@ const steps = [
 export const useInitialRegisterContext = () => {
 	const imagesState = useState<Blob[]>([]);
 	const formDataState = useState<FormData>(new FormData());
-	const {activeStep} = useSteps({count: steps.length});
+	const {activeStep, goToNext, goToPrevious} = useSteps({count: steps.length});
 
 	const [images, setImages] = imagesState;
 
@@ -22,7 +22,7 @@ export const useInitialRegisterContext = () => {
 		setImages(newImages);
 	};
 
-	return {imagesState, formDataState, activeStep, steps, handleRemoveImage};
+	return {imagesState, formDataState, activeStep, steps, goToNext, goToPrevious, handleRemoveImage};
 };
 
 export const RegisterContext = createContext<

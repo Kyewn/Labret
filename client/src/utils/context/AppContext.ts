@@ -1,6 +1,7 @@
 import {Dispatch, createContext, useContext} from 'react';
 
 type AppContextState = {
+	pageLoading: boolean;
 	user: string | null;
 	detectedUser: string | null;
 	handleSubHeaderBack: () => void;
@@ -11,6 +12,7 @@ type AppContextState = {
 	handleCloseNormalCamera: () => void;
 };
 type AppContextActionType =
+	| 'SET_PAGE_LOADING'
 	| 'SET_USER'
 	| 'SET_DETECTED_USER'
 	| 'SET_HANDLE_SUBHEADER_BACK'
@@ -28,6 +30,7 @@ type AppContextAction = {
 type AppContextValue = {appState: AppContextState; appDispatch: Dispatch<AppContextAction>};
 
 export const appContextInitialState: AppContextState = {
+	pageLoading: false,
 	user: null,
 	detectedUser: null,
 	handleSubHeaderBack: () => {},
@@ -42,6 +45,8 @@ export const appContextReducer = (
 	action: AppContextAction
 ): AppContextState => {
 	switch (action.type) {
+		case 'SET_PAGE_LOADING':
+			return {...state, pageLoading: action.payload as boolean};
 		case 'SET_USER':
 			return {...state, user: action.payload as string | null};
 		case 'SET_DETECTED_USER':

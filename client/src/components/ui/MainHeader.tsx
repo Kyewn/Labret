@@ -104,7 +104,7 @@ const MainHeader: React.FC = () => {
 				<LabretIcon w={150} h={'unset'} fill={colorMode == 'dark' ? 'white' : 'black'} />
 				<Spacer />
 				<HStack spacing={'5'}>
-					<Tooltip label={colorMode == 'dark' ? 'Toggle Light Mode' : 'Toggle Night Mode'} hasArrow>
+					<Tooltip label={colorMode == 'dark' ? 'Toggle Light Mode' : 'Toggle Night Mode'}>
 						<IconButton
 							aria-label={'Night Mode'}
 							variant={'iconButton'}
@@ -113,7 +113,7 @@ const MainHeader: React.FC = () => {
 							onClick={toggleColorMode}
 						/>
 					</Tooltip>
-					<Tooltip label='More User Actions' hasArrow>
+					<Tooltip label='More User Actions'>
 						<IconButton
 							aria-label={'Menu'}
 							variant={'iconButton'}

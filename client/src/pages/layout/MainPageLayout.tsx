@@ -4,7 +4,7 @@ import {Outlet} from 'react-router-dom';
 
 function MainPageLayout() {
 	return (
-		<Flex w={'100%'} h={'100%'} flexDirection={'column'}>
+		<Flex position={'absolute'} w={'100%'} h={'100%'} flexDirection={'column'}>
 			<MainHeader />
 			<Flex flex={1}>
 				<Outlet />

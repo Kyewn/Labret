@@ -5,7 +5,7 @@ import {Outlet} from 'react-router-dom';
 
 function SubPageLayout() {
 	return (
-		<Flex w={'100%'} h={'100%'} flexDirection={'column'}>
+		<Flex position={'absolute'} w={'100%'} h={'100%'} flexDirection={'column'}>
 			<SubHeader />
 			<Flex flex={1} flexDirection={'column'}>
 				<Outlet />

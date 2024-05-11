@@ -20,8 +20,8 @@ const Button = defineStyleConfig({
 				borderColor: 'lrBrown.600',
 				backgroundColor: 'lrBrown.600',
 				_disabled: {
-					opacity: 0.4
-					// backgroundColor: 'lrBrown.600'
+					opacity: 0.3,
+					backgroundColor: 'lrBrown.600'
 				}
 			},
 			_active: {
@@ -30,10 +30,6 @@ const Button = defineStyleConfig({
 			_focus: {
 				outline: 'none'
 			}
-			// _disabled: {
-			// 	opacity: 0.4,
-			// 	backgroundColor: 'lrBrown.600'
-			// }
 		},
 		secondary: {
 			backgroundColor: 'none',
@@ -81,6 +77,47 @@ const Button = defineStyleConfig({
 		},
 		iconButton: {
 			minWidth: '50px',
+			_hover: {
+				backgroundColor: 'grey.100',
+				svg: {
+					stroke: 'black'
+				}
+			}
+		},
+		itemIconButton: {
+			position: 'absolute',
+			top: -3,
+			right: -3,
+			backgroundColor: 'white',
+			boxShadow: '0 0 2px 0 black',
+			padding: 1,
+			minWidth: '2em',
+			minHeight: '2em',
+			height: '2em',
+			svg: {
+				width: '1em'
+			},
+			_hover: {
+				backgroundColor: 'grey.100',
+				svg: {
+					stroke: 'black'
+				}
+			}
+		},
+		criticalItemIconButton: {
+			position: 'absolute',
+			top: -3,
+			right: -3,
+			backgroundColor: 'white',
+			boxShadow: '0 0 2px 0 black',
+			padding: 1,
+			minWidth: '2em',
+			minHeight: '2em',
+			height: '2em',
+			svg: {
+				stroke: 'lrRed.300',
+				width: '1em'
+			},
 			_hover: {
 				backgroundColor: 'grey.100',
 				svg: {

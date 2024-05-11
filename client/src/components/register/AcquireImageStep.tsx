@@ -1,4 +1,5 @@
 import {Camera} from '@/components/ui/Camera/Camera';
+import ImageManager from '@/components/ui/ImageManager';
 import {useAppContext} from '@/utils/context/AppContext';
 import {useRegisterContext} from '@/utils/context/RegisterContext';
 import {
@@ -18,9 +19,10 @@ import {useEffect, useRef} from 'react';
 
 const AcquireImageStep: React.FC = () => {
 	const {
-		appState: {mediaStreams}
+		appState: {mediaStreams},
+		appDispatch
 	} = useAppContext();
-	const {imagesState} = useRegisterContext();
+	const {imagesState, goToNext} = useRegisterContext();
 	const [images, setImages] = imagesState;
 	const resolution = {
 		width: {ideal: 640},
@@ -35,9 +37,13 @@ const AcquireImageStep: React.FC = () => {
 		});
 	};
 
-	const handleUploadImages = (files: File[]) => {
-		//TODO: Implement image upload
-		console.log(files);
+	const handleUploadImages = async (files: File[]) => {
+		appDispatch({type: 'SET_PAGE_LOADING', payload: true});
+		const blobs = files.map((file) => new Blob([file], {type: file.type}));
+
+		// FIXME: Remove duplicates that are already in the images array (currently cant find any way)
+		setImages((prev) => [...prev, ...blobs]);
+		appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 	};
 
 	useEffect(() => {
@@ -52,7 +58,7 @@ const AcquireImageStep: React.FC = () => {
 				</Flex>
 			</Flex>
 			<Flex flex={0.5} p={5} height={'100%'} flexDirection={'column'}>
-				<VStack alignItems={'flex-start'} spacing={5}>
+				<VStack flex={1} alignItems={'flex-start'} spacing={5}>
 					<Box>
 						<HStack alignContent={'center'}>
 							<Heading size={'md'}>User image</Heading>
@@ -67,21 +73,33 @@ const AcquireImageStep: React.FC = () => {
 						<Text>Look directly into the camera and take pictures using the buttons.</Text>
 						<ButtonGroup marginY={5}>
 							<Button onClick={handleImageCapture}>Capture image</Button>
-							<Button onClick={() => fileButtonRef.current.click()}>Upload images</Button>
+							<Tooltip label={'Prefer 640 x 480'}>
+								<Button variant={'outline'} onClick={() => fileButtonRef.current.click()}>
+									Upload images
+								</Button>
+							</Tooltip>
 							<input
 								style={{display: 'none'}}
 								ref={fileButtonRef}
 								type={'file'}
 								multiple
 								accept={'image/*'}
-								onClick={() => setImages([])}
-								onChange={(e) => e.target.files && handleUploadImages(Array.from(e.target.files))}
+								onChange={(e) => {
+									const files = e.target.files && Array.from(e.target.files);
+									files && handleUploadImages(files);
+								}}
 							/>
 						</ButtonGroup>
 					</Box>
-					<Box>
+					<VStack flex={1} width={'100%'} alignItems={'stretch'}>
 						<Heading size={'md'}>Images taken</Heading>
-					</Box>
+						<ImageManager isRemovable />
+					</VStack>
+					<Flex w={'100%'} justifyContent={'flex-end'}>
+						<Button isDisabled={images.length < 5} onClick={() => goToNext()}>
+							Next
+						</Button>
+					</Flex>
 				</VStack>
 			</Flex>
 		</Flex>
