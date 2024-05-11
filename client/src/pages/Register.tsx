@@ -1,5 +1,5 @@
 import AcquireImageStep from '@/components/register/AcquireImageStep';
-import {useAppContext} from '@/utils/context/AppContext';
+import RegisterFormStep from '@/components/register/RegisterFormStep';
 import {RegisterContext, useInitialRegisterContext} from '@/utils/context/RegisterContext';
 import {
 	Box,
@@ -13,25 +13,10 @@ import {
 	StepTitle,
 	Stepper
 } from '@chakra-ui/react';
-import {useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
 
 export function Register() {
-	const {appState, appDispatch} = useAppContext();
 	const initialRegisterContext = useInitialRegisterContext();
 	const {activeStep, steps} = initialRegisterContext;
-	const {handleCloseNormalCamera} = appState;
-	const navigate = useNavigate();
-
-	useEffect(() => {
-		appDispatch({
-			type: 'SET_HANDLE_SUBHEADER_BACK',
-			payload: () => {
-				handleCloseNormalCamera();
-				navigate(-1);
-			}
-		});
-	}, [handleCloseNormalCamera]);
 
 	return (
 		<RegisterContext.Provider value={initialRegisterContext}>
@@ -56,7 +41,9 @@ export function Register() {
 					))}
 				</Stepper>
 			</Flex>
-			<AcquireImageStep />
+
+			{activeStep === 0 && <AcquireImageStep />}
+			{activeStep === 1 && <RegisterFormStep />}
 		</RegisterContext.Provider>
 	);
 }

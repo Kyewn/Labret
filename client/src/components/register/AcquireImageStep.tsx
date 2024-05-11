@@ -16,18 +16,18 @@ import {
 } from '@chakra-ui/react';
 import {Info} from 'lucide-react';
 import {useEffect, useRef} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 const AcquireImageStep: React.FC = () => {
-	const {
-		appState: {mediaStreams},
-		appDispatch
-	} = useAppContext();
+	const {appState, appDispatch} = useAppContext();
 	const {imagesState, goToNext} = useRegisterContext();
 	const [images, setImages] = imagesState;
 	const resolution = {
 		width: {ideal: 640},
 		height: {ideal: 480}
 	};
+	const {mediaStreams, handleCloseNormalCamera} = appState;
+	const navigate = useNavigate();
 	const fileButtonRef = useRef() as React.MutableRefObject<HTMLInputElement>;
 
 	const handleImageCapture = () => {
@@ -47,8 +47,16 @@ const AcquireImageStep: React.FC = () => {
 	};
 
 	useEffect(() => {
-		console.log(images);
-	}, [images]);
+		appDispatch({type: 'SET_PAGE_LOADING', payload: true});
+		appDispatch({
+			type: 'SET_HANDLE_SUBHEADER_BACK',
+			payload: () => {
+				handleCloseNormalCamera();
+				navigate(-1);
+			}
+		});
+		appDispatch({type: 'SET_PAGE_LOADING', payload: false});
+	}, [handleCloseNormalCamera]);
 
 	return (
 		<Flex flex={0.9} paddingX={10}>
@@ -96,7 +104,13 @@ const AcquireImageStep: React.FC = () => {
 						<ImageManager isRemovable />
 					</VStack>
 					<Flex w={'100%'} justifyContent={'flex-end'}>
-						<Button isDisabled={images.length < 5} onClick={() => goToNext()}>
+						<Button
+							isDisabled={images.length < 5}
+							onClick={() => {
+								handleCloseNormalCamera();
+								goToNext();
+							}}
+						>
 							Next
 						</Button>
 					</Flex>
