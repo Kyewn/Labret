@@ -3,6 +3,7 @@ import {PublicMenu} from '@/components/main_menu/PublicMenu';
 import {Camera} from '@/components/ui/Camera/Camera';
 import {Box, Flex} from '@chakra-ui/react';
 import {useState} from 'react';
+import {Helmet} from 'react-helmet';
 
 export function MainMenu() {
 	const [mode, setMode] = useState('face');
@@ -14,6 +15,7 @@ export function MainMenu() {
 
 	return (
 		<>
+			<Helmet title='Main menu' />
 			{/* <Button onClick={() => handleClick()} /> */}
 			<Box flex={0.7} p={6}>
 				<Camera videoId='mainMenuCamera' mode={mode} />

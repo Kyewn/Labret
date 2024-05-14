@@ -1,20 +1,25 @@
 import {useSteps} from '@chakra-ui/react';
 import {createContext, useContext, useState} from 'react';
+import {useForm} from 'react-hook-form';
 
 const steps = [
 	{
 		title: 'Acquire Image'
 	},
 	{
-		title: 'Register Form'
+		title: 'Registration Form'
 	}
 ];
 
+export type FieldValues = {
+	name: string;
+	email: string;
+};
+
 export const useInitialRegisterContext = () => {
 	const imagesState = useState<Blob[]>([]);
-	const formDataState = useState<FormData>(new FormData());
+	const {control, register, handleSubmit} = useForm<FieldValues>();
 	const {activeStep, goToNext, goToPrevious} = useSteps({count: steps.length});
-
 	const [images, setImages] = imagesState;
 
 	const handleRemoveImage = (index: number) => {
@@ -22,7 +27,17 @@ export const useInitialRegisterContext = () => {
 		setImages(newImages);
 	};
 
-	return {imagesState, formDataState, activeStep, steps, goToNext, goToPrevious, handleRemoveImage};
+	return {
+		control,
+		imagesState,
+		activeStep,
+		steps,
+		goToNext,
+		goToPrevious,
+		handleRemoveImage,
+		register,
+		handleSubmit
+	};
 };
 
 export const RegisterContext = createContext<

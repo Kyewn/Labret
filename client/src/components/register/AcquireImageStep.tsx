@@ -73,7 +73,7 @@ const AcquireImageStep: React.FC = () => {
 							<Tooltip
 								placement='right-start'
 								hasArrow
-								label={`Please be aware that these images will be used for training the system's facial recognition model, so images should be meaningful for identifying the user. You need to take at least 5 face images to continue to the next section.`}
+								label={`Please be aware that these images will be used for training the system's facial recognition model, so images should be meaningful for identifying the user. You need to take at least 5 face images to continue to the next section, more images makes the model more accurate in detecting your face.`}
 							>
 								<Icon as={Info} />
 							</Tooltip>
@@ -81,7 +81,7 @@ const AcquireImageStep: React.FC = () => {
 						<Text>Look directly into the camera and take pictures using the buttons.</Text>
 						<ButtonGroup marginY={5}>
 							<Button onClick={handleImageCapture}>Capture image</Button>
-							<Tooltip label={'Prefer 640 x 480'}>
+							<Tooltip label={'Prefer 640 x 480 resolution'}>
 								<Button variant={'outline'} onClick={() => fileButtonRef.current.click()}>
 									Upload images
 								</Button>

@@ -159,15 +159,14 @@ const Input = createMultiStyleConfigHelpers(inputAnatomy.keys).defineMultiStyleC
 		filled: {
 			field: {
 				border: '2px solid',
-				borderColor: 'asGrey.100',
-				backgroundColor: 'white',
+				borderColor: 'lrBrown.700',
+				backgroundColor: 'unset',
 				_hover: {
-					backgroundColor: 'asGrey.200'
+					backgroundColor: 'grey.100'
 				},
 				_focus: {
 					border: '2px solid',
-					borderColor: 'lrBrown.600',
-					backgroundColor: 'white'
+					borderColor: 'lrBrown.600'
 				}
 			}
 		}
@@ -282,15 +281,15 @@ export const themes = extendTheme({
 			grey: {
 				100: {
 					default: '#EEEEEE',
-					_dark: '#D9D9D9'
+					_dark: '#D4D0C8'
 				},
 				200: {
 					default: '#D9D9D9',
-					_dark: '#EEEEEE'
+					_dark: '#D9D9D9'
 				},
 				300: {
 					default: '#D4D0C8',
-					_dark: '#D9D9D9'
+					_dark: '#EEEEEE'
 				}
 			}
 		}

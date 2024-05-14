@@ -1,0 +1,7 @@
+.chakra-table__container {
+	border: 2px solid;
+	border-color: var(--chakra-colors-gray-200);
+	border-radius: 10px;
+	scrollbar-width: thin;
+	background-color: white;
+}

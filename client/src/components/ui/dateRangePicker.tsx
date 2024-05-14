@@ -10,11 +10,44 @@ import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
 import {cn} from '@/utils/utils';
 import {CalendarDays} from 'lucide-react';
 
-export function DatePickerWithRange({className}: React.HTMLAttributes<HTMLDivElement>) {
-	const [date, setDate] = React.useState<DateRange | undefined>({
-		from: new Date(2022, 0, 20),
-		to: addDays(new Date(2022, 0, 20), 20)
+type Props = {
+	onSelectRange: (dateRange: DateRange) => void;
+};
+
+export const DatePickerWithRange: React.FC<Props & React.HTMLAttributes<HTMLDivElement>> = ({
+	onSelectRange,
+	...htmlAttributes
+}) => {
+	const {className} = htmlAttributes;
+	const [date, setDate] = React.useState<DateRange | undefined>(() => {
+		const toDate = addDays(new Date(), 20);
+		toDate.setHours(23, 59, 59, 999);
+
+		return {
+			from: new Date(),
+			to: toDate
+		};
 	});
+
+	const handleSelectRange = (dateRange: DateRange | undefined) => {
+		const adjustedDateRange = {
+			from: dateRange?.from,
+			to:
+				dateRange?.to &&
+				new Date(
+					dateRange.to.getFullYear(),
+					dateRange.to.getMonth(),
+					dateRange.to.getDate(),
+					23,
+					59,
+					59,
+					999
+				)
+		};
+
+		setDate(adjustedDateRange);
+		onSelectRange(adjustedDateRange);
+	};
 
 	return (
 		<div className={cn('grid gap-2', className)}>
@@ -48,11 +81,11 @@ export function DatePickerWithRange({className}: React.HTMLAttributes<HTMLDivEle
 						mode='range'
 						defaultMonth={date?.from}
 						selected={date}
-						onSelect={setDate}
+						onSelect={handleSelectRange}
 						numberOfMonths={2}
 					/>
 				</PopoverContent>
 			</Popover>
 		</div>
 	);
-}
+};

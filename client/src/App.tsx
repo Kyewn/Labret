@@ -6,6 +6,7 @@ import {paths} from '@/utils/paths';
 import {themes} from '@/utils/themes';
 import {Box, Center, ChakraProvider, Spinner} from '@chakra-ui/react';
 import {useReducer} from 'react';
+import {Helmet} from 'react-helmet';
 import {
 	Route,
 	RouterProvider,
@@ -13,6 +14,7 @@ import {
 	createRoutesFromElements
 } from 'react-router-dom';
 import './App.css';
+import favicon from './assets/favicon.ico';
 import {MainMenu} from './pages/MainMenu';
 
 const router = createBrowserRouter(
@@ -45,28 +47,33 @@ function App() {
 	const {pageLoading} = appState;
 
 	return (
-		<AppContext.Provider value={{appState, appDispatch}}>
-			<ChakraProvider theme={themes}>
-				{pageLoading ? (
-					<Box position={'relative'} h={'100%'} w={'100%'} pointerEvents={'none'}>
-						<Box
-							position={'absolute'}
-							backgroundColor={'black'}
-							opacity={0.5}
-							w={'100%'}
-							h={'100%'}
-							zIndex={99}
-						/>
-						<Center position={'absolute'} h={'100%'} w={'100%'} zIndex={99}>
-							<Spinner size='xl' />
-						</Center>
+		<>
+			<Helmet>
+				<link rel='icon' href={favicon} />
+			</Helmet>
+			<AppContext.Provider value={{appState, appDispatch}}>
+				<ChakraProvider theme={themes}>
+					{pageLoading ? (
+						<Box position={'relative'} h={'100%'} w={'100%'} pointerEvents={'none'}>
+							<Box
+								position={'absolute'}
+								backgroundColor={'black'}
+								opacity={0.5}
+								w={'100%'}
+								h={'100%'}
+								zIndex={99}
+							/>
+							<Center position={'absolute'} h={'100%'} w={'100%'} zIndex={99}>
+								<Spinner size='xl' />
+							</Center>
+							<RouterProvider router={router} />
+						</Box>
+					) : (
 						<RouterProvider router={router} />
-					</Box>
-				) : (
-					<RouterProvider router={router} />
-				)}
-			</ChakraProvider>
-		</AppContext.Provider>
+					)}
+				</ChakraProvider>
+			</AppContext.Provider>
+		</>
 	);
 }
 

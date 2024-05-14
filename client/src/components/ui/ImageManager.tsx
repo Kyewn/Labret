@@ -58,13 +58,15 @@ const ImageManager: React.FC<Props> = ({isRemovable}) => {
 						onOpen();
 					}}
 				/>
-				<IconButton
-					variant={'criticalItemIconButton'}
-					isRound
-					aria-label='Delete item'
-					icon={<Trash />}
-					onClick={() => handleRemoveImage(index)}
-				/>
+				{isRemovable && (
+					<IconButton
+						variant={'criticalItemIconButton'}
+						isRound
+						aria-label='Delete item'
+						icon={<Trash />}
+						onClick={() => handleRemoveImage(index)}
+					/>
+				)}
 			</Box>
 		));
 	const renderAllImages = () => (
@@ -85,13 +87,15 @@ const ImageManager: React.FC<Props> = ({isRemovable}) => {
 							setViewingImage(image);
 						}}
 					/>
-					<IconButton
-						variant={'criticalItemIconButton'}
-						isRound
-						aria-label='Delete item'
-						icon={<Trash />}
-						onClick={() => handleRemoveImage(index)}
-					/>
+					{isRemovable && (
+						<IconButton
+							variant={'criticalItemIconButton'}
+							isRound
+							aria-label='Delete item'
+							icon={<Trash />}
+							onClick={() => handleRemoveImage(index)}
+						/>
+					)}
 				</GridItem>
 			))}
 		</Grid>
