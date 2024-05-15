@@ -1,14 +1,22 @@
 import {EditableField} from '@/components/ui/EditableField';
 import ImageManager from '@/components/ui/ImageManager';
+import {FormValues} from '@/utils/const';
 import {useAppContext} from '@/utils/context/AppContext';
-import {useRegisterContext} from '@/utils/context/RegisterContext';
+import {RegisterFormValues, useRegisterContext} from '@/utils/context/RegisterContext';
 import {Button, ButtonGroup, Flex, HStack, Spacer, Text, VStack} from '@chakra-ui/react';
 import {useEffect} from 'react';
-import {Form} from 'react-hook-form';
+import {UseFormRegister} from 'react-hook-form';
 
 const RegisterFormStep: React.FC = () => {
 	const {appDispatch} = useAppContext();
-	const {control, register, goToPrevious} = useRegisterContext();
+	const {
+		register,
+		handleSubmit,
+		watch,
+		formState: {isValid},
+		goToPrevious
+	} = useRegisterContext();
+	const {name, email} = watch();
 
 	useEffect(() => {
 		appDispatch({
@@ -19,15 +27,32 @@ const RegisterFormStep: React.FC = () => {
 		});
 	}, []);
 
+	useEffect(() => {
+		console.log(name, email, isValid);
+	}, [name, email, isValid]);
+
 	// TODO Save images to flask server (image and model training server)
+	const onSubmit = (data: RegisterFormValues) => {
+		console.log(data.name, data.email);
+	};
 
 	return (
 		<Flex flex={0.9} paddingX={10} pb={10}>
 			<VStack flex={1} w={'100%'}>
-				<Form control={control} style={{flex: 1}}>
+				<form id='form' onSubmit={handleSubmit(onSubmit)} style={{flex: 1}}>
 					<VStack>
-						<EditableField label='Name' isEditing={true} name='name' register={register} />
-						<EditableField label='Email' isEditing={true} name='email' register={register} />
+						<EditableField
+							name={'name'}
+							label='Name'
+							isEditing={true}
+							register={register as UseFormRegister<FormValues>}
+						/>
+						<EditableField
+							name={'email'}
+							label='Email'
+							isEditing={true}
+							register={register as UseFormRegister<FormValues>}
+						/>
 						<VStack alignItems={'flex-start'} spacing={0}>
 							<Text fontWeight={700} size={'sm'}>
 								Face images
@@ -35,7 +60,7 @@ const RegisterFormStep: React.FC = () => {
 							<ImageManager />
 						</VStack>
 					</VStack>
-				</Form>
+				</form>
 
 				<HStack width={'100%'}>
 					<ButtonGroup width={'100%'}>
@@ -43,7 +68,9 @@ const RegisterFormStep: React.FC = () => {
 							Back
 						</Button>
 						<Spacer />
-						<Button>Register</Button>
+						<Button form='form' type='submit'>
+							Register
+						</Button>
 					</ButtonGroup>
 				</HStack>
 			</VStack>

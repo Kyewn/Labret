@@ -59,7 +59,7 @@ const MainHeader: React.FC = () => {
 								</ListItem>
 							</Link>
 							{/* FIXME Only when user is locked in */}
-							<Link to={paths.sub.users}>
+							<Link to={paths.sub.users} onClick={handleCloseMainMenuCamera}>
 								<ListItem>
 									<ListIcon as={BookUser} w={5} h={5} />
 									<Text display={'inline-block'} fontWeight={700}>

@@ -11,14 +11,18 @@ const steps = [
 	}
 ];
 
-export type FieldValues = {
+export type RegisterFormValues = {
 	name: string;
 	email: string;
 };
 
+export type RegisterFormVal2 = {
+	type: string;
+};
+
 export const useInitialRegisterContext = () => {
 	const imagesState = useState<Blob[]>([]);
-	const {control, register, handleSubmit} = useForm<FieldValues>();
+	const {watch, register, formState, handleSubmit} = useForm<RegisterFormValues>();
 	const {activeStep, goToNext, goToPrevious} = useSteps({count: steps.length});
 	const [images, setImages] = imagesState;
 
@@ -28,7 +32,7 @@ export const useInitialRegisterContext = () => {
 	};
 
 	return {
-		control,
+		formState,
 		imagesState,
 		activeStep,
 		steps,
@@ -36,6 +40,7 @@ export const useInitialRegisterContext = () => {
 		goToPrevious,
 		handleRemoveImage,
 		register,
+		watch,
 		handleSubmit
 	};
 };

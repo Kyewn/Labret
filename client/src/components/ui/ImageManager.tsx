@@ -41,9 +41,8 @@ const ImageManager: React.FC<Props> = ({isRemovable}) => {
 
 	const renderPreviewImages = () =>
 		images.slice(0, 5).map((image, index) => (
-			<Box position={'relative'}>
+			<Box position={'relative'} key={`list-${index}`}>
 				<img
-					key={index}
 					src={URL.createObjectURL(image)}
 					alt={`Image ${index}`}
 					style={{
@@ -72,7 +71,7 @@ const ImageManager: React.FC<Props> = ({isRemovable}) => {
 	const renderAllImages = () => (
 		<Grid gridTemplateColumns={'repeat(5, 100px)'} gap={5}>
 			{images.map((image, index) => (
-				<GridItem position={'relative'} key={index} w={100} h={100}>
+				<GridItem position={'relative'} key={`grid-${index}`} w={100} h={100}>
 					<img
 						src={URL.createObjectURL(image)}
 						alt={`Image ${index}`}

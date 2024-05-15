@@ -1,10 +1,9 @@
-import axios from 'axios';
+import {RegisterFormVal2, RegisterFormValues} from '@/utils/context/RegisterContext';
 
 export const UndefinedString = 'None';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const swrFetcher = async (url: string): Promise<any> =>
-	axios.get(url).then((res) => res.data);
+export const swrFetcher = async (url: string): Promise<any> => fetch(url).then((res) => res.json());
 
 export const formatDate = (date: Date) =>
 	`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
@@ -18,8 +17,14 @@ export const formatDateAndTime = (date: Date) =>
 		minute: 'numeric',
 		second: 'numeric'
 	});
+
+// React hook form general types
+export type FormValues = RegisterFormValues | RegisterFormVal2;
+export type FormValueKeys = keyof RegisterFormValues | keyof RegisterFormVal2;
+
 // API Data Structure
 // Repairs
+
 export type RepairsData = {
 	id?: string;
 	case_number?: string | number;
