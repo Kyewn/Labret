@@ -20,7 +20,7 @@ export const formatDateAndTime = (date: Date) =>
 
 // React hook form general types
 export type FormValues = RegisterFormValues | RegisterFormVal2;
-export type FormValueKeys = keyof RegisterFormValues | keyof RegisterFormVal2;
+export type FormKeys = keyof RegisterFormValues | keyof RegisterFormVal2;
 
 // API Data Structure
 // Repairs
