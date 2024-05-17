@@ -59,18 +59,18 @@ const RegisterFormStep: React.FC = () => {
 		);
 		console.log(imageStrings);
 
-		// Save images to flask server (image and model training server)
-		// TODO Send to roboflow via CLI in flask server
-		await fetch('http://localhost:8000/api/register', {
+		// Send user data to backend for ultralytics pipeline
+		await fetch('http://localhost:8000/register', {
 			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Access-Control-Allow-Origin': '*'
+			},
 			body: JSON.stringify({
 				id: user.id,
 				images: imageStrings,
 				...userData
-			}),
-			headers: {
-				'Content-Type': 'application/json'
-			}
+			})
 		});
 	};
 
