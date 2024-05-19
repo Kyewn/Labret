@@ -27,5 +27,5 @@ def download_face_training_dataset_from_roboflow():
     # Only download dataset if it doesn't exist
     if (not os.path.isdir(f"./images/faces/Labret-{ltsVersion}")):
         # Download and Move default dataset download location to custom path
-        dataset = rfLTSVersionDataset.download("yolov5")
+        dataset = rfLTSVersionDataset.download("yolov8")
         shutil.move(rf"{dataset.location}", r"./images/faces")
