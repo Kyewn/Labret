@@ -16,6 +16,7 @@ def register_user():
     
     # Save images locally first to get path
     # Create folders on init
+    # TODO Relocate dir create commands to respective functions
     pathlib.Path('./images').mkdir(parents=True, exist_ok=True)
     pathlib.Path('./images/new_faces').mkdir(parents=True, exist_ok=True)
     pathlib.Path('./images/new_items').mkdir(parents=True, exist_ok=True)
