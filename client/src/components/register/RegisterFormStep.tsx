@@ -72,13 +72,23 @@ const RegisterFormStep: React.FC = () => {
 				...userData
 			})
 		});
+
+		toast({
+			title: 'Success',
+			description: 'User creation request has been sent for review.',
+			status: 'success',
+			duration: 5000,
+			isClosable: true
+		});
+
+		// TODO redirect to main page
 	};
 
 	const onSubmit = async (data: RegisterFormValues) => {
 		try {
 			appDispatch({type: 'SET_PAGE_LOADING', payload: true});
-			handleCreateUser(data);
-			appDispatch({type: 'SET_PAGE_LOADING', payload: true});
+			await handleCreateUser(data);
+			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 		} catch {
 			toast({
 				title: 'Error',
@@ -94,7 +104,7 @@ const RegisterFormStep: React.FC = () => {
 	return (
 		<Flex flex={0.9} paddingX={10} pb={10}>
 			<VStack flex={1} w={'100%'}>
-				<form id='form' onSubmit={handleSubmit(onSubmit)} style={{flex: 1}}>
+				<form id='form' action='#' onSubmit={handleSubmit(onSubmit)} style={{flex: 1}}>
 					<VStack>
 						<EditableField
 							name={'name'}
@@ -103,7 +113,11 @@ const RegisterFormStep: React.FC = () => {
 							register={register as UseFormRegister<FormValues>}
 							errorMessage={errors.name?.message}
 							rules={{
-								required: 'Name is required'
+								required: 'Name is required',
+								pattern: {
+									value: /^[a-zA-Z\s]*$/,
+									message: 'Invalid name'
+								}
 							}}
 						/>
 						<EditableField

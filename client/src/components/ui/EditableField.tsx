@@ -56,6 +56,10 @@ export const EditableField: React.FC<Props> = ({
 						maxWidth={'400px'}
 						type={valueType}
 						{...(register && registerProps)}
+						onChange={(e) => {
+							onChange?.(e);
+							colKey && handleChange?.({[colKey]: e.target.value});
+						}}
 					/>
 				)
 			) : (
