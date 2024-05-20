@@ -1,3 +1,4 @@
+import {Error404} from '@/pages/Error404';
 import {Register} from '@/pages/Register';
 import MainPageLayout from '@/pages/layout/MainPageLayout';
 import SubPageLayout from '@/pages/layout/SubPageLayout';
@@ -19,7 +20,7 @@ import {MainMenu} from './pages/MainMenu';
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
-		<>
+		<Route errorElement={<Error404 />}>
 			<Route element={<MainPageLayout />}>
 				<Route index element={<MainMenu />} />
 				{/* <Route path={paths.menu} /> */}
@@ -38,7 +39,7 @@ const router = createBrowserRouter(
 				<Route path={paths.sub.equipment} /*element={}*/ />
 				<Route path={paths.sub.verifications} /*element={}*/ />
 			</Route>
-		</>
+		</Route>
 	)
 );
 

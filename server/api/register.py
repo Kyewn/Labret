@@ -2,7 +2,6 @@ import base64
 import pathlib
 from flask import Blueprint, request, jsonify
 from roboflowLabret import rfLabretProject
-from api.model_training import download_face_training_dataset_from_roboflow
 
 register = Blueprint('register', __name__)
 

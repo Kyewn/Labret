@@ -1,6 +1,6 @@
 export const paths = {
 	main: {
-		menu: '/menu',
+		root: '/',
 		rent: '/rent',
 		return: '/return'
 	},

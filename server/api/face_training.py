@@ -6,15 +6,13 @@ from firebaseLabret import init_firebase
 from firebase_admin import firestore
 from roboflowLabret import rfLabretProject
 
-model_training = Blueprint('model_training', __name__)
+face_training = Blueprint('face_training', __name__)
 
 init_firebase()
 firestore_db = firestore.client()
-model_training_collection = firestore_db.collection('model_training')
+face_training_collection = firestore_db.collection('face_training')
 
 # Download face training dataset
-# part of the training process, NOT A ROUTE, NOW A ROUTE ONLY FOR DEV TEST
-@model_training.route('/downloadFaceTrainingDatasetFromRoboflow', methods=['POST'])
 def download_face_training_dataset_from_roboflow():
     # Init local folders
     pathlib.Path('./images/faces').mkdir(parents=True, exist_ok=True)
@@ -29,3 +27,10 @@ def download_face_training_dataset_from_roboflow():
         # Download and Move default dataset download location to custom path
         dataset = rfLTSVersionDataset.download("yolov8")
         shutil.move(rf"{dataset.location}", r"./images/faces")
+
+@face_training.route('/train-face-lts-model')
+def train_face_lts_model():
+    # Download face training dataset
+    download_face_training_dataset_from_roboflow()
+
+    # Train model
