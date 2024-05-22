@@ -2,3 +2,4 @@ venv
 __pycache__/
 images/new_faces/
 images/new_items/
+serviceAccountKey.json
