@@ -1,7 +1,11 @@
 from roboflow import Roboflow
+from dotenv import load_dotenv
+import os
 
-rf = Roboflow(api_key="eNtkPf937uJfxwVp8Eka")
-workspaceId = "oowus-workspace"
-projectId = "labret"
+load_dotenv()
+
+rf = Roboflow(api_key=os.getenv("ROBOFLOW_API_KEY"))
+workspaceId = os.getenv("ROBOFLOW_WORKSPACE_ID")
+projectId = os.getenv("ROBOFLOW_PROJECT_ID")
 
 rfLabretProject = rf.workspace(workspaceId).project(projectId)
