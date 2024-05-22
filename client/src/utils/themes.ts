@@ -14,7 +14,7 @@ const Button = defineStyleConfig({
 	variants: {
 		solid: {
 			backgroundColor: 'lrBrown.700',
-			color: 'contrastWhite',
+			color: 'whiteDarkMode',
 			minWidth: '100px',
 			_hover: {
 				borderColor: 'lrBrown.600',
@@ -58,7 +58,7 @@ const Button = defineStyleConfig({
 			},
 			_active: {
 				backgroundColor: 'lrBrown.700',
-				color: 'contrastWhite',
+				color: 'whiteDarkMode',
 				borderColor: 'lrBrown.700'
 			}
 		},
@@ -68,7 +68,7 @@ const Button = defineStyleConfig({
 			color: 'lrRed.300',
 			_hover: {
 				backgroundColor: 'lrRed.300',
-				color: 'contrastWhite'
+				color: 'whiteDarkMode'
 			},
 			_active: {
 				backgroundColor: 'lrRed.100',
@@ -184,7 +184,7 @@ const List = createMultiStyleConfigHelpers(listAnatomy.keys).defineMultiStyleCon
 			cursor: 'pointer',
 			_hover: {
 				backgroundColor: 'lrBrown.700',
-				color: 'contrastWhite'
+				color: 'whiteDarkMode'
 			},
 			_active: {
 				backgroundColor: 'lrBrown.400'
@@ -274,9 +274,13 @@ export const themes = extendTheme({
 				200: '#FF5757',
 				300: '#FF4040'
 			},
-			contrastWhite: {
+			whiteDarkMode: {
 				default: '#FFFFFF',
 				_dark: '#000000'
+			},
+			blackDarkMode: {
+				default: '#000000',
+				_dark: '#FFFFFF'
 			},
 			grey: {
 				100: {

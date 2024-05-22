@@ -70,7 +70,15 @@ const RegisterFormStep: React.FC = () => {
 
 	const onSubmit = async (data: RegisterFormValues) => {
 		try {
+			appDispatch({
+				type: 'SET_PAGE_LOADING',
+				payload: true
+			});
 			await handleCreateUser(data);
+			appDispatch({
+				type: 'SET_PAGE_LOADING',
+				payload: false
+			});
 			navigate(paths.main.root);
 			toast({
 				title: 'Success',
@@ -81,6 +89,11 @@ const RegisterFormStep: React.FC = () => {
 			});
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
+			appDispatch({
+				type: 'SET_PAGE_LOADING',
+				payload: false
+			});
+
 			switch (err.name) {
 				case 'UserAlreadyExists':
 					toast({
@@ -105,12 +118,7 @@ const RegisterFormStep: React.FC = () => {
 
 	return (
 		<>
-			<Flex
-				flex={0.9}
-				paddingX={10}
-				pb={10}
-				{...(isSubmitting && {pointerEvents: 'none', opacity: 0.5})}
-			>
+			<Flex flex={0.9} paddingX={10} pb={10}>
 				<VStack flex={1} w={'100%'}>
 					<form id='form' onSubmit={handleSubmit(onSubmit)} style={{flex: 1}}>
 						<VStack>

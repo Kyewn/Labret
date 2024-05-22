@@ -55,24 +55,30 @@ function App() {
 				</Helmet>
 				<AppContext.Provider value={{appState, appDispatch}}>
 					<ChakraProvider theme={themes}>
-						{pageLoading ? (
-							<Box position={'relative'} h={'100%'} w={'100%'} pointerEvents={'none'}>
-								<Box
-									position={'absolute'}
-									backgroundColor={'black'}
-									opacity={0.5}
-									w={'100%'}
-									h={'100%'}
-									zIndex={99}
-								/>
-								<Center position={'absolute'} h={'100%'} w={'100%'} zIndex={99}>
-									<Spinner size='xl' />
-								</Center>
-								<RouterProvider router={router} />
-							</Box>
-						) : (
+						<Box
+							position={'relative'}
+							h={'100%'}
+							w={'100%'}
+							{...(pageLoading && {pointerEvents: 'none'})} // Disable pointer events when page is loading
+						>
+							{/* Loading overlay */}
+							{pageLoading && (
+								<Box position={'absolute'} h={'100%'} w={'100%'} zIndex={99}>
+									<Box
+										position={'absolute'}
+										backgroundColor={'gray.800'}
+										opacity={0.5}
+										w={'100%'}
+										h={'100%'}
+										zIndex={99}
+									/>
+									<Center position={'absolute'} h={'100%'} w={'100%'}>
+										<Spinner size='xl' thickness='3px' color='white' zIndex={100} />
+									</Center>
+								</Box>
+							)}
 							<RouterProvider router={router} />
-						)}
+						</Box>
 					</ChakraProvider>
 				</AppContext.Provider>
 			</HelmetProvider>
