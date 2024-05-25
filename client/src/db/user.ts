@@ -20,8 +20,8 @@ export const getUser = async (userId: string) => {
 export const createUser = async (data: RegisterFormValues) => {
 	const doc = await addDoc(userCollection, {
 		...data,
-		userStatus: 'pending',
-		userType: 'user',
+		status: 'pending',
+		type: 'user',
 		createdAt: new Date().toISOString(),
 		lastRentalAt: null
 	});

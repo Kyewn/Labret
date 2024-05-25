@@ -1,5 +1,6 @@
 import base64
 import pathlib
+import shutil
 from flask import Blueprint, request, jsonify
 from roboflowLabret import rfLabretProject
 
@@ -20,6 +21,9 @@ def register_user():
     pathlib.Path('./images/new_faces').mkdir(parents=True, exist_ok=True)
     pathlib.Path('./images/new_items').mkdir(parents=True, exist_ok=True)
 
+    imageIds = []
+    
+    # Temporarily write image files locally for upload later 
     for (i, image) in enumerate(images):
         filePath = f"./images/new_faces/{id}_{name}_{i}.jpg"
         bImage = base64.b64decode(image)
@@ -27,7 +31,16 @@ def register_user():
             image.write(bImage)
             image.close()
 
-    # Send image to roboflow
+        # Send image to roboflow        
         rfLabretProject.upload(filePath, tag_names=[id])
 
-    return jsonify({'message': 'User registered successfully'})
+        # Get image URL
+        for result in rfLabretProject.search(tag=id, batch=True, fields=["id", "owner"]):
+            imageIds.append(result)
+
+    # Remove temp image files
+    # FIXME maybe not to remove to allow locally saving images and serving to display in client
+    shutil.rmtree(pathlib.Path('./images/new_faces'))
+    shutil.rmtree(pathlib.Path('./images/new_items'))
+
+    return jsonify({'message': 'User registered successfully', 'imageIds': imageIds})

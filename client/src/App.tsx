@@ -1,5 +1,6 @@
 import {Error404} from '@/pages/Error404';
 import {Register} from '@/pages/Register';
+import {ViewUsers} from '@/pages/ViewUsers';
 import MainPageLayout from '@/pages/layout/MainPageLayout';
 import SubPageLayout from '@/pages/layout/SubPageLayout';
 import {AppContext, appContextInitialState, appContextReducer} from '@/utils/context/AppContext';
@@ -23,7 +24,6 @@ const router = createBrowserRouter(
 		<Route errorElement={<Error404 />}>
 			<Route element={<MainPageLayout />}>
 				<Route index element={<MainMenu />} />
-				{/* <Route path={paths.menu} /> */}
 				<Route path={paths.main.rent} /*element={}*/ />
 				<Route path={paths.main.return} /*element={}*/ />
 			</Route>
@@ -34,7 +34,7 @@ const router = createBrowserRouter(
 				<Route path={paths.sub.equipmentAvailability} /*element={}*/ />
 				<Route path={paths.sub.register} element={<Register />} />
 				<Route path={paths.sub.registerAdmin} /*element={}*/ />
-				<Route path={paths.sub.users} /*element={}*/ />
+				<Route path={paths.sub.users} element={<ViewUsers />} />
 				<Route path={paths.sub.admins} /*element={}*/ />
 				<Route path={paths.sub.equipment} /*element={}*/ />
 				<Route path={paths.sub.verifications} /*element={}*/ />

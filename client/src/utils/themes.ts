@@ -42,8 +42,8 @@ const Button = defineStyleConfig({
 				backgroundColor: 'lrBrown.200'
 			},
 			_active: {
-				borderColor: 'lrBrown.100',
-				backgroundColor: 'lrBrown.100'
+				borderColor: 'lrBrown.300',
+				backgroundColor: 'lrBrown.300'
 			},
 			_focus: {
 				outline: 'none'
