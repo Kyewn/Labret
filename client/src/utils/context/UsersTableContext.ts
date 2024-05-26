@@ -1,16 +1,26 @@
-import {User} from '@/utils/dataType';
-import {ColumnFiltersState, SortingState, Table} from '@tanstack/react-table';
+import {User} from '@/utils/data';
+import {
+	ColumnFiltersState,
+	PaginationState,
+	RowSelectionState,
+	SortingState,
+	Table
+} from '@tanstack/react-table';
 import {addDays} from 'date-fns';
 import {createContext, useState} from 'react';
 
 // TABLE STRUCTURES
 export const useUsersTableContext = () => {
 	// Table data states
-	const initDataState = useState<User[] | undefined>(undefined);
 	const dataState = useState<User[] | undefined>(undefined);
 	const tableState = useState<Table<User> | undefined>(undefined);
-	const limitState = useState(10);
-	const currLimitState = useState(10);
+	const [, setData] = dataState;
+	const [, setTable] = tableState;
+	const paginationState = useState<PaginationState>({
+		pageIndex: 0,
+		pageSize: 10 // Limit
+	});
+	const rowSelectionState = useState<RowSelectionState>({});
 
 	// Filters
 	const getInitDate = () => {
@@ -30,24 +40,19 @@ export const useUsersTableContext = () => {
 			value: getInitDate()
 		}
 	];
+	const initialSortingState = [{id: 'status', desc: true}];
 	const searchTextState = useState('');
 	const tableFiltersState = useState<ColumnFiltersState>(initialFilterState);
-	const tableSortingState = useState<SortingState>([]);
-
-	const [initData, setInitData] = initDataState;
-	const [, setData] = dataState;
-	const [, setTable] = tableState;
-	const [limit, setLimit] = limitState;
-	const [, setCurrLimit] = currLimitState;
+	const tableSortingState = useState<SortingState>(initialSortingState);
 
 	const handleInitTable = (table: Table<User>) => {
 		setTable(table);
 	};
 
-	const refetch = (mLimit: number) => {
+	const refetch = () => {
 		const data: User[] = [
 			{
-				id: '1',
+				id: 1,
 				name: 'John Doe',
 				email: 'john@gmail.com',
 				status: 'pending',
@@ -55,7 +60,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date('2024-05-24T13:04:25.079Z')
 			},
 			{
-				id: '12',
+				id: 12,
 				name: 'Johnq Doe',
 				email: 'johnq@gmail.com',
 				status: 'active',
@@ -63,7 +68,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '3',
+				id: 3,
 				name: 'Johna Doe',
 				email: 'johna@gmail.com',
 				status: 'pending',
@@ -71,7 +76,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '1',
+				id: 1,
 				name: 'John Doe',
 				email: 'john@gmail.com',
 				status: 'pending',
@@ -79,7 +84,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '12',
+				id: 12,
 				name: 'Johnq Doe',
 				email: 'johnq@gmail.com',
 				status: 'active',
@@ -87,7 +92,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '3',
+				id: 3,
 				name: 'Johna Doe',
 				email: 'johna@gmail.com',
 				status: 'pending',
@@ -95,7 +100,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '1',
+				id: 1,
 				name: 'John Doe',
 				email: 'john@gmail.com',
 				status: 'pending',
@@ -103,7 +108,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '12',
+				id: 12,
 				name: 'Johnq Doe',
 				email: 'johnq@gmail.com',
 				status: 'active',
@@ -111,7 +116,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '3',
+				id: 3,
 				name: 'Johna Doe',
 				email: 'johna@gmail.com',
 				status: 'pending',
@@ -119,7 +124,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '1',
+				id: 1,
 				name: 'John Doe',
 				email: 'john@gmail.com',
 				status: 'pending',
@@ -127,7 +132,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '12',
+				id: 12,
 				name: 'Johnq Doe',
 				email: 'johnq@gmail.com',
 				status: 'active',
@@ -135,7 +140,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '3',
+				id: 3,
 				name: 'Johna Doe',
 				email: 'johna@gmail.com',
 				status: 'pending',
@@ -143,7 +148,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '1',
+				id: 1,
 				name: 'John Doe',
 				email: 'john@gmail.com',
 				status: 'pending',
@@ -151,7 +156,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '12',
+				id: 12,
 				name: 'Johnq Doe',
 				email: 'johnq@gmail.com',
 				status: 'active',
@@ -159,7 +164,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '3',
+				id: 3,
 				name: 'Johna Doe',
 				email: 'johna@gmail.com',
 				status: 'pending',
@@ -167,7 +172,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '1',
+				id: 1,
 				name: 'John Doe',
 				email: 'john@gmail.com',
 				status: 'pending',
@@ -175,7 +180,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '12',
+				id: 12,
 				name: 'Johnq Doe',
 				email: 'johnq@gmail.com',
 				status: 'active',
@@ -183,7 +188,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '3',
+				id: 3,
 				name: 'Johna Doe',
 				email: 'johna@gmail.com',
 				status: 'pending',
@@ -191,7 +196,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '1',
+				id: 1,
 				name: 'John Doe',
 				email: 'john@gmail.com',
 				status: 'pending',
@@ -199,7 +204,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '12',
+				id: 12,
 				name: 'Johnq Doe',
 				email: 'johnq@gmail.com',
 				status: 'active',
@@ -207,7 +212,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '3',
+				id: 3,
 				name: 'Johna Doe',
 				email: 'johna@gmail.com',
 				status: 'pending',
@@ -215,7 +220,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '1',
+				id: 1,
 				name: 'John Doe',
 				email: 'john@gmail.com',
 				status: 'pending',
@@ -223,7 +228,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '12',
+				id: 12,
 				name: 'Johnq Doe',
 				email: 'johnq@gmail.com',
 				status: 'active',
@@ -231,7 +236,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '3',
+				id: 3,
 				name: 'Johna Doe',
 				email: 'johna@gmail.com',
 				status: 'pending',
@@ -239,7 +244,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '1',
+				id: 1,
 				name: 'John Doe',
 				email: 'john@gmail.com',
 				status: 'pending',
@@ -247,7 +252,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '12',
+				id: 12,
 				name: 'Johnq Doe',
 				email: 'johnq@gmail.com',
 				status: 'active',
@@ -255,7 +260,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '3',
+				id: 3,
 				name: 'Johna Doe',
 				email: 'johna@gmail.com',
 				status: 'pending',
@@ -263,7 +268,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '1',
+				id: 1,
 				name: 'John Doe',
 				email: 'john@gmail.com',
 				status: 'pending',
@@ -271,7 +276,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '12',
+				id: 12,
 				name: 'Johnq Doe',
 				email: 'johnq@gmail.com',
 				status: 'active',
@@ -279,7 +284,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '3',
+				id: 3,
 				name: 'Johna Doe',
 				email: 'johna@gmail.com',
 				status: 'pending',
@@ -287,7 +292,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '1',
+				id: 1,
 				name: 'John Doe',
 				email: 'john@gmail.com',
 				status: 'pending',
@@ -295,7 +300,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '12',
+				id: 12,
 				name: 'Johnq Doe',
 				email: 'johnq@gmail.com',
 				status: 'active',
@@ -303,7 +308,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '3',
+				id: 3,
 				name: 'Johna Doe',
 				email: 'johna@gmail.com',
 				status: 'pending',
@@ -311,7 +316,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '1',
+				id: 1,
 				name: 'John Doe',
 				email: 'john@gmail.com',
 				status: 'pending',
@@ -319,7 +324,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '12',
+				id: 12,
 				name: 'Johnq Doe',
 				email: 'johnq@gmail.com',
 				status: 'active',
@@ -327,7 +332,7 @@ export const useUsersTableContext = () => {
 				createdAt: new Date()
 			},
 			{
-				id: '3',
+				id: 3,
 				name: 'Johna Doe',
 				email: 'johna@gmail.com',
 				status: 'pending',
@@ -336,39 +341,39 @@ export const useUsersTableContext = () => {
 			}
 		];
 
-		setInitData(data);
-		setData(data.slice(0, mLimit));
+		setData(data);
 	};
 
-	const handleLoadMore = () => {
-		setCurrLimit((prev) => {
-			const newLimit = prev + limit;
-			setData(initData?.slice(0, newLimit));
+	// const handleLoadMore = () => {
+	// For lazy load
+	// 	setCurrLimit((prev) => {
+	// 		const newLimit = prev + limit;
+	// 		setData(initData?.slice(0, newLimit));
 
-			return newLimit;
-		});
-	};
+	// 		return newLimit;
+	// 	});
+	// };
 
-	const handleLimitChange = (limit: number) => {
-		setLimit(limit);
-		setCurrLimit(limit);
-	};
+	// const handleLimitChange = (limit: number) => {
+	// 	table?.setPageSize(limit);
+	// 	setLimit(limit);
+	// 	// setCurrLimit(limit); For lazy load
+	// };
 
 	return {
 		// DATA
 		dataState,
 		tableState,
-		limitState,
-		currLimitState,
+		paginationState,
+		rowSelectionState,
 		// FILTERS
 		initialFilterState,
-		searchTextState,
+		initialSortingState,
+		searchTextState, // Global filter search
 		tableFiltersState,
 		tableSortingState,
 		handleInitTable,
-		refetch,
-		handleLoadMore,
-		handleLimitChange
+		refetch
 	};
 };
 

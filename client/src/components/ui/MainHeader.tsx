@@ -68,7 +68,7 @@ const MainHeader: React.FC = () => {
 								</ListItem>
 							</Link>
 							{/* FIXME Only when user is admin */}
-							<Link to={paths.sub.admins}>
+							<Link to={paths.sub.admins} onClick={handleCloseMainMenuCamera}>
 								<ListItem>
 									<ListIcon as={Glasses} w={5} h={5} />
 									<Text display={'inline-block'} fontWeight={700}>

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {TableData} from '@/components/ui/Table/TableGroup';
-import {FormKeys, FormValues} from '@/utils/dataType';
+import {FormKeys, FormValues} from '@/utils/data';
 import {Input, Text, Textarea, VStack} from '@chakra-ui/react';
 import {RegisterOptions, UseFormReturn} from 'react-hook-form';
 

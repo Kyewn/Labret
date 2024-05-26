@@ -1,6 +1,6 @@
 import {DatePicker} from '@/components/DatePicker/DatePicker';
 import {TableData} from '@/components/ui/Table/TableGroup';
-import {formatDate} from '@/utils/dataType';
+import {formatDate} from '@/utils/data';
 import {Heading, Text, VStack} from '@chakra-ui/react';
 import {useState} from 'react';
 

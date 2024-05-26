@@ -125,22 +125,22 @@ const Button = defineStyleConfig({
 				}
 			}
 		},
-		tableHeader: {
+		ghost: {
 			maxWidth: '200px',
+			width: '100%',
 			background: 'none',
 			fontSize: 'sm',
 			fontFamily: theme.fonts.heading,
 			textTransform: 'uppercase',
+			justifyContent: 'left',
 			span: {
 				overflow: 'hidden',
 				textOverflow: 'ellipsis'
 			},
 			_hover: {
 				borderColor: 'lrBrown.300',
-				backgroundColor: 'lrBrown.300',
 				_disabled: {
-					opacity: 0.4,
-					backgroundColor: 'lrBrown.600'
+					opacity: 0.4
 				}
 			},
 			_focus: {
@@ -294,6 +294,12 @@ export const themes = extendTheme({
 				300: {
 					default: '#D4D0C8',
 					_dark: '#EEEEEE'
+				}
+			},
+			gray: {
+				100: {
+					default: '#EDF2F7',
+					_dark: '#4A5568'
 				}
 			}
 		}

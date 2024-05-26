@@ -3,7 +3,7 @@ import ImageManager from '@/components/ui/ImageManager';
 import {createUser, userCollection} from '@/db/user';
 import {useAppContext} from '@/utils/context/AppContext';
 import {RegisterFormValues, useRegisterContext} from '@/utils/context/RegisterContext';
-import {FormValues} from '@/utils/dataType';
+import {FormValues} from '@/utils/data';
 import {paths} from '@/utils/paths';
 import {convertBlobToBase64} from '@/utils/utils';
 import {Button, ButtonGroup, Flex, HStack, Spacer, Text, VStack, useToast} from '@chakra-ui/react';

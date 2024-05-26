@@ -1,74 +1,93 @@
 import {
 	ColumnDef,
 	ColumnFiltersState,
+	PaginationState,
+	RowSelectionState,
 	SortingState,
 	Table as TanstackTable,
 	flexRender,
 	getCoreRowModel,
 	getFilteredRowModel,
+	getPaginationRowModel,
 	getSortedRowModel,
 	useReactTable
 } from '@tanstack/react-table';
 
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
-import {userFilterFns} from '@/utils/dataType';
+import {userFilterFns} from '@/utils/columns';
 import {Flex} from '@chakra-ui/react';
 import {Dispatch, SetStateAction, useEffect} from 'react';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
-	handleInitTable?: (table: TanstackTable<TData>) => void;
+	paginationState?: [PaginationState, Dispatch<SetStateAction<PaginationState>>];
 	globalFilterState?: [string, Dispatch<SetStateAction<string>>];
 	filterState?: [ColumnFiltersState, Dispatch<SetStateAction<ColumnFiltersState>>];
 	sortingState?: [SortingState, Dispatch<SetStateAction<SortingState>>];
+	rowSelectionState?: [RowSelectionState, Dispatch<SetStateAction<RowSelectionState>>];
+	handleInitTable?: (table: TanstackTable<TData>) => void;
 	handleRowClick?: (data: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
 	columns,
 	data,
+	paginationState,
 	filterState,
 	sortingState,
 	globalFilterState,
+	rowSelectionState,
 	handleInitTable,
 	handleRowClick
 }: DataTableProps<TData, TValue>) {
 	const [filters, setFilters] = filterState || [[], () => []];
 	const [sorts, setSorts] = sortingState || [[], () => []];
+	const [pagination, setPagination] = paginationState || [undefined, () => undefined];
+	const [rowSelection, setRowSelection] = rowSelectionState || [undefined, () => undefined];
 	const [globalFilter, setGlobalFilter] = globalFilterState || [[], () => []];
 
 	const table = useReactTable({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
+		...(pagination && {
+			getPaginationRowModel: getPaginationRowModel(),
+			onPaginationChange: setPagination
+		}),
+		state: {
+			...(pagination && {pagination}),
+			...(globalFilter && {globalFilter: globalFilter}),
+			...(filterState && {columnFilters: filters}),
+			...(sortingState && {sorting: sorts}),
+			...(rowSelection && {rowSelection})
+		},
 		...(filterState && {
 			onColumnFiltersChange: setFilters,
 			getFilteredRowModel: getFilteredRowModel()
 		}),
+		filterFns: {
+			withinUserDateRange: userFilterFns.withinUserDateRange
+		},
 		...(sortingState && {
 			onSortingChange: setSorts,
 			getSortedRowModel: getSortedRowModel()
 		}),
 		onGlobalFilterChange: setGlobalFilter,
-		state: {
-			...(globalFilter && {globalFilter: globalFilter}),
-			...(filterState && {columnFilters: filters}),
-			...(sortingState && {sorting: sorts})
-		},
-		filterFns: {
-			withinUserDateRange: userFilterFns.withinUserDateRange
-		},
 		globalFilterFn: (row, columnId, filterValue) => {
-			const value = row.getValue(columnId) as string;
-			const intValue = (row.getValue(columnId) as number).toString();
+			let value;
+			if (filterValue.toString) {
+				// number
+				value = (row.getValue(columnId) as number).toString();
+			} else {
+				value = row.getValue(columnId) as string;
+			}
 
-			const isRelevant =
-				value.toLowerCase().includes(filterValue.toLowerCase().trim()) ||
-				intValue.toLowerCase().includes(filterValue.toLowerCase().trim());
+			const isRelevant = value?.toLowerCase().includes(filterValue.toLowerCase().trim());
 
 			return isRelevant;
-		}
+		},
+		onRowSelectionChange: setRowSelection
 	});
 
 	useEffect(() => {
