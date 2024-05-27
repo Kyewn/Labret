@@ -120,12 +120,24 @@ export function DataTable<TData, TValue>({
 									<TableRow
 										id={'last-row'}
 										key={row.id}
-										onClick={() => handleRowClick && handleRowClick(row.original)}
+										onClick={() => {
+											handleRowClick && handleRowClick(row.original);
+										}}
 										data-state={row.getIsSelected() && 'selected'}
 										style={{cursor: 'pointer'}}
 									>
 										{row.getVisibleCells().map((cell) => (
-											<TableCell key={cell.id}>
+											<TableCell
+												key={cell.id}
+												onClick={(e) => {
+													if (
+														e.currentTarget.childNodes[0].firstChild?.firstChild?.nodeName.toLowerCase() ==
+														'input'
+													) {
+														e.stopPropagation();
+													}
+												}}
+											>
 												{flexRender(cell.column.columnDef.cell, cell.getContext())}
 											</TableCell>
 										))}
@@ -135,12 +147,25 @@ export function DataTable<TData, TValue>({
 							return (
 								<TableRow
 									key={row.id}
-									onClick={() => handleRowClick && handleRowClick(row.original)}
+									onClick={() => {
+										handleRowClick && handleRowClick(row.original);
+									}}
 									data-state={row.getIsSelected() && 'selected'}
 									style={{cursor: 'pointer'}}
 								>
 									{row.getVisibleCells().map((cell) => (
-										<TableCell key={cell.id}>
+										<TableCell
+											key={cell.id}
+											onClick={(e) => {
+												// If click on table row checkbox
+												if (
+													e.currentTarget.childNodes[0].firstChild?.firstChild?.nodeName.toLowerCase() ==
+													'input'
+												) {
+													e.stopPropagation();
+												}
+											}}
+										>
 											{flexRender(cell.column.columnDef.cell, cell.getContext())}
 										</TableCell>
 									))}

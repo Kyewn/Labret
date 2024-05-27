@@ -1,3 +1,4 @@
+import {AddUserFormValues} from '@/utils/data';
 import {useSteps} from '@chakra-ui/react';
 import {createContext, useContext, useState} from 'react';
 import {useForm} from 'react-hook-form';
@@ -11,18 +12,9 @@ const steps = [
 	}
 ];
 
-export type RegisterFormValues = {
-	name: string;
-	email: string;
-};
-
-export type RegisterFormVal2 = {
-	type: string;
-};
-
 export const useInitialRegisterContext = () => {
 	const imagesState = useState<Blob[]>([]);
-	const {watch, register, trigger, formState, handleSubmit} = useForm<RegisterFormValues>();
+	const {watch, register, trigger, formState, handleSubmit} = useForm<AddUserFormValues>();
 	const {activeStep, goToNext, goToPrevious} = useSteps({count: steps.length});
 	const [images, setImages] = imagesState;
 

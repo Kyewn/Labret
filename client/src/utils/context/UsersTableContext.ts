@@ -7,12 +7,13 @@ import {
 	Table
 } from '@tanstack/react-table';
 import {addDays} from 'date-fns';
-import {createContext, useState} from 'react';
+import {SyntheticEvent, createContext, useState} from 'react';
 
 // TABLE STRUCTURES
-export const useUsersTableContext = () => {
+export const useUserTableContext = () => {
 	// Table data states
 	const dataState = useState<User[] | undefined>(undefined);
+	const selectedDataState = useState<User | undefined>(undefined);
 	const tableState = useState<Table<User> | undefined>(undefined);
 	const [, setData] = dataState;
 	const [, setTable] = tableState;
@@ -21,6 +22,7 @@ export const useUsersTableContext = () => {
 		pageSize: 10 // Limit
 	});
 	const rowSelectionState = useState<RowSelectionState>({});
+	const pendingForTrainingUserIdsState = useState<string[]>([]); //AI model training
 
 	// Filters
 	const getInitDate = () => {
@@ -344,6 +346,39 @@ export const useUsersTableContext = () => {
 		setData(data);
 	};
 
+	const handleSetActive = (e: SyntheticEvent, userId: string) => {
+		// TODO
+		e.stopPropagation();
+		console.log(userId);
+	};
+
+	const handleReject = (e: SyntheticEvent, userId: string) => {
+		// TODO
+		e.stopPropagation();
+		console.log(userId);
+	};
+
+	const handleDelete = (e: SyntheticEvent, userId: string) => {
+		// TODO
+		e.stopPropagation();
+		console.log(userId);
+	};
+
+	const handleSetActiveForRows = (rowIds: string[]) => {
+		// TODO
+		console.log(rowIds);
+	};
+
+	const handleRejectForRows = (rowIds: string[]) => {
+		// TODO
+		console.log(rowIds);
+	};
+
+	const handleDeleteForRows = (rowIds: string[]) => {
+		// TODO
+		console.log(rowIds);
+	};
+
 	// const handleLoadMore = () => {
 	// For lazy load
 	// 	setCurrLimit((prev) => {
@@ -363,9 +398,11 @@ export const useUsersTableContext = () => {
 	return {
 		// DATA
 		dataState,
+		selectedDataState,
 		tableState,
 		paginationState,
 		rowSelectionState,
+		pendingForTrainingUserIdsState,
 		// FILTERS
 		initialFilterState,
 		initialSortingState,
@@ -373,10 +410,17 @@ export const useUsersTableContext = () => {
 		tableFiltersState,
 		tableSortingState,
 		handleInitTable,
-		refetch
+		refetch,
+		// ACTIONS
+		handleSetActive,
+		handleReject,
+		handleDelete,
+		handleSetActiveForRows,
+		handleRejectForRows,
+		handleDeleteForRows
 	};
 };
 
-export const UserTableContext = createContext<ReturnType<typeof useUsersTableContext> | undefined>(
+export const UserTableContext = createContext<ReturnType<typeof useUserTableContext> | undefined>(
 	undefined
 );

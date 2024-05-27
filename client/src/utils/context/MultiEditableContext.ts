@@ -1,13 +1,13 @@
-import {TableData} from '@/components/Table/TableGroup';
+import {TableData} from '@/utils/data';
 import {useEffect, useState} from 'react';
 
 // MultiEditableContext - states and functions for edit page where multiple inputs can be toggled to edit mode
 type MultiEditableContext = {
-	data: TableData;
-	oldData: TableData;
+	data?: TableData;
+	oldData?: TableData;
 	isEditing: boolean;
 };
-export const useMultiEditableContext = (initData: TableData) => {
+export const useMultiEditableContext = (initData: TableData | undefined) => {
 	const [{data, oldData, isEditing}, setMEContext] = useState<MultiEditableContext>({
 		oldData: initData,
 		data: initData,
@@ -42,7 +42,7 @@ export const useMultiEditableContext = (initData: TableData) => {
 	const onSubmit = async (handleSubmit: (newData: TableData) => Promise<void>) => {
 		if (JSON.stringify(data) != JSON.stringify(oldData)) {
 			setMEContext((prev) => {
-				handleSubmit(prev.data);
+				prev?.data && handleSubmit(prev.data);
 				return {
 					...prev,
 					oldData: data,

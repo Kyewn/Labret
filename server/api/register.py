@@ -21,7 +21,7 @@ def register_user():
     pathlib.Path('./images/new_faces').mkdir(parents=True, exist_ok=True)
     pathlib.Path('./images/new_items').mkdir(parents=True, exist_ok=True)
 
-    imageIds = []
+    uploadedImgs = []
     
     # Temporarily write image files locally for upload later 
     for (i, image) in enumerate(images):
@@ -32,15 +32,16 @@ def register_user():
             image.close()
 
         # Send image to roboflow        
-        rfLabretProject.upload(filePath, tag_names=[id])
+        uploadedImg = rfLabretProject.single_upload(filePath, tag_names=[id])
 
         # Get image URL
-        for result in rfLabretProject.search(tag=id, batch=True, fields=["id", "owner"]):
-            imageIds.append(result)
-
+        uploadedImgs.append(uploadedImg)
+# TODO test new image fetching behavior
+   
+   
     # Remove temp image files
     # FIXME maybe not to remove to allow locally saving images and serving to display in client
-    shutil.rmtree(pathlib.Path('./images/new_faces'))
-    shutil.rmtree(pathlib.Path('./images/new_items'))
+    # shutil.rmtree(pathlib.Path('./images/new_faces'))
+    # shutil.rmtree(pathlib.Path('./images/new_items'))
 
     return jsonify({'message': 'User registered successfully', 'imageIds': imageIds})

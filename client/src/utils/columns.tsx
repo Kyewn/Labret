@@ -1,8 +1,9 @@
-import {User} from '@/utils/data';
+import {User, mapUserStatus} from '@/utils/data';
 import {formatDate} from '@/utils/utils';
 import {Button, ButtonGroup, Checkbox, Flex, IconButton} from '@chakra-ui/react';
 import {ColumnDef, CustomFilterFns, FilterFn, Row} from '@tanstack/react-table';
 import {ArrowBigDown, ArrowBigUp, Trash} from 'lucide-react';
+import {SyntheticEvent} from 'react';
 import {DateRange} from 'react-day-picker';
 
 // Table column structures
@@ -16,9 +17,9 @@ declare module '@tanstack/table-core' {
 export const getUserColumns: (
 	openSelectionModal: () => void,
 	closeSelectionModal: () => void,
-	handlePrimaryClick: (userId: string) => void,
-	handleSecondaryClick: (userId: string) => void,
-	handleDelete: (userId: string) => void
+	handlePrimaryClick: (e: SyntheticEvent, userId: string) => void,
+	handleSecondaryClick: (e: SyntheticEvent, userId: string) => void,
+	handleDelete: (e: SyntheticEvent, userId: string) => void
 ) => ColumnDef<User>[] = (
 	openSelectionModal,
 	closeSelectionModal,
@@ -50,8 +51,8 @@ export const getUserColumns: (
 				<Flex>
 					<Checkbox
 						isChecked={row.getIsSelected()}
-						onChange={(e) => {
-							row.toggleSelected(!!e.target.checked);
+						onChange={() => {
+							row.toggleSelected(!row.getIsSelected());
 						}}
 						aria-label='Select row'
 					/>
@@ -148,16 +149,7 @@ export const getUserColumns: (
 				</Button>
 			);
 		},
-		cell: ({row}) => {
-			switch (row.original.status) {
-				case 'active':
-					return 'Active';
-				case 'pending':
-					return 'Pending';
-				default:
-					return row.original.status;
-			}
-		},
+		cell: ({row}) => mapUserStatus(row.original.status),
 		enableGlobalFilter: true
 	},
 	{
@@ -172,13 +164,13 @@ export const getUserColumns: (
 				<ButtonGroup>
 					<Button
 						fontSize={'sm'}
-						onClick={() => handlePrimaryClick((user.id as string) || user.id.toString())}
+						onClick={(e) => handlePrimaryClick(e, (user.id as string) || user.id.toString())}
 					>
 						Set Active
 					</Button>
 					<Button
 						variant={'secondary'}
-						onClick={() => handleSecondaryClick((user.id as string) || user.id.toString())}
+						onClick={(e) => handleSecondaryClick(e, (user.id as string) || user.id.toString())}
 					>
 						Reject
 					</Button>
@@ -196,7 +188,7 @@ export const getUserColumns: (
 					aria-label={'delete'}
 					icon={<Trash />}
 					variant={'criticalOutline'}
-					onClick={() => handleDelete((user.id as string) || user.id.toString())}
+					onClick={(e) => handleDelete(e, (user.id as string) || user.id.toString())}
 				/>
 			);
 		}

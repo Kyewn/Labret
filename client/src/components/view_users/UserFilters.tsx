@@ -1,5 +1,5 @@
 import {DatePickerWithRange} from '@/components/ui/dateRangePicker';
-import {UserTableContext, useUsersTableContext} from '@/utils/context/UsersTableContext';
+import {UserTableContext, useUserTableContext} from '@/utils/context/UsersTableContext';
 import {
 	Button,
 	Flex,
@@ -26,7 +26,7 @@ export const UserFilters: React.FC = () => {
 		initialFilterState,
 		initialSortingState,
 		paginationState
-	} = userTableContext as ReturnType<typeof useUsersTableContext>;
+	} = userTableContext as ReturnType<typeof useUserTableContext>;
 	const [table] = tableState;
 	const [pagination] = paginationState;
 	const [filters] = tableFiltersState;

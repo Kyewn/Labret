@@ -2,8 +2,8 @@ import {EditableField} from '@/components/ui/EditableField';
 import ImageManager from '@/components/ui/ImageManager';
 import {createUser, userCollection} from '@/db/user';
 import {useAppContext} from '@/utils/context/AppContext';
-import {RegisterFormValues, useRegisterContext} from '@/utils/context/RegisterContext';
-import {FormValues} from '@/utils/data';
+import {useRegisterContext} from '@/utils/context/RegisterContext';
+import {AddUserFormValues, FormValues} from '@/utils/data';
 import {paths} from '@/utils/paths';
 import {convertBlobToBase64} from '@/utils/utils';
 import {Button, ButtonGroup, Flex, HStack, Spacer, Text, VStack, useToast} from '@chakra-ui/react';
@@ -34,7 +34,7 @@ const RegisterFormStep: React.FC = () => {
 		});
 	}, []);
 
-	const handleCreateUser = async (data: RegisterFormValues) => {
+	const handleCreateUser = async (data: AddUserFormValues) => {
 		// Create firebase user
 		const userDocs = await getDocs(userCollection);
 		const existingUser = userDocs.docs.find((doc) => doc.data().email === data.email);
@@ -44,7 +44,7 @@ const RegisterFormStep: React.FC = () => {
 			throw UserAlreadyExistsError;
 		}
 		const user = await createUser(data);
-		const userData = (await getDoc(user)).data() as RegisterFormValues;
+		const userData = (await getDoc(user)).data() as AddUserFormValues;
 
 		// Convert images to base64 strings
 		const imageStrings = await Promise.all(
@@ -68,7 +68,7 @@ const RegisterFormStep: React.FC = () => {
 		});
 	};
 
-	const onSubmit = async (data: RegisterFormValues) => {
+	const onSubmit = async (data: AddUserFormValues) => {
 		try {
 			appDispatch({
 				type: 'SET_PAGE_LOADING',

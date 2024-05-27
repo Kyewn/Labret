@@ -1,8 +1,10 @@
 import {DataTable} from '@/components/ui/DataTable/DataTable';
 import {UserFilters} from '@/components/view_users/UserFilters';
+import {UserRecordModal} from '@/components/view_users/UserRecordModal';
 import {getUserColumns} from '@/utils/columns';
 import {useAppContext} from '@/utils/context/AppContext';
-import {UserTableContext, useUsersTableContext} from '@/utils/context/UsersTableContext';
+import {useMultiEditableContext} from '@/utils/context/MultiEditableContext';
+import {UserTableContext, useUserTableContext} from '@/utils/context/UsersTableContext';
 import {User} from '@/utils/data';
 import {
 	Button,
@@ -24,12 +26,16 @@ import {Helmet} from 'react-helmet-async';
 
 export function ViewUsers() {
 	const {appDispatch} = useAppContext();
-	const usersTableContext = useUsersTableContext();
+	const usersTableContext = useUserTableContext();
 	const {isOpen, onOpen, onClose} = useDisclosure(); // Selection actions modal
-	const [canNext, setCanNext] = useState(false); // Selection actions modal
-	const [canPrev, setCanPrev] = useState(false); // Selection actions modal
+	const infoDisclosure = useDisclosure(); // Selection actions modal
+	const {onOpen: onInfoOpen} = infoDisclosure; // Selection actions modal
+	const [canNext, setCanNext] = useState(false);
+	const [canPrev, setCanPrev] = useState(false);
 
 	const {
+		pendingForTrainingUserIdsState,
+		selectedDataState,
 		tableState,
 		dataState,
 		paginationState,
@@ -38,17 +44,24 @@ export function ViewUsers() {
 		tableFiltersState,
 		tableSortingState,
 		handleInitTable,
-		refetch
+		refetch,
+		handleDelete,
+		handleReject,
+		handleSetActive
 	} = usersTableContext;
 	const [table] = tableState;
 	const [data] = dataState;
 	const [rowSelection] = rowSelectionState;
+	const [selectedData, setSelectedData] = selectedDataState;
+	const [pendingForTrainingUserIds] = pendingForTrainingUserIdsState;
+	const multiEditableContext = useMultiEditableContext(selectedData);
+
 	const pageBottomRef = useRef<HTMLDivElement | null>(null);
 	const pageIndex = useMemo(() => paginationState[0].pageIndex, [paginationState]);
-	const pendingForTrainingUserIds = useState<string[]>([]);
 
 	const handleRowClick = (data: User) => {
-		console.log(data);
+		setSelectedData(data);
+		onInfoOpen();
 	};
 
 	const handleRefetch = async () => {
@@ -73,8 +86,6 @@ export function ViewUsers() {
 
 	// reqs
 	// - Confirmation modal (accept/reject/delete)
-	// - Item detail view
-	//    -> edit item
 	// - Retrain func
 
 	return (
@@ -84,6 +95,8 @@ export function ViewUsers() {
 			</Helmet>
 
 			<UserTableContext.Provider value={usersTableContext}>
+				<UserRecordModal multiEditableContext={multiEditableContext} disclosure={infoDisclosure} />
+
 				<Flex flex={1} flexDirection={'column'} justifyContent={'center'} p={3} paddingX={10}>
 					<Flex marginY={3} alignItems={'center'}>
 						<Heading size={'md'}>Users</Heading>
@@ -94,19 +107,13 @@ export function ViewUsers() {
 							placement='left'
 							borderRadius={5}
 						>
-							<Button isDisabled={!!pendingForTrainingUserIds.length}>Retrain user model</Button>
+							<Button isDisabled={!pendingForTrainingUserIds.length}>Retrain user model</Button>
 						</Tooltip>
 					</Flex>
 					<Divider orientation='horizontal' />
 					<UserFilters />
 					<DataTable
-						columns={getUserColumns(
-							onOpen,
-							onClose,
-							() => {},
-							() => {},
-							() => {}
-						)}
+						columns={getUserColumns(onOpen, onClose, handleSetActive, handleReject, handleDelete)}
 						data={data || []}
 						paginationState={paginationState}
 						rowSelectionState={rowSelectionState}

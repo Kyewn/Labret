@@ -1,0 +1,19 @@
+.date-item-base:hover {
+	background: var(--chakra-colors-grey-300);
+}
+
+.selected-date-bg {
+	background: var(--chakra-colors-lrBrown-700);
+}
+
+.selected-date-bg:hover {
+	background: var(--chakra-colors-lrBrown-400);
+}
+
+.clear-button {
+	background: var(--chakra-colors-lrBrown-700);
+}
+
+.clear-button:hover {
+	background: var(--chakra-colors-lrBrown-400);
+}

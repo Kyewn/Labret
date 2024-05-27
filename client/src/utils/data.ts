@@ -1,10 +1,15 @@
-import {RegisterFormVal2, RegisterFormValues} from '@/utils/context/RegisterContext';
-
 export const UndefinedString = 'None';
 
 // React hook form general types
-export type FormValues = RegisterFormValues | RegisterFormVal2;
-export type FormKeys = keyof RegisterFormValues | keyof RegisterFormVal2;
+export type AddUserFormValues = {
+	name: string;
+	email: string;
+};
+export type UserInfoValues = {
+	name?: string;
+	email?: string;
+	createdAt?: string | Date;
+};
 
 // DB Data Structure
 // User
@@ -18,12 +23,19 @@ export type User = {
 	lastRentalAt?: null;
 };
 
-// export type TableOrderBy = {
-// 	[key: string]: 'asc' | 'desc' | undefined;
-// };
+// Data Utils
+// User
+export const mapUserStatus = (status: string) => {
+	switch (status) {
+		case 'active':
+			return 'Active';
+		case 'pending':
+			return 'Pending';
+		default:
+			return status;
+	}
+};
 
-// export type DateSubjectType = 'from' | 'to';
-// export type DateRangeType = {
-// 	from: Date;
-// 	to: Date;
-// };
+export type FormValues = AddUserFormValues | UserInfoValues;
+export type FormKeys = keyof AddUserFormValues | keyof UserInfoValues;
+export type TableData = User;

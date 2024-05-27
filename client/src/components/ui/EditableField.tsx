@@ -7,7 +7,6 @@ import {RegisterOptions, UseFormReturn} from 'react-hook-form';
 type Props = Partial<Pick<UseFormReturn<FormValues>, 'register'>> & {
 	label: string;
 	name: FormKeys;
-	colKey?: string;
 	value?: string;
 	valueType?: string;
 	isEditing?: boolean;
@@ -20,7 +19,6 @@ type Props = Partial<Pick<UseFormReturn<FormValues>, 'register'>> & {
 export const EditableField: React.FC<Props> = ({
 	label,
 	name,
-	colKey,
 	value,
 	valueType,
 	isEditing,
@@ -47,7 +45,7 @@ export const EditableField: React.FC<Props> = ({
 						{...(register && registerProps)}
 						onChange={(e) => {
 							onChange?.(e);
-							colKey && handleChange?.({[colKey]: e.target.value});
+							handleChange && handleChange?.({[name]: e.target.value});
 						}}
 					/>
 				) : (
@@ -55,10 +53,11 @@ export const EditableField: React.FC<Props> = ({
 						minWidth={'250px'}
 						maxWidth={'400px'}
 						type={valueType}
+						value={value || ''}
 						{...(register && registerProps)}
 						onChange={(e) => {
 							onChange?.(e);
-							colKey && handleChange?.({[colKey]: e.target.value});
+							handleChange && handleChange?.({[name]: e.target.value});
 						}}
 					/>
 				)

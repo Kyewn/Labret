@@ -1,5 +1,5 @@
 import {db} from '@/db/firebase-init';
-import {RegisterFormValues} from '@/utils/context/RegisterContext';
+import {AddUserFormValues} from '@/utils/data';
 import {addDoc, collection, deleteDoc, getDocs, updateDoc} from 'firebase/firestore';
 
 export const userCollection = collection(db, 'users');
@@ -17,7 +17,7 @@ export const getUser = async (userId: string) => {
 	return queryResult.data();
 };
 
-export const createUser = async (data: RegisterFormValues) => {
+export const createUser = async (data: AddUserFormValues) => {
 	const doc = await addDoc(userCollection, {
 		...data,
 		status: 'pending',
@@ -28,7 +28,7 @@ export const createUser = async (data: RegisterFormValues) => {
 	return doc;
 };
 
-export const editUser = async (userId: string, updatedValues: RegisterFormValues) => {
+export const editUser = async (userId: string, updatedValues: AddUserFormValues) => {
 	const queryResult = (await getDocs(userCollection)).docs.filter((doc) => userId == doc.id)[0];
 	const docRef = queryResult.ref;
 	await updateDoc(docRef, updatedValues);
