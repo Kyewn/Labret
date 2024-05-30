@@ -111,8 +111,8 @@ export const Camera: React.FC<{
 		try {
 			const mediaStream = await navigator.mediaDevices.getUserMedia({
 				video: {
-					width: {ideal: 1280},
-					height: {ideal: 720}
+					width: {ideal: 640},
+					height: {ideal: 480}
 				}
 			});
 
@@ -225,9 +225,11 @@ export const Camera: React.FC<{
 	return (
 		<>
 			{videoState ? (
-				<video id={videoId} className={className || undefined} autoPlay playsInline />
+				<Center height={'100%'}>
+					<video id={videoId} className={className || undefined} autoPlay playsInline />
+				</Center>
 			) : (
-				<Center flexDirection={'column'} height={'100%'}>
+				<Center flexDirection={'column'} alignContent={'center'} height={'100%'}>
 					<Icon as={Unplug} w={75} h={75} mb={5} />
 					<Heading as={'h6'}>Facecam is unavailable</Heading>
 					<Text>

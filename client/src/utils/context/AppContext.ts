@@ -1,13 +1,16 @@
 import {Dispatch, createContext, useContext} from 'react';
 
+type VideoMode = 'face' | 'equipment';
+
 type AppContextState = {
 	pageLoading: boolean;
 	user: string | null;
 	detectedUser: string | null;
 	handleSubHeaderBack: () => void;
 	// Video camera states
-	mediaStreams: MediaStream[] | null;
 	videoLoading: boolean;
+	mediaStreams: MediaStream[] | null;
+	videoMode: VideoMode;
 	handleCloseExistingPeerConnection: () => void;
 	handleCloseNormalCamera: () => void;
 };
@@ -20,9 +23,17 @@ type AppContextActionType =
 	| 'SET_VIDEO_LOADING'
 	| 'SET_MEDIA_STREAMS'
 	| 'ADD_MEDIA_STREAM'
+	| 'SET_VIDEO_MODE'
 	| 'SET_CLOSE_EXISTING_PEER_CONNECTION'
 	| 'SET_CLOSE_NORMAL_CAMERA';
-type AppContextActionPayload = string | boolean | MediaStream | MediaStream[] | (() => void) | null;
+type AppContextActionPayload =
+	| VideoMode
+	| string
+	| boolean
+	| MediaStream
+	| MediaStream[]
+	| (() => void)
+	| null;
 type AppContextAction = {
 	type: AppContextActionType;
 	payload?: AppContextActionPayload;
@@ -37,6 +48,7 @@ export const appContextInitialState: AppContextState = {
 	// Video camera states
 	mediaStreams: null,
 	videoLoading: false,
+	videoMode: 'face',
 	handleCloseExistingPeerConnection: () => {},
 	handleCloseNormalCamera: () => {}
 };
@@ -63,6 +75,8 @@ export const appContextReducer = (
 				...state,
 				mediaStreams: [...(state.mediaStreams || []), action.payload as MediaStream]
 			};
+		case 'SET_VIDEO_MODE':
+			return {...state, videoMode: action.payload as VideoMode};
 		case 'SET_CLOSE_EXISTING_PEER_CONNECTION':
 			return {...state, handleCloseExistingPeerConnection: action.payload as () => void};
 		case 'SET_CLOSE_NORMAL_CAMERA':

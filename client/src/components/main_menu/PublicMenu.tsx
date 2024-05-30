@@ -14,7 +14,7 @@ export const PublicMenu: React.FC = () => {
 	};
 
 	return (
-		<VStack spacing={5} flex={0.3}>
+		<VStack spacing={5} flex={0.3} mt={5}>
 			<Heading size={'xs'} alignSelf={'flex-start'} color={'lrBrown.400'}>
 				Public Menu
 			</Heading>

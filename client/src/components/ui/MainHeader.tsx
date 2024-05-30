@@ -100,6 +100,7 @@ const MainHeader: React.FC = () => {
 						? '0 0 8px 0 var(--chakra-colors-gray-300)'
 						: '0 0 8px 0 var(--chakra-colors-gray-500)'
 				}
+				height={'10%'}
 			>
 				<LabretIcon w={150} h={'unset'} fill={colorMode == 'dark' ? 'white' : 'black'} />
 				<Spacer />
