@@ -1,4 +1,5 @@
 import {useRegisterContext} from '@/utils/context/RegisterContext';
+import {useScanContext} from '@/utils/context/ScanContext';
 import {
 	Box,
 	Button,
@@ -25,12 +26,16 @@ import {ArrowLeft, CircleHelp, Ellipsis, Trash} from 'lucide-react';
 import {useState} from 'react';
 
 type Props = {
+	specifiedImages?: Blob[];
 	isRemovable?: boolean;
 };
 
-const ImageManager: React.FC<Props> = ({isRemovable}) => {
-	const {imagesState, handleRemoveImage} = useRegisterContext();
-	const [images, setImages] = imagesState;
+const ImageManager: React.FC<Props> = ({specifiedImages, isRemovable}) => {
+	const scanContext = useScanContext();
+	const registerContext = useRegisterContext();
+	const {imagesState, handleRemoveImage} = registerContext || scanContext || {};
+	const [contextImages, setImages] = imagesState || [];
+	const images = (specifiedImages || contextImages) as Blob[];
 	const [viewingImage, setViewingImage] = useState<Blob | null>(null);
 	const {isOpen, onOpen, onClose} = useDisclosure(); // Image modal
 	const {
@@ -46,6 +51,7 @@ const ImageManager: React.FC<Props> = ({isRemovable}) => {
 					src={URL.createObjectURL(image)}
 					alt={`Image ${index}`}
 					style={{
+						cursor: 'pointer',
 						border: '1px solid',
 						borderColor: 'var(--chakra-colors-lrBrown-700)',
 						objectFit: 'cover',
@@ -63,7 +69,7 @@ const ImageManager: React.FC<Props> = ({isRemovable}) => {
 						isRound
 						aria-label='Delete item'
 						icon={<Trash />}
-						onClick={() => handleRemoveImage(index)}
+						onClick={() => handleRemoveImage?.(index)}
 					/>
 				)}
 			</Box>
@@ -76,6 +82,7 @@ const ImageManager: React.FC<Props> = ({isRemovable}) => {
 						src={URL.createObjectURL(image)}
 						alt={`Image ${index}`}
 						style={{
+							cursor: 'pointer',
 							border: '1px solid',
 							borderColor: 'var(--chakra-colors-lrBrown-700)',
 							objectFit: 'cover',
@@ -92,7 +99,7 @@ const ImageManager: React.FC<Props> = ({isRemovable}) => {
 							isRound
 							aria-label='Delete item'
 							icon={<Trash />}
-							onClick={() => handleRemoveImage(index)}
+							onClick={() => handleRemoveImage?.(index)}
 						/>
 					)}
 				</GridItem>
@@ -114,7 +121,7 @@ const ImageManager: React.FC<Props> = ({isRemovable}) => {
 		/>
 	);
 	const handleRemoveAllImages = () => {
-		setImages([]);
+		setImages?.([]);
 		onConfirmModalClose();
 	};
 

@@ -5,8 +5,9 @@ export const paths = {
 		return: '/return'
 	},
 	sub: {
+		rentResult: '/rent-result',
+		returnResult: '/return-result',
 		userHistory: '/user-history',
-		userHistorySpecificRecord: '/user-history/:recordId',
 		publicHistory: '/public-history',
 		equipmentAvailability: '/equipment-availability',
 		register: '/register',

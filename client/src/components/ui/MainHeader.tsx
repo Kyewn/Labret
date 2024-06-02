@@ -102,7 +102,9 @@ const MainHeader: React.FC = () => {
 				}
 				height={'10%'}
 			>
-				<LabretIcon w={150} h={'unset'} fill={colorMode == 'dark' ? 'white' : 'black'} />
+				<Link to={paths.main.root} onClick={handleCloseMainMenuCamera}>
+					<LabretIcon w={150} h={'unset'} fill={colorMode == 'dark' ? 'white' : 'black'} />
+				</Link>
 				<Spacer />
 				<HStack spacing={'5'}>
 					<Tooltip label={colorMode == 'dark' ? 'Toggle Light Mode' : 'Toggle Night Mode'}>

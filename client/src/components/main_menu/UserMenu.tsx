@@ -11,16 +11,20 @@ import {
 	Tag,
 	Text,
 	VStack,
-	useColorMode
+	useColorMode,
+	useToast
 } from '@chakra-ui/react';
 import {Combine, HandCoins, Moon, PackageCheck, PackagePlus, ScanFace, Sun} from 'lucide-react';
+import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 
 export const UserMenu = () => {
+	const navigate = useNavigate();
+	const {colorMode} = useColorMode();
 	const {appState, appDispatch} = useAppContext();
 	const {handleCloseExistingPeerConnection} = appState;
-	const {colorMode} = useColorMode();
-	const navigate = useNavigate();
+	const [hasUserRecords, setHasUserRecords] = useState<boolean>(false);
+	const toast = useToast();
 
 	const getUserTypeColor = (type: string) => {
 		switch (type) {
@@ -31,6 +35,16 @@ export const UserMenu = () => {
 		}
 	};
 
+	const checkIfHasUserRecords: () => boolean = () => {
+		// TODO get user records
+		// TODO return false if no records to return
+		return true;
+	};
+
+	useEffect(() => {
+		setHasUserRecords(checkIfHasUserRecords());
+	}, []);
+
 	const handleRentClick = () => {
 		handleCloseExistingPeerConnection();
 		appDispatch({type: 'SET_VIDEO_MODE', payload: 'item'});
@@ -38,6 +52,16 @@ export const UserMenu = () => {
 	};
 
 	const handleReturnClick = () => {
+		if (!hasUserRecords) {
+			toast({
+				title: 'No records found',
+				description: 'User does not have any records to return.',
+				status: 'info',
+				duration: 3000,
+				isClosable: true
+			});
+			return;
+		}
 		handleCloseExistingPeerConnection();
 		appDispatch({type: 'SET_VIDEO_MODE', payload: 'item'});
 		navigate(paths.main.return);
@@ -121,6 +145,14 @@ export const UserMenu = () => {
 						iconH={10}
 						onClick={() => {}}
 						label='View Equipment'
+						variant='outline'
+					/>
+					<LargeIconButton
+						icon={Skull}
+						iconW={10}
+						iconH={10}
+						onClick={() => {}}
+						label='Critical records'
 						variant='outline'
 					/> */}
 				</HStack>

@@ -1,7 +1,7 @@
 import {Camera} from '@/components/ui/Camera/Camera';
 import ImageManager from '@/components/ui/ImageManager';
 import {useAppContext} from '@/utils/context/AppContext';
-import {useRegisterContext} from '@/utils/context/RegisterContext';
+import {useInitialRegisterContext, useRegisterContext} from '@/utils/context/RegisterContext';
 import {
 	Box,
 	Button,
@@ -20,7 +20,9 @@ import {useNavigate} from 'react-router-dom';
 
 const AcquireImageStep: React.FC = () => {
 	const {appState, appDispatch} = useAppContext();
-	const {imagesState, goToNext} = useRegisterContext();
+	const {imagesState, goToNext} = useRegisterContext() as ReturnType<
+		typeof useInitialRegisterContext
+	>;
 	const [images, setImages] = imagesState;
 	const resolution = {
 		width: {ideal: 640},

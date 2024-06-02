@@ -20,7 +20,20 @@ export type User = {
 	status: string;
 	type: string;
 	createdAt: string | Date;
-	lastRentalAt?: null;
+	lastRentalAt?: string | Date;
+};
+
+export type RentalRecord = {
+	recordId: string;
+	recordTitle: string;
+	renterId: string | number;
+	rentImages: string[];
+	notes: string;
+	rentStatus: string;
+	rentedAt: string | Date;
+	returnedAt?: string | Date;
+	returnImages?: Record<string, unknown>[];
+	returnLocation?: string;
 };
 
 // Data Utils

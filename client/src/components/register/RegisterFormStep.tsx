@@ -2,7 +2,7 @@ import {EditableField} from '@/components/ui/EditableField';
 import ImageManager from '@/components/ui/ImageManager';
 import {createUser, userCollection} from '@/db/user';
 import {useAppContext} from '@/utils/context/AppContext';
-import {useRegisterContext} from '@/utils/context/RegisterContext';
+import {useInitialRegisterContext, useRegisterContext} from '@/utils/context/RegisterContext';
 import {AddUserFormValues, FormValues} from '@/utils/data';
 import {paths} from '@/utils/paths';
 import {convertBlobToBase64} from '@/utils/utils';
@@ -20,7 +20,7 @@ const RegisterFormStep: React.FC = () => {
 		register,
 		handleSubmit,
 		goToPrevious
-	} = useRegisterContext();
+	} = useRegisterContext() as ReturnType<typeof useInitialRegisterContext>;
 	const [images] = imagesState;
 	const toast = useToast();
 	const navigate = useNavigate();

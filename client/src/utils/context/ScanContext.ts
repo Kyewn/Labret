@@ -1,7 +1,6 @@
-import {AddUserFormValues} from '@/utils/data';
+import {RentalRecord} from '@/utils/data';
 import {useSteps} from '@chakra-ui/react';
 import {createContext, useContext, useState} from 'react';
-import {useForm} from 'react-hook-form';
 
 const steps = [
 	{
@@ -12,9 +11,9 @@ const steps = [
 	}
 ];
 
-export const useInitialRegisterContext = () => {
+export const useInitialScanContext = () => {
 	const imagesState = useState<Blob[]>([]);
-	const {watch, register, trigger, formState, handleSubmit} = useForm<AddUserFormValues>();
+	const returningRecordState = useState<RentalRecord | undefined>(undefined);
 	const {activeStep, goToNext, goToPrevious} = useSteps({count: steps.length});
 	const [images, setImages] = imagesState;
 
@@ -24,22 +23,18 @@ export const useInitialRegisterContext = () => {
 	};
 
 	return {
-		formState,
 		imagesState,
+		returningRecordState,
 		activeStep,
 		steps,
 		goToNext,
 		goToPrevious,
-		handleRemoveImage,
-		register,
-		trigger,
-		watch,
-		handleSubmit
+		handleRemoveImage
 	};
 };
 
-export const RegisterContext = createContext<
-	ReturnType<typeof useInitialRegisterContext> | undefined
->(undefined);
+export const ScanContext = createContext<ReturnType<typeof useInitialScanContext> | undefined>(
+	undefined
+);
 
-export const useRegisterContext = () => useContext(RegisterContext);
+export const useScanContext = () => useContext(ScanContext);
