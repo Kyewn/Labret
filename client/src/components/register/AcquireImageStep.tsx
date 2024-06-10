@@ -64,7 +64,12 @@ const AcquireImageStep: React.FC = () => {
 		<Flex flex={0.9} paddingX={10}>
 			<Flex flex={0.5} height={'100%'} flexDirection={'column'}>
 				<Flex justifyContent={'flex-end'} w={'100%'} h={'100%'} p={5}>
-					<Camera videoId={'registerCamera'} useNormalMode mediaResolution={resolution} />
+					<Camera
+						videoId={'registerCamera'}
+						useNormalMode
+						mediaResolution={resolution}
+						centerBox={{width: '310px', height: '300px'}}
+					/>
 				</Flex>
 			</Flex>
 			<Flex flex={0.5} p={5} height={'100%'} flexDirection={'column'}>
@@ -80,10 +85,14 @@ const AcquireImageStep: React.FC = () => {
 								<Icon as={Info} />
 							</Tooltip>
 						</HStack>
-						<Text>Look directly into the camera and take pictures using the buttons.</Text>
+						<Text>
+							Act natural as you would when using the system, fit your face in the highlighted
+							region and take facial images using the buttons. Take as many images as you can to
+							include different face views.
+						</Text>
 						<ButtonGroup marginY={5}>
 							<Button onClick={handleImageCapture}>Capture image</Button>
-							<Tooltip label={'Prefer 640 x 480 resolution'}>
+							<Tooltip label={'Prefer 640 x 640 resolution'}>
 								<Button variant={'outline'} onClick={() => fileButtonRef.current.click()}>
 									Upload images
 								</Button>

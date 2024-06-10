@@ -20,6 +20,17 @@ export type User = {
 	status: string;
 	type: string;
 	createdAt: string | Date;
+	imageUrls: string[];
+	lastRentalAt?: string | Date;
+};
+
+export type UserEditableFields = {
+	name?: string;
+	email?: string;
+	status?: string;
+	type?: string;
+	createdAt?: string | Date;
+	imageUrls?: string[];
 	lastRentalAt?: string | Date;
 };
 

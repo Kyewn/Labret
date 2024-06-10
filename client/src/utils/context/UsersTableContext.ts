@@ -22,7 +22,6 @@ export const useUserTableContext = () => {
 		pageSize: 10 // Limit
 	});
 	const rowSelectionState = useState<RowSelectionState>({});
-	const pendingForTrainingUserIdsState = useState<string[]>([]); //AI model training
 
 	// Filters
 	const getInitDate = () => {
@@ -59,7 +58,8 @@ export const useUserTableContext = () => {
 				email: 'john@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date('2024-05-24T13:04:25.079Z')
+				createdAt: new Date('2024-05-24T13:04:25.079Z'),
+				imageUrls: []
 			},
 			{
 				id: 12,
@@ -67,7 +67,8 @@ export const useUserTableContext = () => {
 				email: 'johnq@gmail.com',
 				status: 'active',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 3,
@@ -75,7 +76,8 @@ export const useUserTableContext = () => {
 				email: 'johna@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 1,
@@ -83,7 +85,8 @@ export const useUserTableContext = () => {
 				email: 'john@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 12,
@@ -91,7 +94,8 @@ export const useUserTableContext = () => {
 				email: 'johnq@gmail.com',
 				status: 'active',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 3,
@@ -99,7 +103,8 @@ export const useUserTableContext = () => {
 				email: 'johna@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 1,
@@ -107,7 +112,8 @@ export const useUserTableContext = () => {
 				email: 'john@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 12,
@@ -115,7 +121,8 @@ export const useUserTableContext = () => {
 				email: 'johnq@gmail.com',
 				status: 'active',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 3,
@@ -123,7 +130,8 @@ export const useUserTableContext = () => {
 				email: 'johna@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 1,
@@ -131,7 +139,8 @@ export const useUserTableContext = () => {
 				email: 'john@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 12,
@@ -139,7 +148,8 @@ export const useUserTableContext = () => {
 				email: 'johnq@gmail.com',
 				status: 'active',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 3,
@@ -147,7 +157,8 @@ export const useUserTableContext = () => {
 				email: 'johna@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 1,
@@ -155,7 +166,8 @@ export const useUserTableContext = () => {
 				email: 'john@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 12,
@@ -163,7 +175,8 @@ export const useUserTableContext = () => {
 				email: 'johnq@gmail.com',
 				status: 'active',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 3,
@@ -171,7 +184,8 @@ export const useUserTableContext = () => {
 				email: 'johna@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 1,
@@ -179,7 +193,8 @@ export const useUserTableContext = () => {
 				email: 'john@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 12,
@@ -187,7 +202,8 @@ export const useUserTableContext = () => {
 				email: 'johnq@gmail.com',
 				status: 'active',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 3,
@@ -195,7 +211,8 @@ export const useUserTableContext = () => {
 				email: 'johna@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 1,
@@ -203,7 +220,8 @@ export const useUserTableContext = () => {
 				email: 'john@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 12,
@@ -211,7 +229,8 @@ export const useUserTableContext = () => {
 				email: 'johnq@gmail.com',
 				status: 'active',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 3,
@@ -219,7 +238,8 @@ export const useUserTableContext = () => {
 				email: 'johna@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 1,
@@ -227,7 +247,8 @@ export const useUserTableContext = () => {
 				email: 'john@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 12,
@@ -235,7 +256,8 @@ export const useUserTableContext = () => {
 				email: 'johnq@gmail.com',
 				status: 'active',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 3,
@@ -243,7 +265,8 @@ export const useUserTableContext = () => {
 				email: 'johna@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 1,
@@ -251,7 +274,8 @@ export const useUserTableContext = () => {
 				email: 'john@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 12,
@@ -259,7 +283,8 @@ export const useUserTableContext = () => {
 				email: 'johnq@gmail.com',
 				status: 'active',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 3,
@@ -267,7 +292,8 @@ export const useUserTableContext = () => {
 				email: 'johna@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 1,
@@ -275,7 +301,8 @@ export const useUserTableContext = () => {
 				email: 'john@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 12,
@@ -283,7 +310,8 @@ export const useUserTableContext = () => {
 				email: 'johnq@gmail.com',
 				status: 'active',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 3,
@@ -291,7 +319,8 @@ export const useUserTableContext = () => {
 				email: 'johna@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 1,
@@ -299,7 +328,8 @@ export const useUserTableContext = () => {
 				email: 'john@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 12,
@@ -307,7 +337,8 @@ export const useUserTableContext = () => {
 				email: 'johnq@gmail.com',
 				status: 'active',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 3,
@@ -315,7 +346,8 @@ export const useUserTableContext = () => {
 				email: 'johna@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 1,
@@ -323,7 +355,8 @@ export const useUserTableContext = () => {
 				email: 'john@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 12,
@@ -331,7 +364,8 @@ export const useUserTableContext = () => {
 				email: 'johnq@gmail.com',
 				status: 'active',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			},
 			{
 				id: 3,
@@ -339,7 +373,8 @@ export const useUserTableContext = () => {
 				email: 'johna@gmail.com',
 				status: 'pending',
 				type: 'user',
-				createdAt: new Date()
+				createdAt: new Date(),
+				imageUrls: []
 			}
 		];
 
@@ -402,7 +437,6 @@ export const useUserTableContext = () => {
 		tableState,
 		paginationState,
 		rowSelectionState,
-		pendingForTrainingUserIdsState,
 		// FILTERS
 		initialFilterState,
 		initialSortingState,

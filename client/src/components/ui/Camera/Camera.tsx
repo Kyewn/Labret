@@ -1,10 +1,15 @@
 import {useAppContext} from '@/utils/context/AppContext';
-import {Center, Heading, Icon, Skeleton, Text, useToast} from '@chakra-ui/react';
+import {Box, Center, Heading, Icon, Skeleton, Text, useToast} from '@chakra-ui/react';
 import '@fontsource/fredoka-one/400.css';
 import '@fontsource/roboto/400.css';
 import {Unplug} from 'lucide-react';
 import React, {useEffect, useRef, useState} from 'react';
 import './camera.css';
+
+type CenterBoxProps = {
+	width: string;
+	height: string;
+};
 
 // Normal mode: [NormalStream]
 // AI mode: [NormalStream, ProcessedStream]
@@ -15,7 +20,8 @@ export const Camera: React.FC<{
 	useNormalMode?: boolean;
 	mediaResolution?: MediaTrackConstraints;
 	className?: string;
-}> = ({videoId, mode, useNormalMode, mediaResolution, className}) => {
+	centerBox?: CenterBoxProps;
+}> = ({videoId, mode, useNormalMode, mediaResolution, centerBox, className}) => {
 	const [videoState, setVideoState] = useState(true);
 	const isInit = useRef(false);
 	const toast = useToast();
@@ -225,7 +231,15 @@ export const Camera: React.FC<{
 	return (
 		<>
 			{videoState ? (
-				<Center height={'100%'}>
+				<Center w={'100%'} h={'100%'}>
+					{!!centerBox && navigator.mediaSession.playbackState && (
+						<Box
+							position={'absolute'}
+							h={centerBox.height}
+							w={centerBox.width}
+							border={'5px dashed red'}
+						/>
+					)}
 					<video id={videoId} className={className || undefined} autoPlay playsInline />
 				</Center>
 			) : (

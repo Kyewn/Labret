@@ -1,6 +1,6 @@
 import {EditableField} from '@/components/ui/EditableField';
 import ImageManager from '@/components/ui/ImageManager';
-import {createUser, userCollection} from '@/db/user';
+import {createUser, editUser, userCollection} from '@/db/user';
 import {useAppContext} from '@/utils/context/AppContext';
 import {useInitialRegisterContext, useRegisterContext} from '@/utils/context/RegisterContext';
 import {AddUserFormValues, FormValues} from '@/utils/data';
@@ -12,18 +12,29 @@ import {useEffect} from 'react';
 import {UseFormRegister} from 'react-hook-form';
 import {useNavigate} from 'react-router-dom';
 
+type ImageInfo = {
+	image: {
+		id: string;
+		urls: {
+			original: string;
+		};
+	};
+};
+
 const RegisterFormStep: React.FC = () => {
 	const {appDispatch} = useAppContext();
 	const {
 		imagesState,
 		formState: {isSubmitting, errors},
 		register,
+		watch,
 		handleSubmit,
 		goToPrevious
 	} = useRegisterContext() as ReturnType<typeof useInitialRegisterContext>;
 	const [images] = imagesState;
 	const toast = useToast();
 	const navigate = useNavigate();
+	const {name, email} = watch();
 
 	useEffect(() => {
 		appDispatch({
@@ -54,7 +65,7 @@ const RegisterFormStep: React.FC = () => {
 			})
 		);
 		// Send user data to backend for ultralytics pipeline
-		await fetch('http://localhost:8000/register', {
+		const uploadRes = await fetch('http://localhost:8000/register', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -66,6 +77,13 @@ const RegisterFormStep: React.FC = () => {
 				...userData
 			})
 		});
+
+		const resJson = await uploadRes.json();
+		const imageUrls = (resJson.uploadedImageInfos as ImageInfo[]).map((info) => {
+			const originalUrl = info.image.urls.original;
+			return originalUrl.replace('undefined', info.image.id);
+		});
+		await editUser(user.id, {imageUrls});
 	};
 
 	const onSubmit = async (data: AddUserFormValues) => {
@@ -125,6 +143,7 @@ const RegisterFormStep: React.FC = () => {
 							<EditableField
 								name={'name'}
 								label='Name'
+								value={name}
 								isEditing={true}
 								register={register as UseFormRegister<FormValues>}
 								errorMessage={errors.name?.message}
@@ -139,6 +158,7 @@ const RegisterFormStep: React.FC = () => {
 							<EditableField
 								name={'email'}
 								label='Email'
+								value={email}
 								isEditing={true}
 								register={register as UseFormRegister<FormValues>}
 								errorMessage={errors.email?.message}

@@ -4,6 +4,7 @@ type VideoMode = 'face' | 'equipment';
 
 type AppContextState = {
 	pageLoading: boolean;
+	loadingLabel: string;
 	user: string | null;
 	detectedUser: string | null;
 	handleSubHeaderBack: () => void;
@@ -16,6 +17,7 @@ type AppContextState = {
 };
 type AppContextActionType =
 	| 'SET_PAGE_LOADING'
+	| 'SET_PAGE_LOADING_LABEL'
 	| 'SET_USER'
 	| 'SET_DETECTED_USER'
 	| 'SET_HANDLE_SUBHEADER_BACK'
@@ -42,6 +44,7 @@ type AppContextValue = {appState: AppContextState; appDispatch: Dispatch<AppCont
 
 export const appContextInitialState: AppContextState = {
 	pageLoading: false,
+	loadingLabel: 'Loading',
 	user: null,
 	detectedUser: null,
 	handleSubHeaderBack: () => {},
@@ -59,6 +62,8 @@ export const appContextReducer = (
 	switch (action.type) {
 		case 'SET_PAGE_LOADING':
 			return {...state, pageLoading: action.payload as boolean};
+		case 'SET_PAGE_LOADING_LABEL':
+			return {...state, loadingLabel: action.payload as string};
 		case 'SET_USER':
 			return {...state, user: action.payload as string | null};
 		case 'SET_DETECTED_USER':

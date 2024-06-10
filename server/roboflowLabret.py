@@ -6,6 +6,6 @@ load_dotenv()
 
 rf = Roboflow(api_key=os.getenv("ROBOFLOW_API_KEY"))
 workspaceId = os.getenv("ROBOFLOW_WORKSPACE_ID")
-projectId = os.getenv("ROBOFLOW_PROJECT_ID")
+faceProjectId = os.getenv("ROBOFLOW_FACE_PROJECT_ID")
 
-rfLabretProject = rf.workspace(workspaceId).project(projectId)
+rfLabretFaceProject = rf.workspace(workspaceId).project(faceProjectId)

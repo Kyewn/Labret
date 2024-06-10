@@ -1,8 +1,13 @@
 import base64
 import pathlib
+import requests
 import shutil
 from flask import Blueprint, request, jsonify
-from roboflowLabret import rfLabretProject
+from roboflowLabret import rfLabretFaceProject
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 register = Blueprint('register', __name__)
 
@@ -21,7 +26,7 @@ def register_user():
     pathlib.Path('./images/new_faces').mkdir(parents=True, exist_ok=True)
     pathlib.Path('./images/new_items').mkdir(parents=True, exist_ok=True)
 
-    uploadedImgs = []
+    uploadedImgInfos = []
     
     # Temporarily write image files locally for upload later 
     for (i, image) in enumerate(images):
@@ -32,16 +37,23 @@ def register_user():
             image.close()
 
         # Send image to roboflow        
-        uploadedImg = rfLabretProject.single_upload(filePath, tag_names=[id])
+        # Get uploaded image id
+        uploadedImg = rfLabretFaceProject.single_upload(filePath, tag_names=[id])
+        
+        # Get image info overview using id
+        imageInfoURL = f"https://api.roboflow.com/"\
+        f"{os.getenv("ROBOFLOW_WORKSPACE_ID")}/"\
+        f"{os.getenv("ROBOFLOW_FACE_PROJECT_ID")}/"\
+        f"images/{uploadedImg.get("image").get("id")}?api_key={os.getenv("ROBOFLOW_API_KEY")}"
+        res = requests.get(imageInfoURL)
+        imageInfo = res.json()
+        uploadedImgInfos.append(imageInfo)
 
-        # Get image URL
-        uploadedImgs.append(uploadedImg)
-# TODO test new image fetching behavior
-   
-   
     # Remove temp image files
-    # FIXME maybe not to remove to allow locally saving images and serving to display in client
-    # shutil.rmtree(pathlib.Path('./images/new_faces'))
-    # shutil.rmtree(pathlib.Path('./images/new_items'))
+    shutil.rmtree(pathlib.Path('./images/new_faces'))
+    shutil.rmtree(pathlib.Path('./images/new_items'))
 
-    return jsonify({'message': 'User registered successfully', 'imageIds': imageIds})
+    return jsonify({
+        'message': 'User registered successfully',
+        'uploadedImageInfos': uploadedImgInfos
+    })

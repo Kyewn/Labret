@@ -15,7 +15,7 @@ import {
 } from '@/utils/context/AppContext';
 import {paths} from '@/utils/paths';
 import {themes} from '@/utils/themes';
-import {Box, Center, ChakraProvider, Spinner} from '@chakra-ui/react';
+import {Box, ChakraProvider, Heading, Spinner, VStack} from '@chakra-ui/react';
 import {useReducer} from 'react';
 import {Helmet, HelmetProvider} from 'react-helmet-async';
 import {
@@ -75,7 +75,7 @@ const router = createBrowserRouter(
 
 function App() {
 	const [appState, appDispatch] = useReducer(appContextReducer, appContextInitialState);
-	const {pageLoading} = appState;
+	const {pageLoading, loadingLabel} = appState;
 
 	return (
 		<>
@@ -102,9 +102,12 @@ function App() {
 										h={'100%'}
 										zIndex={99}
 									/>
-									<Center position={'absolute'} h={'100%'} w={'100%'}>
+									<VStack position={'absolute'} justifyContent={'center'} h={'100%'} w={'100%'}>
 										<Spinner size='xl' thickness='3px' color='white' zIndex={100} />
-									</Center>
+										<Heading fontSize={'sm'} color={'white'} zIndex={100}>
+											{loadingLabel}
+										</Heading>
+									</VStack>
 								</Box>
 							)}
 							<RouterProvider router={router} />

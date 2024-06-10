@@ -18,11 +18,13 @@ import {
 	Spacer,
 	Text,
 	Tooltip,
-	useDisclosure
+	useDisclosure,
+	useToast
 } from '@chakra-ui/react';
 import {ChevronDown, SquareCheck, Trash} from 'lucide-react';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {Helmet} from 'react-helmet-async';
+import {Link} from 'react-router-dom';
 
 export function ViewUsers() {
 	const {appDispatch} = useAppContext();
@@ -34,7 +36,6 @@ export function ViewUsers() {
 	const [canPrev, setCanPrev] = useState(false);
 
 	const {
-		pendingForTrainingUserIdsState,
 		selectedDataState,
 		tableState,
 		dataState,
@@ -53,11 +54,40 @@ export function ViewUsers() {
 	const [data] = dataState;
 	const [rowSelection] = rowSelectionState;
 	const [selectedData, setSelectedData] = selectedDataState;
-	const [pendingForTrainingUserIds] = pendingForTrainingUserIdsState;
 	const multiEditableContext = useMultiEditableContext(selectedData);
+	const [isAnnotationButtonClicked, setIsAnnotationButtonClicked] = useState(false);
+	const toast = useToast();
 
 	const pageBottomRef = useRef<HTMLDivElement | null>(null);
 	const pageIndex = useMemo(() => paginationState[0].pageIndex, [paginationState]);
+
+	const handleTrainModel = async () => {
+		try {
+			appDispatch({
+				type: 'SET_PAGE_LOADING_LABEL',
+				payload: 'Downloading and training new images. This could take awhile.'
+			});
+			appDispatch({type: 'SET_PAGE_LOADING', payload: true});
+			await fetch('http://localhost:8000/train-face-lts-model');
+			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
+			appDispatch({
+				type: 'SET_PAGE_LOADING_LABEL',
+				payload: 'Loading'
+			});
+		} catch {
+			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
+			appDispatch({
+				type: 'SET_PAGE_LOADING_LABEL',
+				payload: 'Loading'
+			});
+			toast({
+				title: 'Training interrupted',
+				description: 'Something went wrong during face training, please try again.',
+				status: 'error',
+				duration: 3000
+			});
+		}
+	};
 
 	const handleRowClick = (data: User) => {
 		setSelectedData(data);
@@ -101,14 +131,37 @@ export function ViewUsers() {
 					<Flex marginY={3} alignItems={'center'}>
 						<Heading size={'md'}>Users</Heading>
 						<Spacer />
-						<Tooltip
-							hasArrow
-							label={'User recognition model needs to be updated everytime a user is set active.'}
-							placement='left'
-							borderRadius={5}
-						>
-							<Button isDisabled={!pendingForTrainingUserIds.length}>Retrain user model</Button>
-						</Tooltip>
+						<HStack>
+							<Tooltip
+								hasArrow
+								label={
+									'Label face images for AI model in Roboflow. Publish a new version after all new annotations are completed'
+								}
+								placement='bottom-start'
+								borderRadius={5}
+							>
+								<Link
+									style={{width: 'unset'}}
+									to={'https://app.roboflow.com/oowus-workspace/labret-face/annotate'}
+									target='_blank'
+									onClick={() => setIsAnnotationButtonClicked(true)}
+								>
+									<Button variant={'outline'}>Check Annotations</Button>
+								</Link>
+							</Tooltip>
+							<Tooltip
+								hasArrow
+								label={
+									'Enable after checking annotations. User recognition model needs to be updated everytime a new Roboflow version is published.'
+								}
+								placement='bottom-start'
+								borderRadius={5}
+							>
+								<Button isDisabled={!isAnnotationButtonClicked} onClick={handleTrainModel}>
+									Retrain user model
+								</Button>
+							</Tooltip>
+						</HStack>
 					</Flex>
 					<Divider orientation='horizontal' />
 					<UserFilters />
