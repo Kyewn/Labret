@@ -1,10 +1,18 @@
 export const UndefinedString = 'None';
 
-// React hook form general types
+// App form types
+// CreateUpdate forms
 export type AddUserFormValues = {
 	name: string;
 	email: string;
 };
+
+export type NewRentedItemFormValues = {
+	item?: Item;
+	rentQuantity?: number;
+};
+
+// Table record info
 export type UserInfoValues = {
 	name?: string;
 	email?: string;
@@ -34,10 +42,28 @@ export type UserEditableFields = {
 	lastRentalAt?: string | Date;
 };
 
+export type Item = {
+	itemId: string;
+	itemName: string;
+	itemImages: string;
+	itemQuantity?: string | number; // Referenced by rented item and should be opt in
+	itemCategory?: string;
+	itemDescription?: string;
+	createdAt?: string | Date;
+	createdBy?: string;
+};
+
+export type RentedItem = {
+	item: Item;
+	rentQuantity: string | number;
+	proofOfReturn?: string;
+};
+
 export type RentalRecord = {
 	recordId: string;
 	recordTitle: string;
 	renterId: string | number;
+	rentedItems: RentedItem[];
 	rentImages: string[];
 	notes: string;
 	rentStatus: string;
@@ -45,6 +71,16 @@ export type RentalRecord = {
 	returnedAt?: string | Date;
 	returnImages?: Record<string, unknown>[];
 	returnLocation?: string;
+};
+
+export type Verification = {
+	verificationId: string;
+	rentId: string;
+	verificationType: string;
+	verificationStatus: string;
+	createdAt: string | Date;
+	verifiedAt?: string | Date;
+	verifiedBy?: string;
 };
 
 // Data Utils
@@ -60,6 +96,15 @@ export const mapUserStatus = (status: string) => {
 	}
 };
 
-export type FormValues = AddUserFormValues | UserInfoValues;
-export type FormKeys = keyof AddUserFormValues | keyof UserInfoValues;
+export type FormValues = AddUserFormValues | UserInfoValues | NewRentedItemFormValues;
+export type FormKeys =
+	| keyof AddUserFormValues
+	| keyof UserInfoValues
+	| keyof NewRentedItemFormValues;
 export type TableData = User;
+
+// Others
+export type MiscObject = {
+	[key: string]: string | number | boolean | Date;
+};
+export type InputData = TableData | MiscObject;

@@ -1,30 +1,39 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {FormKeys, FormValues, InputData} from '@/utils/data';
-import {Input, Text, Textarea, VStack} from '@chakra-ui/react';
+import {
+	NumberDecrementStepper,
+	NumberIncrementStepper,
+	NumberInput,
+	NumberInputField,
+	NumberInputStepper,
+	Text,
+	VStack
+} from '@chakra-ui/react';
 import {RegisterOptions, UseFormReturn} from 'react-hook-form';
 
 type Props = Partial<Pick<UseFormReturn<FormValues>, 'register'>> & {
+	name: string;
 	label: string;
-	name: FormKeys | string;
-	value?: string;
-	valueType?: string;
+	value: number;
+	min?: number;
+	max?: number;
 	isEditing?: boolean;
-	useTextArea?: boolean;
-	rules?: RegisterOptions<FormValues, FormKeys>;
 	errorMessage?: string;
-	handleChange?: (newData: InputData) => void;
+	rules?: RegisterOptions<FormValues, FormKeys>;
+	handleChange?: (strData: string, numData: number) => void;
+	handleMEContextChange?: (newData: InputData) => void;
 };
 
-export const EditableField: React.FC<Props> = ({
-	label,
+export const EditableNumberInput: React.FC<Props> = ({
 	name,
+	label,
 	value,
-	valueType,
+	min,
+	max,
 	isEditing,
-	useTextArea,
-	errorMessage,
 	rules,
+	errorMessage,
 	handleChange,
+	handleMEContextChange,
 	register
 }) => {
 	const registerProps = rules ? register?.(name as FormKeys, rules) : register?.(name as FormKeys);
@@ -36,30 +45,27 @@ export const EditableField: React.FC<Props> = ({
 				{rules?.required ? label + ' *' : label}
 			</Text>
 			{isEditing ? (
-				useTextArea || (value && value.length > 50) ? (
-					<Textarea
-						minWidth={'250px'}
-						value={value || ''}
-						resize={'both'}
+				<NumberInput
+					allowMouseWheel
+					min={min}
+					max={max}
+					defaultValue={value}
+					onChange={(valueStr, value) => {
+						handleChange?.(valueStr, value);
+						handleMEContextChange?.({name: value});
+					}}
+				>
+					<NumberInputField
 						{...(register && registerProps)}
 						onChange={(e) => {
 							onChange?.(e);
-							handleChange && handleChange?.({[name]: e.target.value});
 						}}
 					/>
-				) : (
-					<Input
-						minWidth={'250px'}
-						maxWidth={'400px'}
-						type={valueType}
-						value={value || ''}
-						{...(register && registerProps)}
-						onChange={(e) => {
-							onChange?.(e);
-							handleChange && handleChange?.({[name]: e.target.value});
-						}}
-					/>
-				)
+					<NumberInputStepper>
+						<NumberIncrementStepper />
+						<NumberDecrementStepper />
+					</NumberInputStepper>
+				</NumberInput>
 			) : (
 				<Text>{value || '--'}</Text>
 			)}

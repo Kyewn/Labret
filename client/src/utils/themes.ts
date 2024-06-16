@@ -1,4 +1,10 @@
-import {inputAnatomy, listAnatomy, menuAnatomy, stepperAnatomy} from '@chakra-ui/anatomy';
+import {
+	inputAnatomy,
+	listAnatomy,
+	menuAnatomy,
+	numberInputAnatomy,
+	stepperAnatomy
+} from '@chakra-ui/anatomy';
 import {
 	createMultiStyleConfigHelpers,
 	defineStyleConfig,
@@ -82,6 +88,14 @@ const Button = defineStyleConfig({
 				svg: {
 					stroke: 'black'
 				}
+			}
+		},
+		criticalIconButton: {
+			color: 'lrRed.300',
+			minWidth: '50px',
+			_hover: {
+				color: 'lrRed.300',
+				backgroundColor: 'grey.100'
 			}
 		},
 		itemIconButton: {
@@ -173,6 +187,25 @@ const Input = createMultiStyleConfigHelpers(inputAnatomy.keys).defineMultiStyleC
 	},
 	defaultProps: {
 		variant: 'filled'
+	}
+});
+
+const NumberInput = createMultiStyleConfigHelpers(numberInputAnatomy.keys).defineMultiStyleConfig({
+	variants: {
+		outline: {
+			field: {
+				border: '2px solid',
+				borderColor: 'lrBrown.700',
+				_hover: {
+					borderColor: 'lrBrown.600'
+				},
+				_focus: {
+					ring: 'unset',
+					border: '2px solid',
+					borderColor: 'lrBrown.600'
+				}
+			}
+		}
 	}
 });
 
@@ -311,6 +344,7 @@ export const themes = extendTheme({
 	components: {
 		Button,
 		Input,
+		NumberInput,
 		Menu,
 		List,
 		Stepper

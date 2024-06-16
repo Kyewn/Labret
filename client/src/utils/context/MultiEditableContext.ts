@@ -1,4 +1,4 @@
-import {TableData} from '@/utils/data';
+import {InputData, TableData} from '@/utils/data';
 import {useEffect, useState} from 'react';
 
 // MultiEditableContext - states and functions for edit page where multiple inputs can be toggled to edit mode
@@ -28,13 +28,13 @@ export const useMultiEditableContext = (initData: TableData | undefined) => {
 	const onCancel = () => {
 		setMEContext((prev) => ({...prev, data: oldData, isEditing: false}));
 	};
-	const onChange = (newData: TableData) => {
+	const onChange = (newData: InputData) => {
 		setMEContext((prev) => {
 			return {
 				...prev,
 				data: {
 					...prev.data,
-					...newData
+					...(newData as TableData)
 				}
 			};
 		});

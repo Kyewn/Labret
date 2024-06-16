@@ -12,9 +12,11 @@ export const paths = {
 		equipmentAvailability: '/equipment-availability',
 		register: '/register',
 		registerAdmin: '/register-admin',
+		addItem: '/add-item',
 		users: '/users',
 		admins: '/admins',
 		equipment: '/equipment',
-		verifications: '/verifications'
+		verifications: '/verifications',
+		criticalRecords: '/critical-records'
 	}
 };

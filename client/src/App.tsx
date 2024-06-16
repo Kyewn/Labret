@@ -4,6 +4,7 @@ import {Rent} from '@/pages/Rent';
 import {RentResult} from '@/pages/RentResult';
 import {Return} from '@/pages/Return';
 import {ReturnResult} from '@/pages/ReturnResult';
+import {UserHistory} from '@/pages/UserHistory';
 import {ViewUsers} from '@/pages/ViewUsers';
 import MainPageLayout from '@/pages/layout/MainPageLayout';
 import SubPageLayout from '@/pages/layout/SubPageLayout';
@@ -61,12 +62,14 @@ const router = createBrowserRouter(
 				<Route element={<AuthCheck />}>
 					<Route path={paths.sub.rentResult} element={<RentResult />} />
 					<Route path={paths.sub.returnResult} element={<ReturnResult />} />
-					<Route path={paths.sub.userHistory} /*element={}*/ />
-					<Route path={paths.sub.registerAdmin} /*element={}*/ />
+					<Route path={paths.sub.userHistory} element={<UserHistory />} />
 					<Route path={paths.sub.users} element={<ViewUsers />} />
 					<Route path={paths.sub.admins} /*element={}*/ />
 					<Route path={paths.sub.equipment} /*element={}*/ />
+					<Route path={paths.sub.registerAdmin} /* element={} */ />
+					<Route path={paths.sub.addItem} /* element={} */ />
 					<Route path={paths.sub.verifications} /*element={}*/ />
+					<Route path={paths.sub.criticalRecords} /*element={}*/ />
 				</Route>
 			</Route>
 		</Route>
