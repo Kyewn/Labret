@@ -3,7 +3,7 @@ import pathlib
 import numpy as np
 import requests
 import shutil
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, Response, request, jsonify
 from roboflowLabret import rfLabretFaceProject
 from dotenv import load_dotenv
 import os
@@ -36,19 +36,11 @@ def register_user():
         bImage = base64.b64decode(image)
         cvImage = np.fromstring(bImage, dtype=np.uint8)
         cvImage = cv.imdecode(cvImage, cv.IMREAD_ANYCOLOR)
+    
+        # Crop image
+        image_crop = cvImage[90:390, 165:475]
+        cv.imwrite(filePath, image_crop)
 
-        cv.imshow("image", cvImage)
-        finalImage = cvImage[90:390, 165:475]
-        
-        cv.imshow("image_crop", finalImage)
-
-        # Face preprocessing
-        # Sharpen
-        # Edge detection
-
-        cv.imwrite(filePath, finalImage)
-
-        cv.waitKey(0)
         # Send image to roboflow        
         # Get uploaded image id
         uploadedImg = rfLabretFaceProject.single_upload(filePath, tag_names=[id])
