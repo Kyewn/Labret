@@ -67,8 +67,8 @@ def predict_face():
 # Download face training dataset
 def download_face_model_dataset_from_roboflow():
     # Init local folders
+    pathlib.Path('./images').mkdir(parents=True, exist_ok=True)
     pathlib.Path('./images/faces').mkdir(parents=True, exist_ok=True)
-    pathlib.Path('./images/items').mkdir(parents=True, exist_ok=True)
    
     # Get dataset from roboflow with lts version no.
     ltsVersion = rfLabretFaceProject.get_version_information()[0].get("id")[-1]
@@ -109,45 +109,6 @@ def splitDataset():
     for image, label in zip(testX, testY):
         shutil.move(trainPath / label / image, testPath / label / image)
     # Completed
-
-# TODO for object detection? incomplete
-# def splitDataset():
-#     # Prepare test folder 
-#     pathlib.Path(testPath).mkdir(parents=True, exist_ok=True)
-#     pathlib.Path(testImagesPath).mkdir(parents=True, exist_ok=True)
-#     pathlib.Path(testLabelsPath).mkdir(parents=True, exist_ok=True)
-#     originalImages = os.listdir(trainImagesPath)
-#     originalLabels = os.listdir(trainLabelsPath)
-#     originalLabels = [readLabel(label) for label in originalLabels]
-#     print(originalLabels)
-#     # shuffledIndexes = np.arange(len(originalImages))
-
-#     # np.random.seed(42)
-#     # np.random.shuffle(shuffledIndexes)
-#     # trainIndexes, testIndexes = np.split(shuffledIndexes, [int(0.8 * len(shuffledIndexes))])
-#     # trainImages = np.array(originalImages)[trainIndexes]
-#     # testImages = np.array(originalImages)[testIndexes]
-#     # trainLabels = np.array(originalLabels)[trainIndexes]
-#     # testLabels = np.array(originalLabels)[testIndexes]
-
-#     # for image in trainImages:
-#     #     shutil.move(os.path.join(testImagesPath, image), os.path.join(trainImagesPath, image))
-
-#     # for image in testImages:
-#     #     shutil.move(os.path.join(trainImagesPath, image), os.path.join(testImagesPath, image))
-
-#     # for label in trainLabels:
-#     #     shutil.move(os.path.join(testLabelsPath, label), os.path.join(trainLabelsPath, label))
-
-#     # for label in testLabels:
-#     #     shutil.move(os.path.join(trainLabelsPath, label), os.path.join(testLabelsPath, label))
-
-# def readLabel(filename):
-#     with open(filename, 'r') as f:
-#         content = f.read()
-#         label = content.split(" ")[0]
-#         f.close()
-#     return label
 
 def imageppFace(cvImage, filePath):
     # Face preprocessing

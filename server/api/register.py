@@ -37,7 +37,7 @@ def register_user():
         cvImage = np.fromstring(bImage, dtype=np.uint8)
         cvImage = cv.imdecode(cvImage, cv.IMREAD_ANYCOLOR)
     
-        # Crop image
+        # Crop image ROI
         image_crop = cvImage[90:390, 165:475]
         cv.imwrite(filePath, image_crop)
 

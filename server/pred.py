@@ -1,7 +1,7 @@
 import os
 from ultralytics import YOLO
-from api.face_training import splitDataset
-# from api.face_training import train_face_lts_model
+from server.api.face_model import splitDataset
+# from api.face_model import train_face_lts_model
 
 # train_face_lts_model()
 # set IOU thresh when using pred() func later in route api
