@@ -22,7 +22,11 @@ export const UserMenu = () => {
 	const navigate = useNavigate();
 	const {colorMode} = useColorMode();
 	const {appState, appDispatch} = useAppContext();
-	const {handleCloseExistingPeerConnection} = appState;
+	const {
+		handleOpenExistingPeerConnection,
+		handleCloseExistingPeerConnection,
+		handleCloseNormalCamera
+	} = appState;
 	const [hasUserRecords, setHasUserRecords] = useState<boolean>(false);
 	const toast = useToast();
 
@@ -72,10 +76,21 @@ export const UserMenu = () => {
 		navigate(paths.sub.userHistory);
 	};
 
+	const handleLogout = () => {
+		appDispatch({type: 'SET_USER', payload: null});
+		handleCloseNormalCamera();
+		handleOpenExistingPeerConnection();
+	};
+
 	return (
 		<Flex flexDirection={'column'} flex={0.7} overflowX={'hidden'} overflowY={'auto'}>
 			<VStack alignItems={'flex-start'}>
-				<Button variant={'criticalOutline'} alignSelf={'flex-end'} leftIcon={<ScanFace />}>
+				<Button
+					variant={'criticalOutline'}
+					alignSelf={'flex-end'}
+					leftIcon={<ScanFace />}
+					onClick={handleLogout}
+				>
 					Logout
 				</Button>
 				<HStack>

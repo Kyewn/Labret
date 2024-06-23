@@ -13,7 +13,7 @@ import {ScanFace, SearchCheck} from 'lucide-react';
 
 export const FaceLogin: React.FC = () => {
 	const {appState, appDispatch} = useAppContext();
-	const {detectedUser, videoLoading} = appState;
+	const {detectedUser, videoLoading, handleCloseExistingPeerConnection} = appState;
 
 	if (videoLoading) {
 		return (
@@ -23,8 +23,15 @@ export const FaceLogin: React.FC = () => {
 		);
 	}
 
-	const handleRescan = () => appDispatch({type: 'SET_DETECTED_USER', payload: null});
-	const handleConfirmIdentity = () => appDispatch({type: 'SET_USER', payload: detectedUser});
+	const handleRescan = () => {
+		appDispatch({type: 'SET_DETECTED_USER', payload: null});
+		handleCloseExistingPeerConnection();
+	};
+	const handleConfirmIdentity = () => {
+		appDispatch({type: 'SET_USER', payload: detectedUser});
+		appDispatch({type: 'SET_DETECTED_USER', payload: null});
+		handleCloseExistingPeerConnection();
+	};
 
 	return detectedUser ? (
 		<Flex flexDirection={'column'} justifyContent={'center'} flex={0.7}>
@@ -33,7 +40,7 @@ export const FaceLogin: React.FC = () => {
 					Is that you?
 				</Text>
 				{/* TODO: Replace with user name*/}
-				<Heading size={'lg'}>Brian</Heading>
+				<Heading size={'lg'}>{detectedUser.name}</Heading>
 				<ButtonGroup width={'100%'}>
 					<Button flex={1} leftIcon={<SearchCheck />} onClick={handleConfirmIdentity}>
 						Confirm Identity

@@ -32,3 +32,32 @@ export const formatDateAndTime = (date: Date) =>
 		minute: 'numeric',
 		second: 'numeric'
 	});
+
+// Prediction API
+export type FaceResult = {
+	label: string[] | string;
+	score: string[] | number;
+	image: string;
+};
+
+export const predictFace = async (faceBlob: Blob[]) => {
+	const faceBase64s = await Promise.all(
+		faceBlob.map(async (blob) => await convertBlobToBase64(blob))
+	);
+	const predictFaceApiUrl = 'http://localhost:8000/predict-face';
+
+	const res = await fetch(predictFaceApiUrl, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Access-Control-Allow-Origin': '*'
+		},
+		body: JSON.stringify({
+			images: faceBase64s
+		})
+	});
+	const resJson = await res.json();
+	const parsedJson = JSON.parse(resJson.data.replace(/nan/gi, 'null').replace(/None/g, 'null'));
+	const predictResults = parsedJson.predictResults as FaceResult;
+	return predictResults;
+};
