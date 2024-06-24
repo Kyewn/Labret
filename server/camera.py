@@ -1,3 +1,6 @@
+import base64
+import os
+import pathlib
 import cv2 as cv
 import json
 import asyncio
@@ -7,8 +10,14 @@ from aiohttp import web
 import aiohttp_cors
 from av import VideoFrame
 
+from api.predict import predict_faces
+
 relay = MediaRelay()
 pcs = set()
+lock = asyncio.Lock()
+
+serverPath = pathlib.Path(os.path.dirname(os.path.abspath(__file__)))
+predictDirPath = serverPath / "predict"
 
 class CameraTrack(MediaStreamTrack):
     kind = "video"
@@ -20,24 +29,12 @@ class CameraTrack(MediaStreamTrack):
 
     async def recv(self):
         frame = await self.track.recv()
-
-        if ((self.channel) and (not self.channel.bufferedAmount > 0)):
-            self.channel.send(json.dumps({"data": "Hello from the server"}))
-
-        if (self.mode == "face"):
-            # TODO: Implement facial recognition
-            img = frame.to_ndarray(format="bgr24")
-            img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-            img = cv.flip(img, 1)
-            new_frame = VideoFrame.from_ndarray(img, format='gray')
-            new_frame.pts = frame.pts
-            new_frame.time_base = frame.time_base
-            return new_frame
-        elif (self.mode == "equipment"):
-            # TODO: Implement equipment recognition
-            pass
-        else:
-            return frame
+        img = frame.to_ndarray(format="bgr24")
+        img = cv.flip(img, 1)
+        new_frame = VideoFrame.from_ndarray(img, format='bgr24')
+        new_frame.pts = frame.pts
+        new_frame.time_base = frame.time_base
+        return new_frame
 
 async def offer(request):
     try:
@@ -59,10 +56,6 @@ async def offer(request):
                 global local_video
                 local_video = CameraTrack(relay.subscribe(track), params["mode"])
                 pc.addTrack(local_video)
-                
-        @pc.on("datachannel")
-        def on_datachannel(channel):
-            local_video.channel = channel
 
         # handle offer
         await pc.setRemoteDescription(offer)

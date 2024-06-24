@@ -1,6 +1,4 @@
-import base64
 import pathlib
-import numpy as np
 import requests
 import shutil
 from flask import Blueprint, request, jsonify
@@ -8,6 +6,7 @@ from roboflowLabret import rfLabretFaceProject
 from dotenv import load_dotenv
 import os
 import cv2 as cv
+from api.predict import convertBase64ToCvImage
 
 load_dotenv()
 
@@ -33,22 +32,12 @@ def register_user():
     # Temporarily write image files locally for upload later 
     for (i, image) in enumerate(images):
         filePath = f"./images/new_faces/{id}_{name}_{i}.jpg"
-        bImage = base64.b64decode(image)
-        cvImage = np.fromstring(bImage, dtype=np.uint8)
-        cvImage = cv.imdecode(cvImage, cv.IMREAD_ANYCOLOR)
+        cvImage = convertBase64ToCvImage(image)
+    
+        # Crop image ROI
+        image_crop = cvImage[90:390, 165:475]
+        cv.imwrite(filePath, image_crop)
 
-        cv.imshow("image", cvImage)
-        finalImage = cvImage[90:390, 165:475]
-        
-        cv.imshow("image_crop", finalImage)
-
-        # Face preprocessing
-        # Sharpen
-        # Edge detection
-
-        cv.imwrite(filePath, finalImage)
-
-        cv.waitKey(0)
         # Send image to roboflow        
         # Get uploaded image id
         uploadedImg = rfLabretFaceProject.single_upload(filePath, tag_names=[id])

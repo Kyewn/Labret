@@ -1,5 +1,5 @@
 import {db} from '@/db/firebase-init';
-import {AddUserFormValues, UserEditableFields} from '@/utils/data';
+import {AddUserFormValues, User, UserEditableFields} from '@/utils/data';
 import {addDoc, collection, deleteDoc, getDocs, updateDoc} from 'firebase/firestore';
 
 export const userCollection = collection(db, 'users');
@@ -14,7 +14,7 @@ export const getAllUsers = async () => {
 
 export const getUser = async (userId: string) => {
 	const queryResult = (await getDocs(userCollection)).docs.filter((doc) => userId == doc.id)[0];
-	return queryResult.data();
+	return queryResult.data() as User;
 };
 
 export const createUser = async (data: AddUserFormValues) => {

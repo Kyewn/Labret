@@ -1,17 +1,17 @@
+import {User} from '@/utils/data';
 import {Dispatch, createContext, useContext} from 'react';
-
-type VideoMode = 'face' | 'equipment';
 
 type AppContextState = {
 	pageLoading: boolean;
 	loadingLabel: string;
-	user: string | null;
-	detectedUser: string | null;
+	user: User | null;
+	detectedUser: User | null;
+	detectedUserImageURL: string | null;
 	handleSubHeaderBack: () => void;
 	// Video camera states
 	videoLoading: boolean;
 	mediaStreams: MediaStream[] | null;
-	videoMode: VideoMode;
+	handleOpenExistingPeerConnection: () => void;
 	handleCloseExistingPeerConnection: () => void;
 	handleCloseNormalCamera: () => void;
 };
@@ -20,16 +20,17 @@ type AppContextActionType =
 	| 'SET_PAGE_LOADING_LABEL'
 	| 'SET_USER'
 	| 'SET_DETECTED_USER'
+	| 'SET_DETECTED_USER_IMAGE_URL'
 	| 'SET_HANDLE_SUBHEADER_BACK'
 	// Video camera states
 	| 'SET_VIDEO_LOADING'
 	| 'SET_MEDIA_STREAMS'
 	| 'ADD_MEDIA_STREAM'
-	| 'SET_VIDEO_MODE'
+	| 'SET_OPEN_EXISTING_PEER_CONNECTION'
 	| 'SET_CLOSE_EXISTING_PEER_CONNECTION'
 	| 'SET_CLOSE_NORMAL_CAMERA';
 type AppContextActionPayload =
-	| VideoMode
+	| User
 	| string
 	| boolean
 	| MediaStream
@@ -47,11 +48,12 @@ export const appContextInitialState: AppContextState = {
 	loadingLabel: 'Loading',
 	user: null,
 	detectedUser: null,
+	detectedUserImageURL: null,
 	handleSubHeaderBack: () => {},
 	// Video camera states
 	mediaStreams: null,
 	videoLoading: false,
-	videoMode: 'face',
+	handleOpenExistingPeerConnection: () => {},
 	handleCloseExistingPeerConnection: () => {},
 	handleCloseNormalCamera: () => {}
 };
@@ -65,9 +67,11 @@ export const appContextReducer = (
 		case 'SET_PAGE_LOADING_LABEL':
 			return {...state, loadingLabel: action.payload as string};
 		case 'SET_USER':
-			return {...state, user: action.payload as string | null};
+			return {...state, user: action.payload as User | null};
 		case 'SET_DETECTED_USER':
-			return {...state, detectedUser: action.payload as string | null};
+			return {...state, detectedUser: action.payload as User | null};
+		case 'SET_DETECTED_USER_IMAGE_URL':
+			return {...state, detectedUserImageURL: action.payload as string | null};
 		case 'SET_HANDLE_SUBHEADER_BACK':
 			return {...state, handleSubHeaderBack: action.payload as () => void};
 		// MEDIA STREAMS & VIDEO CAMERA CONTEXT SWITCHING
@@ -80,8 +84,8 @@ export const appContextReducer = (
 				...state,
 				mediaStreams: [...(state.mediaStreams || []), action.payload as MediaStream]
 			};
-		case 'SET_VIDEO_MODE':
-			return {...state, videoMode: action.payload as VideoMode};
+		case 'SET_OPEN_EXISTING_PEER_CONNECTION':
+			return {...state, handleOpenExistingPeerConnection: action.payload as () => void};
 		case 'SET_CLOSE_EXISTING_PEER_CONNECTION':
 			return {...state, handleCloseExistingPeerConnection: action.payload as () => void};
 		case 'SET_CLOSE_NORMAL_CAMERA':

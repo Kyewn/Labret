@@ -108,3 +108,9 @@ export type MiscObject = {
 	[key: string]: string | number | boolean | Date;
 };
 export type InputData = TableData | MiscObject;
+
+// Prediction API
+export type FaceResult = {
+	labels: string[];
+	scores: number[];
+};

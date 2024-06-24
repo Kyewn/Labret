@@ -102,17 +102,6 @@ export const Camera: React.FC<{
 	const initializeCameraRTC = async () => {
 		appDispatch({type: 'SET_VIDEO_LOADING', payload: true});
 		const peerConnection = await createPeerConnection();
-		const dataChannel = peerConnection.createDataChannel('faceData', {
-			ordered: true,
-			maxPacketLifeTime: 0
-		});
-
-		dataChannel.onerror = (error) => console.log(error);
-		dataChannel.onbufferedamountlow = (ev) => console.log(ev);
-		dataChannel.onmessage = (event) => {
-			// TODO handle detected data sent from the server
-			console.log(event.data);
-		};
 
 		try {
 			const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -133,11 +122,6 @@ export const Camera: React.FC<{
 
 			const handleClosePC = () => {
 				// Close peer connection associations
-				if (dataChannel) {
-					// Close data channel
-					dataChannel.close();
-				}
-
 				// close transceivers
 				if (peerConnection.getTransceivers) {
 					peerConnection.getTransceivers().forEach(function (transceiver) {
@@ -153,6 +137,8 @@ export const Camera: React.FC<{
 				});
 				// close peer connection
 				peerConnection.close();
+
+				appDispatch({type: 'SET_MEDIA_STREAMS', payload: null});
 			};
 
 			appDispatch({type: 'SET_CLOSE_EXISTING_PEER_CONNECTION', payload: handleClosePC});
@@ -175,6 +161,7 @@ export const Camera: React.FC<{
 		if (!isInit.current) {
 			isInit.current = true;
 			initializeCameraRTC();
+			appDispatch({type: 'SET_OPEN_EXISTING_PEER_CONNECTION', payload: initializeCameraRTC});
 		}
 	}, []);
 
@@ -214,6 +201,7 @@ export const Camera: React.FC<{
 						stream.getTracks().forEach((track) => {
 							track.stop();
 						});
+						appDispatch({type: 'SET_MEDIA_STREAMS', payload: null});
 					};
 					appDispatch({type: 'SET_MEDIA_STREAMS', payload: [stream]});
 					appDispatch({type: 'SET_CLOSE_NORMAL_CAMERA', payload: handleCloseCamera});
@@ -237,10 +225,12 @@ export const Camera: React.FC<{
 							position={'absolute'}
 							h={centerBox.height}
 							w={centerBox.width}
-							border={'5px dashed red'}
+							opacity={0.75}
+							border={'5px dashed var(--chakra-colors-lrRed-300)'}
+							borderRadius={3}
 						/>
 					)}
-					<video id={videoId} className={className || undefined} autoPlay playsInline />
+					<video id={videoId} className={className || undefined} autoPlay playsInline muted />
 				</Center>
 			) : (
 				<Center flexDirection={'column'} alignContent={'center'} height={'100%'}>

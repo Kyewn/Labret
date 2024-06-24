@@ -1,3 +1,4 @@
+import {FaceResult} from '@/utils/data';
 import {clsx, type ClassValue} from 'clsx';
 import {twMerge} from 'tailwind-merge';
 
@@ -32,3 +33,29 @@ export const formatDateAndTime = (date: Date) =>
 		minute: 'numeric',
 		second: 'numeric'
 	});
+
+export const predictFaces = async (faceBlob: Blob[]) => {
+	const faceBase64s = await Promise.all(
+		faceBlob.map(async (blob) => await convertBlobToBase64(blob))
+	);
+	const predictFaceApiUrl = 'http://localhost:8000/predict-face';
+
+	const res = await fetch(predictFaceApiUrl, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Access-Control-Allow-Origin': '*'
+		},
+		body: JSON.stringify({
+			images: faceBase64s
+		})
+	});
+	const resJson = await res.json();
+	console.log(resJson);
+	const parsedJson = JSON.parse(
+		JSON.stringify(resJson).replace(/nan/gi, 'null').replace(/None/g, 'null')
+	);
+	const parsedData = parsedJson.data as FaceResult;
+
+	return parsedData;
+};
