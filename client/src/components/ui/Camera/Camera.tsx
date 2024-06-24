@@ -137,6 +137,8 @@ export const Camera: React.FC<{
 				});
 				// close peer connection
 				peerConnection.close();
+
+				appDispatch({type: 'SET_MEDIA_STREAMS', payload: null});
 			};
 
 			appDispatch({type: 'SET_CLOSE_EXISTING_PEER_CONNECTION', payload: handleClosePC});
@@ -199,6 +201,7 @@ export const Camera: React.FC<{
 						stream.getTracks().forEach((track) => {
 							track.stop();
 						});
+						appDispatch({type: 'SET_MEDIA_STREAMS', payload: null});
 					};
 					appDispatch({type: 'SET_MEDIA_STREAMS', payload: [stream]});
 					appDispatch({type: 'SET_CLOSE_NORMAL_CAMERA', payload: handleCloseCamera});

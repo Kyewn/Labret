@@ -42,7 +42,7 @@ export function MainMenu() {
 						const currPhotoURL = URL.createObjectURL(photoBlob);
 						appDispatch({type: 'SET_DETECTED_USER_IMAGE_URL', payload: currPhotoURL});
 					}
-				}, 3000);
+				}, 2000);
 				setIntervalId(id);
 			} else if (detectedUser && intervalId) {
 				clearInterval(intervalId);
