@@ -13,7 +13,7 @@ import {ScanFace, SearchCheck} from 'lucide-react';
 
 export const FaceLogin: React.FC = () => {
 	const {appState, appDispatch} = useAppContext();
-	const {detectedUser, videoLoading} = appState;
+	const {detectedUser, videoLoading, handleCloseExistingPeerConnection} = appState;
 
 	if (videoLoading) {
 		return (
@@ -24,10 +24,12 @@ export const FaceLogin: React.FC = () => {
 	}
 
 	const handleRescan = () => {
+		handleCloseExistingPeerConnection();
 		appDispatch({type: 'SET_DETECTED_USER', payload: null});
 		appDispatch({type: 'SET_DETECTED_USER_IMAGE_URL', payload: null});
 	};
 	const handleConfirmIdentity = () => {
+		handleCloseExistingPeerConnection();
 		appDispatch({type: 'SET_USER', payload: detectedUser});
 		appDispatch({type: 'SET_DETECTED_USER', payload: null});
 		appDispatch({type: 'SET_DETECTED_USER_IMAGE_URL', payload: null});
