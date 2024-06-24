@@ -13,7 +13,7 @@ import {ScanFace, SearchCheck} from 'lucide-react';
 
 export const FaceLogin: React.FC = () => {
 	const {appState, appDispatch} = useAppContext();
-	const {detectedUser, videoLoading, handleCloseExistingPeerConnection} = appState;
+	const {detectedUser, videoLoading} = appState;
 
 	if (videoLoading) {
 		return (
@@ -25,12 +25,12 @@ export const FaceLogin: React.FC = () => {
 
 	const handleRescan = () => {
 		appDispatch({type: 'SET_DETECTED_USER', payload: null});
-		handleCloseExistingPeerConnection();
+		appDispatch({type: 'SET_DETECTED_USER_IMAGE_URL', payload: null});
 	};
 	const handleConfirmIdentity = () => {
 		appDispatch({type: 'SET_USER', payload: detectedUser});
 		appDispatch({type: 'SET_DETECTED_USER', payload: null});
-		handleCloseExistingPeerConnection();
+		appDispatch({type: 'SET_DETECTED_USER_IMAGE_URL', payload: null});
 	};
 
 	return detectedUser ? (
@@ -39,7 +39,6 @@ export const FaceLogin: React.FC = () => {
 				<Text fontWeight={'700'} color={'lrBrown.700'}>
 					Is that you?
 				</Text>
-				{/* TODO: Replace with user name*/}
 				<Heading size={'lg'}>{detectedUser.name}</Heading>
 				<ButtonGroup width={'100%'}>
 					<Button flex={1} leftIcon={<SearchCheck />} onClick={handleConfirmIdentity}>

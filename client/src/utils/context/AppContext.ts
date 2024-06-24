@@ -1,8 +1,6 @@
 import {User} from '@/utils/data';
 import {Dispatch, createContext, useContext} from 'react';
 
-type VideoMode = 'face' | 'equipment';
-
 type AppContextState = {
 	pageLoading: boolean;
 	loadingLabel: string;
@@ -12,7 +10,6 @@ type AppContextState = {
 	handleSubHeaderBack: () => void;
 	// Video camera states
 	videoLoading: boolean;
-	videoMode: VideoMode;
 	mediaStreams: MediaStream[] | null;
 	handleOpenExistingPeerConnection: () => void;
 	handleCloseExistingPeerConnection: () => void;
@@ -29,13 +26,11 @@ type AppContextActionType =
 	| 'SET_VIDEO_LOADING'
 	| 'SET_MEDIA_STREAMS'
 	| 'ADD_MEDIA_STREAM'
-	| 'SET_VIDEO_MODE'
 	| 'SET_OPEN_EXISTING_PEER_CONNECTION'
 	| 'SET_CLOSE_EXISTING_PEER_CONNECTION'
 	| 'SET_CLOSE_NORMAL_CAMERA';
 type AppContextActionPayload =
 	| User
-	| VideoMode
 	| string
 	| boolean
 	| MediaStream
@@ -58,7 +53,6 @@ export const appContextInitialState: AppContextState = {
 	// Video camera states
 	mediaStreams: null,
 	videoLoading: false,
-	videoMode: 'face',
 	handleOpenExistingPeerConnection: () => {},
 	handleCloseExistingPeerConnection: () => {},
 	handleCloseNormalCamera: () => {}
@@ -90,8 +84,6 @@ export const appContextReducer = (
 				...state,
 				mediaStreams: [...(state.mediaStreams || []), action.payload as MediaStream]
 			};
-		case 'SET_VIDEO_MODE':
-			return {...state, videoMode: action.payload as VideoMode};
 		case 'SET_OPEN_EXISTING_PEER_CONNECTION':
 			return {...state, handleOpenExistingPeerConnection: action.payload as () => void};
 		case 'SET_CLOSE_EXISTING_PEER_CONNECTION':

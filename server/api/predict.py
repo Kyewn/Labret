@@ -14,7 +14,7 @@ predict = Blueprint('predict', __name__)
 serverPath = pathlib.Path(os.path.dirname(os.path.dirname(__file__)))
 predictDirPath = serverPath / "predict"
 
-face_conf_threshold = 0.6
+face_conf_threshold = 0.9
 
 @predict.route('/predict-face', methods=['POST'])
 def predict_face_api():
@@ -25,18 +25,28 @@ def predict_face_api():
     cvImages = [convertBase64ToCvImage(image) for image in images]
     
     # Predict
-    predictResults = predict_faces(cvImages)
+    imagePredictions = predict_faces(cvImages)
 
     # Return result if any 
-    for predictResult in predictResults:
-        if (predictResult is not None):
-            return jsonify({
-                "predictResults": {
-                    "top1": [result.probs.top1 for result in predictResult],
-                    "top1conf": [result.probs.top1conf.item() for result in predictResult],
-                },
-                'message': 'Prediction successful',
-            })
+    for objectResults in imagePredictions:
+        labels = []
+        scores = []
+        for predictResult in objectResults:
+            if (predictResult is not None):
+                bestIndex = predictResult.probs.top1
+                bestLabel = predictResult.names[bestIndex] 
+                bestScore = predictResult.probs.top1conf.item()
+
+                labels.append(bestLabel)
+                scores.append(bestScore)
+
+        return jsonify({
+            "data": {
+                "labels": labels,
+                "scores": scores,
+            },
+            'message': 'Prediction successful',
+        })
         
     # All empty results - Failed
     return jsonify({
@@ -73,7 +83,7 @@ def predict_faces(cvImages):
         results = model.predict(ppImageCompat, imgsz=640, device=0)
         for result in results:
             # Filter out low confidence predictions
-            if (result.probs.top1 >= face_conf_threshold):
+            if (result.probs.top1conf >= face_conf_threshold):
                 parsedResults.append(result)
             else:
                 parsedResults.append(None)
