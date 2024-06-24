@@ -1,3 +1,4 @@
+import {FaceResult} from '@/utils/data';
 import {clsx, type ClassValue} from 'clsx';
 import {twMerge} from 'tailwind-merge';
 
@@ -33,14 +34,7 @@ export const formatDateAndTime = (date: Date) =>
 		second: 'numeric'
 	});
 
-// Prediction API
-export type FaceResult = {
-	label: string[] | string;
-	score: string[] | number;
-	image: string;
-};
-
-export const predictFace = async (faceBlob: Blob[]) => {
+export const predictFaces = async (faceBlob: Blob[]) => {
 	const faceBase64s = await Promise.all(
 		faceBlob.map(async (blob) => await convertBlobToBase64(blob))
 	);
@@ -57,7 +51,11 @@ export const predictFace = async (faceBlob: Blob[]) => {
 		})
 	});
 	const resJson = await res.json();
-	const parsedJson = JSON.parse(resJson.data.replace(/nan/gi, 'null').replace(/None/g, 'null'));
-	const predictResults = parsedJson.predictResults as FaceResult;
-	return predictResults;
+	console.log(resJson);
+	const parsedJson = JSON.parse(
+		JSON.stringify(resJson).replace(/nan/gi, 'null').replace(/None/g, 'null')
+	);
+	const parsedData = parsedJson.data as FaceResult;
+
+	return parsedData;
 };

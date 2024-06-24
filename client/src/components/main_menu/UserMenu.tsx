@@ -22,11 +22,7 @@ export const UserMenu = () => {
 	const navigate = useNavigate();
 	const {colorMode} = useColorMode();
 	const {appState, appDispatch} = useAppContext();
-	const {
-		handleOpenExistingPeerConnection,
-		handleCloseExistingPeerConnection,
-		handleCloseNormalCamera
-	} = appState;
+	const {user, handleCloseExistingPeerConnection} = appState;
 	const [hasUserRecords, setHasUserRecords] = useState<boolean>(false);
 	const toast = useToast();
 
@@ -46,12 +42,15 @@ export const UserMenu = () => {
 	};
 
 	useEffect(() => {
-		setHasUserRecords(checkIfHasUserRecords());
+		const checkUserRecords = async () => {
+			const mHasUserRecords = await checkIfHasUserRecords();
+			setHasUserRecords(mHasUserRecords);
+		};
+		checkUserRecords();
 	}, []);
 
 	const handleRentClick = () => {
 		handleCloseExistingPeerConnection();
-		appDispatch({type: 'SET_VIDEO_MODE', payload: 'item'});
 		navigate(paths.main.rent);
 	};
 
@@ -67,7 +66,6 @@ export const UserMenu = () => {
 			return;
 		}
 		handleCloseExistingPeerConnection();
-		appDispatch({type: 'SET_VIDEO_MODE', payload: 'item'});
 		navigate(paths.main.return);
 	};
 
@@ -78,8 +76,6 @@ export const UserMenu = () => {
 
 	const handleLogout = () => {
 		appDispatch({type: 'SET_USER', payload: null});
-		handleCloseNormalCamera();
-		handleOpenExistingPeerConnection();
 	};
 
 	return (
@@ -100,14 +96,10 @@ export const UserMenu = () => {
 					<Box display={'inline-block'}>{colorMode == 'dark' ? <Moon /> : <Sun />}</Box>
 				</HStack>
 				<Flex width={'100%'} alignItems={'center'}>
-					{/* TODO: Replace with user name*/}
 					<VStack alignItems={'flex-start'}>
 						<Heading size={'lg'} maxW={'14em'} overflow={'hidden'}>
-							Brian
+							{user?.name}
 						</Heading>
-						<Text fontSize={'sm'} p={0}>
-							Balance: 0
-						</Text>
 					</VStack>
 					<Spacer />
 					<HStack>
@@ -119,6 +111,10 @@ export const UserMenu = () => {
 						</Button>
 					</HStack>
 				</Flex>
+				<HStack>
+					<Button variant={'outline'}>Edit Profile</Button>
+					<Button variant={'outline'}>Unsettled rentals</Button>
+				</HStack>
 				<HStack justifyContent={'flex-start'} paddingY={5} width={'100%'}>
 					{/* TODO If user type */}
 					<LargeIconButton

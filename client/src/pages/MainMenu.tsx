@@ -2,13 +2,64 @@ import {FaceLogin} from '@/components/main_menu/FaceLogin';
 import {PublicMenu} from '@/components/main_menu/PublicMenu';
 import {UserMenu} from '@/components/main_menu/UserMenu';
 import {Camera} from '@/components/ui/Camera/Camera';
+import {getUser} from '@/db/user';
 import {useAppContext} from '@/utils/context/AppContext';
+import {User} from '@/utils/data';
+import {predictFaces} from '@/utils/utils';
 import {Box, Center, Flex, Image} from '@chakra-ui/react';
+import {useEffect, useState} from 'react';
 import {Helmet} from 'react-helmet-async';
 
+const face_conf_threshold = 0.9;
+
 export function MainMenu() {
-	const {appState} = useAppContext();
-	const {user, detectedUser, detectedUserImageURL} = appState;
+	const {appState, appDispatch} = useAppContext();
+	const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+	const {user, detectedUser, detectedUserImageURL, mediaStreams} = appState;
+
+	useEffect(() => {
+		const handlePredictFace = async (
+			streams: MediaStream[],
+			detectedUser: User | null,
+			detectedUserImageURL: string | null
+		) => {
+			if (user) return;
+			console.log(!detectedUser, !detectedUserImageURL, !intervalId);
+			if (!detectedUser && !detectedUserImageURL && !intervalId) {
+				// Predict faces heartbeat
+				const id = setInterval(async () => {
+					const imageCapture = new ImageCapture(streams[0].getVideoTracks()[0]);
+					const photoBlob = await imageCapture.takePhoto().then((blob) => {
+						return blob;
+					});
+
+					const parsedResult = await predictFaces([photoBlob]);
+					const {labels, scores} = parsedResult;
+
+					const predictedUser = await getUser(labels[0]);
+					if (predictedUser && scores[0] > face_conf_threshold) {
+						appDispatch({type: 'SET_DETECTED_USER', payload: predictedUser});
+						const currPhotoURL = URL.createObjectURL(photoBlob);
+						appDispatch({type: 'SET_DETECTED_USER_IMAGE_URL', payload: currPhotoURL});
+					}
+				}, 3000);
+				setIntervalId(id);
+			} else if (detectedUser && intervalId) {
+				clearInterval(intervalId);
+				setIntervalId(null);
+			}
+		};
+
+		if (!mediaStreams?.length) return;
+
+		handlePredictFace(mediaStreams, detectedUser, detectedUserImageURL);
+	}, [mediaStreams, detectedUser, detectedUserImageURL, intervalId, user]);
+
+	// useEffect(() => {
+	// 	if (detectedUser && intervalId) {
+	// 		clearInterval(intervalId);
+	// 	}
+	// }, [detectedUser, intervalId]);
 
 	return (
 		<>
@@ -20,8 +71,6 @@ export function MainMenu() {
 					<Center w={'100%'} h={'100%'}>
 						<Image src={detectedUserImageURL as string} alt={'Detected user'} />
 					</Center>
-				) : user ? (
-					<Camera videoId='mainMenuNormalCamera' mode={'face'} useNormalMode />
 				) : (
 					<Camera videoId='mainMenuCamera' mode={'face'} />
 				)}

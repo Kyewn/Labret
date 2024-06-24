@@ -1,7 +1,4 @@
-import {getUser} from '@/db/user';
 import {useAppContext} from '@/utils/context/AppContext';
-import {User} from '@/utils/data';
-import {FaceResult} from '@/utils/utils';
 import {Box, Center, Heading, Icon, Skeleton, Text, useToast} from '@chakra-ui/react';
 import '@fontsource/fredoka-one/400.css';
 import '@fontsource/roboto/400.css';
@@ -26,14 +23,10 @@ export const Camera: React.FC<{
 	centerBox?: CenterBoxProps;
 }> = ({videoId, mode, useNormalMode, mediaResolution, centerBox, className}) => {
 	const [videoState, setVideoState] = useState(true);
-	const [localDataChannel, setLocalDataChannel] = useState<RTCDataChannel | null>(null);
-	const [mDetectedUser, setmDetectedUser] = useState<User | null>(null);
-	const [mDetectedUserImageURL, setmDetectedUserImageURL] = useState<string | null>(null);
-
 	const isInit = useRef(false);
 	const toast = useToast();
 	const {appState, appDispatch} = useAppContext();
-	const {detectedUser, detectedUserImageURL, mediaStreams, videoLoading} = appState;
+	const {mediaStreams, videoLoading} = appState;
 
 	const createPeerConnection = async () => {
 		const peerConnection = new RTCPeerConnection();
@@ -109,15 +102,6 @@ export const Camera: React.FC<{
 	const initializeCameraRTC = async () => {
 		appDispatch({type: 'SET_VIDEO_LOADING', payload: true});
 		const peerConnection = await createPeerConnection();
-		const dataChannel = peerConnection.createDataChannel('faceData', {
-			ordered: true,
-			maxPacketLifeTime: 0
-		});
-
-		dataChannel.onerror = (error) => console.log(error);
-		dataChannel.onbufferedamountlow = (ev) => console.log(ev);
-		console.log('start');
-		setLocalDataChannel(dataChannel);
 
 		try {
 			const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -138,12 +122,6 @@ export const Camera: React.FC<{
 
 			const handleClosePC = () => {
 				// Close peer connection associations
-				if (dataChannel) {
-					// Close data channel
-					dataChannel.close();
-					setLocalDataChannel(null);
-				}
-
 				// close transceivers
 				if (peerConnection.getTransceivers) {
 					peerConnection.getTransceivers().forEach(function (transceiver) {
@@ -174,52 +152,6 @@ export const Camera: React.FC<{
 		}
 		appDispatch({type: 'SET_VIDEO_LOADING', payload: false});
 	};
-
-	useEffect(() => {
-		console.log('redo');
-		const handleResult = async (event: MessageEvent, mUser: User | null, mURL: string | null) => {
-			// FIXME: To finetune
-			const face_conf_threshold = 0.95;
-
-			console.log('looping');
-
-			// FIXME: Never update states
-			if (mUser && mURL) return;
-			console.log('looping1');
-
-			const json = event.data;
-			const parsedJson = JSON.parse(
-				(json as string).replace(/nan/gi, 'null').replace(/None/g, 'null')
-			);
-			const {label, score} = parsedJson.data as FaceResult;
-			// const {label, image: detectedImage} = parsedJson.data as FaceResult;
-			const user = await getUser(label as string);
-
-			// Get saved predicted image from server
-			const userImage = await fetch('http://localhost:8000/get-predicted-face').then((res) =>
-				res.blob()
-			);
-			const userImageURL = URL.createObjectURL(userImage);
-			if ((score as number) >= face_conf_threshold) {
-				console.log('hit');
-				setmDetectedUser(user);
-				setmDetectedUserImageURL(userImageURL);
-			}
-		};
-		// When required resources ready
-		console.log(localDataChannel);
-		if (localDataChannel) {
-			localDataChannel.onmessage = (event) =>
-				handleResult(event, detectedUser, detectedUserImageURL);
-		}
-	}, [localDataChannel, detectedUser, detectedUserImageURL]);
-
-	useEffect(() => {
-		if (mDetectedUser && mDetectedUserImageURL) {
-			appDispatch({type: 'SET_DETECTED_USER', payload: mDetectedUser});
-			appDispatch({type: 'SET_DETECTED_USER_IMAGE_URL', payload: mDetectedUserImageURL});
-		}
-	}, [mDetectedUser, mDetectedUserImageURL]);
 
 	useEffect(() => {
 		if (useNormalMode) return;

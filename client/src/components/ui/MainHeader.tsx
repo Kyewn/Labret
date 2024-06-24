@@ -102,7 +102,7 @@ const MainHeader: React.FC = () => {
 				}
 				height={'10%'}
 			>
-				<Link to={paths.main.root} onClick={handleCloseMainMenuCamera}>
+				<Link style={{width: 'auto'}} to={paths.main.root} onClick={handleCloseMainMenuCamera}>
 					<LabretIcon w={150} h={'unset'} fill={colorMode == 'dark' ? 'white' : 'black'} />
 				</Link>
 				<Spacer />
