@@ -51,7 +51,6 @@ export const predictFaces = async (faceBlob: Blob[]) => {
 		})
 	});
 	const resJson = await res.json();
-	console.log(resJson);
 	const parsedJson = JSON.parse(
 		JSON.stringify(resJson).replace(/nan/gi, 'null').replace(/None/g, 'null')
 	);

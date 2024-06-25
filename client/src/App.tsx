@@ -34,8 +34,8 @@ import {MainMenu} from './pages/MainMenu';
 function AuthCheck() {
 	const {appState} = useAppContext();
 	const {user} = appState;
-	const hasUser = !!Object.entries(user || {}).length; //FIXME: Correct format, change to this after development
-	// const hasUser = !Object.entries(user || {}).length;
+	// const hasUser = !!Object.entries(user || {}).length; //FIXME: Correct format, change to this after development
+	const hasUser = !Object.entries(user || {}).length;
 
 	if (!hasUser) {
 		return <Navigate to={paths.main.root} />;

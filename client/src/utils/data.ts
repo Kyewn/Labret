@@ -7,7 +7,7 @@ export type AddUserFormValues = {
 	email: string;
 };
 
-export type NewRentedItemFormValues = {
+export type NewRentingItemFormValues = {
 	item?: Item;
 	rentQuantity?: number;
 };
@@ -46,24 +46,24 @@ export type Item = {
 	itemId: string;
 	itemName: string;
 	itemImages: string;
-	itemQuantity?: string | number; // Referenced by rented item and should be opt in
+	itemQuantity: string | number;
 	itemCategory?: string;
 	itemDescription?: string;
 	createdAt?: string | Date;
 	createdBy?: string;
 };
 
-export type RentedItem = {
+export type RentingItem = {
 	item: Item;
 	rentQuantity: string | number;
-	proofOfReturn?: string;
+	proofOfReturn?: string | Blob;
 };
 
 export type RentalRecord = {
 	recordId: string;
 	recordTitle: string;
 	renterId: string | number;
-	rentedItems: RentedItem[];
+	rentingItems: RentingItem[];
 	rentImages: string[];
 	notes: string;
 	rentStatus: string;
@@ -75,7 +75,7 @@ export type RentalRecord = {
 
 export type Verification = {
 	verificationId: string;
-	rentId: string;
+	recordId: string; // Rental record id
 	verificationType: string;
 	verificationStatus: string;
 	createdAt: string | Date;
@@ -96,11 +96,11 @@ export const mapUserStatus = (status: string) => {
 	}
 };
 
-export type FormValues = AddUserFormValues | UserInfoValues | NewRentedItemFormValues;
+export type FormValues = AddUserFormValues | UserInfoValues | NewRentingItemFormValues;
 export type FormKeys =
 	| keyof AddUserFormValues
 	| keyof UserInfoValues
-	| keyof NewRentedItemFormValues;
+	| keyof NewRentingItemFormValues;
 export type TableData = User;
 
 // Others

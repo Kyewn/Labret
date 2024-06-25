@@ -1,6 +1,6 @@
 import {ComboBox} from '@/components/ui/ComboBox';
 import {EditableNumberInput} from '@/components/ui/EditableNumberInput';
-import {FormValues, NewRentedItemFormValues, RentedItem} from '@/utils/data';
+import {FormValues, NewRentingItemFormValues, RentingItem} from '@/utils/data';
 
 import {
 	Button,
@@ -20,11 +20,11 @@ import {UseFormRegister, useForm} from 'react-hook-form';
 
 export const NewItemInfoModal: React.FC<{
 	title: string;
-	selectedItem?: RentedItem;
+	selectedItem?: RentingItem;
 	disclosure: ReturnType<typeof useDisclosure>;
-	handleConfirmNewItemInfo?: (item: RentedItem) => void;
+	handleConfirmNewItemInfo?: (item: RentingItem) => void;
 }> = ({title, selectedItem, disclosure, handleConfirmNewItemInfo}) => {
-	const items: RentedItem[] = [
+	const items: RentingItem[] = [
 		{
 			item: {
 				itemId: '1',
@@ -66,7 +66,7 @@ export const NewItemInfoModal: React.FC<{
 		}
 	];
 	const {isOpen, onClose} = disclosure;
-	const {watch, register, setValue} = useForm<NewRentedItemFormValues>();
+	const {watch, register, setValue} = useForm<NewRentingItemFormValues>();
 	const {item, rentQuantity} = watch();
 
 	return (
