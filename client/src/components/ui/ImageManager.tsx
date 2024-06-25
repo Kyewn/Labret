@@ -28,9 +28,16 @@ import {useState} from 'react';
 type Props = {
 	specifiedImages?: Blob[];
 	isRemovable?: boolean;
+	currPreviewIndex?: number;
+	handlePreviewClick?: (index: number) => void;
 };
 
-const ImageManager: React.FC<Props> = ({specifiedImages, isRemovable}) => {
+const ImageManager: React.FC<Props> = ({
+	specifiedImages,
+	currPreviewIndex,
+	isRemovable,
+	handlePreviewClick
+}) => {
 	const scanContext = useScanContext();
 	const registerContext = useRegisterContext();
 	const {imagesState, handleRemoveImage} = registerContext || scanContext || {};
@@ -44,16 +51,52 @@ const ImageManager: React.FC<Props> = ({specifiedImages, isRemovable}) => {
 		onClose: onConfirmModalClose
 	} = useDisclosure(); // Confirmation modal
 
-	const renderPreviewImages = () =>
-		images.slice(0, 5).map((image, index) => (
+	const renderPreviewImages = () => {
+		if (currPreviewIndex != undefined || currPreviewIndex != null) {
+			const currPageNum = Math.trunc(currPreviewIndex / 5);
+			const parsedPreviewIndex = currPreviewIndex % 5;
+
+			return images.slice(currPageNum * 5, currPageNum * 5 + 5).map((image, index) => (
+				<Box position={'relative'} key={`list-${index}`}>
+					<img
+						src={URL.createObjectURL(image)}
+						alt={`Image ${index}`}
+						style={{
+							cursor: 'pointer',
+							border:
+								parsedPreviewIndex == index
+									? '3px solid var(--chakra-colors-lrRed-200)'
+									: '1px solid var(--chakra-colors-lrBrown-700)',
+							objectFit: 'cover',
+							width: 100,
+							height: 100
+						}}
+						onClick={() => {
+							setViewingImage(image);
+							onOpen();
+							handlePreviewClick?.(index);
+						}}
+					/>
+					{isRemovable && (
+						<IconButton
+							variant={'criticalItemIconButton'}
+							isRound
+							aria-label='Delete item'
+							icon={<Trash />}
+							onClick={() => handleRemoveImage?.(index)}
+						/>
+					)}
+				</Box>
+			));
+		}
+		return images.slice(0, 5).map((image, index) => (
 			<Box position={'relative'} key={`list-${index}`}>
 				<img
 					src={URL.createObjectURL(image)}
 					alt={`Image ${index}`}
 					style={{
 						cursor: 'pointer',
-						border: '1px solid',
-						borderColor: 'var(--chakra-colors-lrBrown-700)',
+						border: '1px solid var(--chakra-colors-lrBrown-700)',
 						objectFit: 'cover',
 						width: 100,
 						height: 100
@@ -74,6 +117,7 @@ const ImageManager: React.FC<Props> = ({specifiedImages, isRemovable}) => {
 				)}
 			</Box>
 		));
+	};
 	const renderAllImages = () => (
 		<Grid gridTemplateColumns={'repeat(5, 100px)'} gap={5}>
 			{images.map((image, index) => (

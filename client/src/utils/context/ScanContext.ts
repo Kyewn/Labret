@@ -1,20 +1,23 @@
-import {RentalRecord} from '@/utils/data';
-import {useSteps} from '@chakra-ui/react';
+import {RentalRecord, RentingItem} from '@/utils/data';
+import {useDisclosure, useSteps} from '@chakra-ui/react';
 import {createContext, useContext, useState} from 'react';
 
 const steps = [
 	{
-		title: 'Acquire Image'
+		title: 'Edit items'
 	},
 	{
-		title: 'Registration Form'
+		title: 'Rent Form'
 	}
 ];
 
 export const useInitialScanContext = () => {
-	const imagesState = useState<Blob[]>([]);
-	const returningRecordState = useState<RentalRecord | undefined>(undefined);
 	const {activeStep, goToNext, goToPrevious} = useSteps({count: steps.length});
+	const imagesState = useState<Blob[]>([]);
+	const selectedItemState = useState<RentingItem | null>(null);
+	const returningRecordState = useState<RentalRecord | undefined>(undefined);
+	const {isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose} = useDisclosure();
+	const {isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose} = useDisclosure();
 	const [images, setImages] = imagesState;
 
 	const handleRemoveImage = (index: number) => {
@@ -22,14 +25,27 @@ export const useInitialScanContext = () => {
 		setImages(newImages);
 	};
 
+	const handleDeleteRentingItem = (index: number) => {};
+
+	const handleEditRentingItem = (index: number) => {};
+
 	return {
 		imagesState,
+		selectedItemState,
 		returningRecordState,
 		activeStep,
 		steps,
+		isEditOpen,
+		onEditOpen,
+		onEditClose,
+		isDeleteOpen,
+		onDeleteOpen,
+		onDeleteClose,
 		goToNext,
 		goToPrevious,
-		handleRemoveImage
+		handleRemoveImage,
+		handleEditRentingItem,
+		handleDeleteRentingItem
 	};
 };
 
