@@ -14,7 +14,7 @@ predict = Blueprint('predict', __name__)
 serverPath = pathlib.Path(os.path.dirname(os.path.dirname(__file__)))
 predictDirPath = serverPath / "predict"
 
-face_conf_threshold = 0.9
+face_conf_threshold = 0.7
 
 @predict.route('/predict-face', methods=['POST'])
 def predict_face_api():
