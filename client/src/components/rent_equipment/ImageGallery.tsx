@@ -1,27 +1,42 @@
 import ImageManager from '@/components/ui/ImageManager';
 import {Box, Flex, HStack, IconButton, Image, VStack} from '@chakra-ui/react';
 import {ChevronLeft, ChevronRight} from 'lucide-react';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
 type Props = {
 	images: Blob[];
+	handlePreviewChange?: (index: number) => void;
 };
 
-export const ImageGallery: React.FC<Props> = ({images}) => {
+export const ImageGallery: React.FC<Props> = ({images, handlePreviewChange}) => {
 	const [imageIndex, setImageIndex] = useState(0);
+	const [currPage, setCurrPage] = useState(0);
 	const imageUrls = images.map((image) => URL.createObjectURL(image));
 
 	const handleNextPreview = () => {
 		setImageIndex((prev) => {
-			return prev + 1;
+			const newVal = prev + 1 > imageUrls.length - 1 ? imageUrls.length - 1 : prev + 1;
+			handlePreviewChange?.(newVal);
+			return newVal;
 		});
 	};
 
 	const handlePrevPreview = () => {
 		setImageIndex((prev) => {
-			return prev - 1;
+			const newVal = prev - 1 < 0 ? 0 : prev - 1;
+			handlePreviewChange?.(newVal);
+			return newVal;
 		});
 	};
+
+	const handlePreviewClick = (index: number) => {
+		setImageIndex(currPage * 5 + index);
+		handlePreviewChange?.(index);
+	};
+
+	useEffect(() => {
+		setCurrPage(Math.floor(imageIndex / 5));
+	}, [imageIndex]);
 
 	return (
 		<VStack flex={1} p={5}>
@@ -37,7 +52,11 @@ export const ImageGallery: React.FC<Props> = ({images}) => {
 					/>
 				</Flex>
 				<Box flex={1}>
-					<ImageManager specifiedImages={images} currPreviewIndex={imageIndex} />
+					<ImageManager
+						specifiedImages={images}
+						currPreviewIndex={imageIndex}
+						handlePreviewClick={handlePreviewClick}
+					/>
 				</Box>
 				<Flex>
 					<IconButton

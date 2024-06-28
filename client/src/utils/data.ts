@@ -9,7 +9,7 @@ export type AddUserFormValues = {
 
 export type NewRentingItemFormValues = {
 	item?: Item;
-	rentQuantity?: number;
+	rentQuantity?: string | number;
 };
 
 // Table record info
@@ -45,7 +45,7 @@ export type UserEditableFields = {
 export type Item = {
 	itemId: string;
 	itemName: string;
-	itemImages: string;
+	itemImages: string[];
 	itemQuantity: string | number;
 	itemCategory?: string;
 	itemDescription?: string;
