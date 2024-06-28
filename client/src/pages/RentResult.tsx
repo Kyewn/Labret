@@ -1,13 +1,30 @@
+import {EditScanResult} from '@/components/rent_equipment/EditScanResult';
 import {ImageGallery} from '@/components/rent_equipment/ImageGallery';
-import {ScannedItem} from '@/components/rent_equipment/ScannedItem';
+import {RentForm} from '@/components/rent_equipment/RentForm';
 import {useAppContext} from '@/utils/context/AppContext';
 import {ScanContext, useInitialScanContext} from '@/utils/context/ScanContext';
 import {RentingItem} from '@/utils/data';
-import {Button, Flex, Heading, Spacer, Text, VStack} from '@chakra-ui/react';
+import {
+	Box,
+	Flex,
+	Heading,
+	Spacer,
+	Step,
+	StepIcon,
+	StepIndicator,
+	StepNumber,
+	StepSeparator,
+	StepStatus,
+	StepTitle,
+	Stepper,
+	Text
+} from '@chakra-ui/react';
+import {useEffect} from 'react';
 import {Helmet} from 'react-helmet-async';
 import {useLocation} from 'react-router-dom';
 
 type LocationState = {
+	scanResult: RentingItem[];
 	images: Blob[];
 };
 
@@ -15,26 +32,16 @@ export function RentResult() {
 	const {appState} = useAppContext();
 	const location = useLocation();
 	const scanContext = useInitialScanContext() as ReturnType<typeof useInitialScanContext>;
-	const {
-		activeStep,
-		goToNext,
-		goToPrevious,
-		selectedItemState,
-		isEditOpen,
-		isDeleteOpen,
-		onEditOpen,
-		onDeleteOpen
-	} = scanContext;
 	const {user} = appState;
-	const [selectedItem, setSelectedItem] = selectedItemState;
-	const {images} = location.state as LocationState;
-
+	const {images, scanResult} = location.state as LocationState;
+	const {steps, activeStep, scanResultState} = scanContext;
+	const [, setNewScanResult] = scanResultState;
 	const dummyItems: RentingItem[] = [
 		{
 			item: {
 				itemId: 'ABC123',
 				itemName: 'Beaker',
-				itemImages: '',
+				itemImages: [],
 				itemQuantity: 123
 			},
 			rentQuantity: 2
@@ -43,7 +50,7 @@ export function RentResult() {
 			item: {
 				itemId: 'AC123',
 				itemName: 'Balls',
-				itemImages: '',
+				itemImages: [],
 				itemQuantity: 1223
 			},
 			rentQuantity: 5
@@ -52,27 +59,18 @@ export function RentResult() {
 			item: {
 				itemId: 'A1333',
 				itemName: 'Cups',
-				itemImages: '',
+				itemImages: [],
 				itemQuantity: 12
 			},
 			rentQuantity: 3
 		}
 	];
 
-	const renderItemResult = () =>
-		// FIXME: Change to actual items after development
-		dummyItems.map((rentingItem) => {
-			return (
-				<ScannedItem
-					itemInfo={rentingItem}
-					onOpenEditItem={() => {
-						setSelectedItem(rentingItem);
-						onEditOpen();
-					}}
-					onDeleteItem={onDeleteOpen}
-				/>
-			);
-		});
+	useEffect(() => {
+		// FIXME:
+		// setNewScanResult(scanResult);
+		setNewScanResult(dummyItems);
+	}, []);
 
 	return (
 		<>
@@ -92,18 +90,30 @@ export function RentResult() {
 							<Spacer />
 							<Text>{user?.name || 'Brian'}</Text>
 						</Flex>
+						<Flex />
+						<Flex>
+							<Stepper index={activeStep} flex={0.5}>
+								{steps.map((step, index) => (
+									<Step key={index}>
+										<StepIndicator>
+											<StepStatus
+												complete={<StepIcon />}
+												incomplete={<StepNumber />}
+												active={<StepNumber />}
+											/>
+										</StepIndicator>
 
-						<Flex w={'100%'} paddingY={3}>
-							<Text>Item Listing</Text>
+										<Box flexShrink='0'>
+											<StepTitle>{step.title}</StepTitle>
+										</Box>
+
+										<StepSeparator />
+									</Step>
+								))}
+							</Stepper>
 						</Flex>
-
-						<VStack overflowY={'auto'} flex={1} w={'100%'}>
-							{renderItemResult()}
-						</VStack>
-
-						<Flex w={'100%'} justifyContent={'flex-end'} paddingY={5}>
-							<Button> Next</Button>
-						</Flex>
+						{activeStep == 0 && <EditScanResult />}
+						{activeStep == 1 && <RentForm />}
 					</Flex>
 				</Flex>
 			</ScanContext.Provider>
