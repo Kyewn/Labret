@@ -10,7 +10,7 @@ import {Box, Center, Flex, Image} from '@chakra-ui/react';
 import {useEffect, useState} from 'react';
 import {Helmet} from 'react-helmet-async';
 
-const face_conf_threshold = 0.9;
+const face_conf_threshold = 0.7;
 
 export function MainMenu() {
 	const {appState, appDispatch} = useAppContext();
@@ -24,7 +24,6 @@ export function MainMenu() {
 			detectedUserImageURL: string | null
 		) => {
 			if (user) return;
-			console.log(!detectedUser, !detectedUserImageURL, !intervalId);
 			if (!detectedUser && !detectedUserImageURL && !intervalId) {
 				// Predict faces heartbeat
 				const id = setInterval(async () => {
@@ -34,7 +33,10 @@ export function MainMenu() {
 					});
 
 					const parsedResult = await predictFaces([photoBlob]);
+
 					const {labels, scores} = parsedResult;
+
+					if (!labels.length) return;
 
 					const predictedUser = await getUser(labels[0]);
 					if (predictedUser && scores[0] > face_conf_threshold) {
