@@ -209,26 +209,6 @@ const NumberInput = createMultiStyleConfigHelpers(numberInputAnatomy.keys).defin
 	}
 });
 
-const List = createMultiStyleConfigHelpers(listAnatomy.keys).defineMultiStyleConfig({
-	baseStyle: {
-		item: {
-			paddingX: 10,
-			paddingY: 5,
-			cursor: 'pointer',
-			_hover: {
-				backgroundColor: 'lrBrown.700',
-				color: 'whiteDarkMode'
-			},
-			_active: {
-				backgroundColor: 'lrBrown.400'
-			},
-			_focus: {
-				outline: 'none'
-			}
-		}
-	}
-});
-
 const Menu = createMultiStyleConfigHelpers(menuAnatomy.keys).defineMultiStyleConfig({
 	baseStyle: {
 		list: {
@@ -262,6 +242,26 @@ const Stepper = createMultiStyleConfigHelpers(stepperAnatomy.keys).defineMultiSt
 		separator: {
 			'&[data-status=complete]': {
 				backgroundColor: 'lrBrown.700'
+			}
+		}
+	}
+});
+
+export const CardList = createMultiStyleConfigHelpers(listAnatomy.keys).defineMultiStyleConfig({
+	baseStyle: {
+		item: {
+			paddingX: 10,
+			paddingY: 5,
+			cursor: 'pointer',
+			_hover: {
+				backgroundColor: 'lrBrown.700',
+				color: 'whiteDarkMode'
+			},
+			_active: {
+				backgroundColor: 'lrBrown.400'
+			},
+			_focus: {
+				outline: 'none'
 			}
 		}
 	}
@@ -346,8 +346,6 @@ export const themes = extendTheme({
 		Input,
 		NumberInput,
 		Menu,
-		List,
 		Stepper
-		// Table,
 	}
 });

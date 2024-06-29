@@ -12,6 +12,13 @@ export type NewRentingItemFormValues = {
 	rentQuantity?: string | number;
 };
 
+export type NewRentFormValues = {
+	recordTitle?: string;
+	recordNotes?: string;
+	recordReturnDate?: Date;
+	isReadTnC?: boolean;
+};
+
 // Table record info
 export type UserInfoValues = {
 	name?: string;
@@ -68,9 +75,11 @@ export type RentalRecord = {
 	notes: string;
 	rentStatus: string;
 	rentedAt: string | Date;
+	expectedReturnedAt?: string | Date;
 	returnedAt?: string | Date;
 	returnImages?: Record<string, unknown>[];
 	returnLocation?: string;
+	unpaidAmount?: number;
 };
 
 export type Verification = {
@@ -96,11 +105,16 @@ export const mapUserStatus = (status: string) => {
 	}
 };
 
-export type FormValues = AddUserFormValues | UserInfoValues | NewRentingItemFormValues;
+export type FormValues =
+	| AddUserFormValues
+	| UserInfoValues
+	| NewRentingItemFormValues
+	| NewRentFormValues;
 export type FormKeys =
 	| keyof AddUserFormValues
 	| keyof UserInfoValues
-	| keyof NewRentingItemFormValues;
+	| keyof NewRentingItemFormValues
+	| keyof NewRentFormValues;
 export type TableData = User;
 
 // Others

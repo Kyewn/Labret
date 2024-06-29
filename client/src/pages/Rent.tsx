@@ -37,7 +37,7 @@ export function Rent() {
 			</Box>
 			<ScanContext.Provider value={initialScanContext}>
 				<Flex flexDirection={'column'} flex={0.4} p={6}>
-					<VisionScanner backLabel='Add Rental' handleScan={handleScan} />
+					<VisionScanner backLabel='Add Rent' handleScan={handleScan} />
 				</Flex>
 			</ScanContext.Provider>
 		</>
