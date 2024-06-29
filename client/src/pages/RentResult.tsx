@@ -85,7 +85,7 @@ export function RentResult() {
 					<Flex flex={0.5} flexDirection={'column'} paddingX={5}>
 						<Flex w={'100%'} alignItems={'center'}>
 							<Heading fontSize={'1.5rem'} paddingY={5}>
-								Scan result
+								New Rent
 							</Heading>
 							<Spacer />
 							<Text>{user?.name || 'Brian'}</Text>

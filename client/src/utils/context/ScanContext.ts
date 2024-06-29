@@ -1,6 +1,7 @@
-import {RentalRecord, RentingItem} from '@/utils/data';
+import {useAppContext} from '@/utils/context/AppContext';
+import {NewRentFormValues, RentalRecord, RentingItem} from '@/utils/data';
 import {useDisclosure, useSteps} from '@chakra-ui/react';
-import {createContext, useContext, useEffect, useState} from 'react';
+import {createContext, useContext, useState} from 'react';
 
 const steps = [
 	{
@@ -12,6 +13,9 @@ const steps = [
 ];
 
 export const useInitialScanContext = () => {
+	const {
+		appState: {user}
+	} = useAppContext();
 	const {activeStep, goToNext, goToPrevious} = useSteps({count: steps.length});
 	const scanResultState = useState<RentingItem[] | null>(null);
 	const imagesState = useState<Blob[]>([]);
@@ -26,7 +30,7 @@ export const useInitialScanContext = () => {
 	const imageProofDisclosure = useDisclosure();
 
 	const [images, setImages] = imagesState;
-	const [dirtyForm, setIsDirtyForm] = dirtyFormState;
+	const [, setIsDirtyForm] = dirtyFormState;
 
 	const handleRemoveImage = (index: number) => {
 		const newImages = images.filter((_, i) => i !== index);
@@ -82,9 +86,19 @@ export const useInitialScanContext = () => {
 		setIsDirtyForm(true);
 	};
 
-	useEffect(() => {
-		console.log(dirtyForm);
-	});
+	const handleAddRent = ({
+		recordTitle,
+		recordNotes,
+		recordReturnDate,
+		isReadTnC
+	}: NewRentFormValues) => {
+		// Only after isReadTnC is true
+
+		// Validate inputs
+		// Check item count does not subtract beyond 0
+
+		console.log(recordTitle, recordNotes, recordReturnDate, isReadTnC);
+	};
 
 	return {
 		activeStep,
@@ -106,7 +120,8 @@ export const useInitialScanContext = () => {
 		handleRemoveImage,
 		handleAddConfirm,
 		handleEditConfirm,
-		handleDeleteConfirm
+		handleDeleteConfirm,
+		handleAddRent
 	};
 };
 

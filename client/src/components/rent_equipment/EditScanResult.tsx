@@ -73,7 +73,7 @@ export const EditScanResult: React.FC = () => {
 			/>
 
 			<Flex w={'100%'} paddingY={5} alignItems={'center'}>
-				<Text>Item Listing</Text>
+				<Text fontWeight={700}>Scan results</Text>
 				<Spacer />
 				<Button onClick={onAddOpen}>Add Item</Button>
 			</Flex>
