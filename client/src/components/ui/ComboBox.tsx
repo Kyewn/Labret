@@ -54,7 +54,7 @@ export const ComboBox: <T extends Record<string, unknown>>(props: Props<T>) => J
 	return (
 		<Menu>
 			{({isOpen}) => {
-				if (!isOpen) {
+				if (!isOpen && searchText) {
 					// Handle selection on popper close
 					const existingItemLabel = items?.find(
 						(item) =>
@@ -63,8 +63,8 @@ export const ComboBox: <T extends Record<string, unknown>>(props: Props<T>) => J
 					if (existingItemLabel) {
 						setValue?.(name, existingItemLabel);
 						handleChange?.(existingItemLabel);
-						setSearchText('');
 					}
+					setSearchText('');
 				}
 
 				return (
@@ -79,7 +79,7 @@ export const ComboBox: <T extends Record<string, unknown>>(props: Props<T>) => J
 								onChange={(e) => {
 									setSearchText(e.target.value);
 								}}
-								placeholder={placeholder || 'Create or search...'}
+								placeholder={placeholder || 'Search...'}
 								mb={2}
 							/>
 							<VStack>{renderItems()}</VStack>

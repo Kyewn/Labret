@@ -1,6 +1,7 @@
 import {ComboBox} from '@/components/ui/ComboBox';
 import {EditableNumberInput} from '@/components/ui/EditableNumberInput';
-import {FormValues, NewRentedItemFormValues, RentedItem} from '@/utils/data';
+import {useInitialScanContext, useScanContext} from '@/utils/context/ScanContext';
+import {FormValues, Item, NewRentingItemFormValues, RentingItem} from '@/utils/data';
 
 import {
 	Button,
@@ -12,24 +13,24 @@ import {
 	ModalContent,
 	ModalOverlay,
 	Spacer,
-	VStack,
-	useDisclosure
+	Text,
+	VStack
 } from '@chakra-ui/react';
 import {Check, X} from 'lucide-react';
+import {useEffect} from 'react';
 import {UseFormRegister, useForm} from 'react-hook-form';
 
-export const NewItemInfoModal: React.FC<{
+export const AddRentingItemModal: React.FC<{
 	title: string;
-	selectedItem?: RentedItem;
-	disclosure: ReturnType<typeof useDisclosure>;
-	handleConfirmNewItemInfo?: (item: RentedItem) => void;
-}> = ({title, selectedItem, disclosure, handleConfirmNewItemInfo}) => {
-	const items: RentedItem[] = [
+	handleConfirm?: (item: RentingItem) => void;
+}> = ({title, handleConfirm}) => {
+	// FIXME: Fetch from db
+	const items: RentingItem[] = [
 		{
 			item: {
 				itemId: '1',
 				itemName: 'item1',
-				itemImages: '',
+				itemImages: [],
 				itemQuantity: 0,
 				itemCategory: undefined,
 				itemDescription: undefined,
@@ -42,7 +43,7 @@ export const NewItemInfoModal: React.FC<{
 			item: {
 				itemId: '2',
 				itemName: 'item2',
-				itemImages: '',
+				itemImages: [],
 				itemQuantity: 0,
 				itemCategory: undefined,
 				itemDescription: undefined,
@@ -55,7 +56,7 @@ export const NewItemInfoModal: React.FC<{
 			item: {
 				itemId: '3',
 				itemName: 'item3',
-				itemImages: '',
+				itemImages: [],
 				itemQuantity: 0,
 				itemCategory: undefined,
 				itemDescription: undefined,
@@ -65,12 +66,30 @@ export const NewItemInfoModal: React.FC<{
 			rentQuantity: 30
 		}
 	];
-	const {isOpen, onClose} = disclosure;
-	const {watch, register, setValue} = useForm<NewRentedItemFormValues>();
+	const cbItems: Item[] = items.map((item) => ({
+		itemId: item.item.itemId,
+		itemName: item.item.itemName,
+		itemImages: item.item.itemImages,
+		itemQuantity: item.item.itemQuantity
+	}));
+	const {addDisclosure} = useScanContext() as ReturnType<typeof useInitialScanContext>;
+	const {isOpen, onClose} = addDisclosure;
+	const {watch, register, setValue} = useForm<NewRentingItemFormValues>();
 	const {item, rentQuantity} = watch();
 
+	const handleClose = () => {
+		onClose();
+	};
+
+	useEffect(() => {
+		if (isOpen) {
+			setValue('item', cbItems[0]);
+			setValue('rentQuantity', 1);
+		}
+	}, [isOpen]);
+
 	return (
-		<Modal scrollBehavior={'inside'} isOpen={isOpen} onClose={onClose}>
+		<Modal scrollBehavior={'inside'} isOpen={isOpen} onClose={handleClose}>
 			<ModalOverlay />
 			<ModalContent width={'unset'} minWidth={'50%'} maxWidth={'90%'} height={'90%'}>
 				<ModalBody p={5} display={'flex'} flexDirection={'column'}>
@@ -78,7 +97,7 @@ export const NewItemInfoModal: React.FC<{
 						<Heading fontSize={'lg'}>{title}</Heading>
 						<Spacer />
 						<HStack>
-							<Button variant={'secondary'} leftIcon={<X />} onClick={onClose}>
+							<Button variant={'secondary'} leftIcon={<X />} onClick={handleClose}>
 								Cancel
 							</Button>
 							<Button
@@ -86,11 +105,11 @@ export const NewItemInfoModal: React.FC<{
 								onClick={() => {
 									item &&
 										rentQuantity &&
-										handleConfirmNewItemInfo?.({
+										handleConfirm?.({
 											item,
 											rentQuantity
 										});
-									onClose();
+									handleClose();
 								}}
 							>
 								Confirm
@@ -99,19 +118,27 @@ export const NewItemInfoModal: React.FC<{
 					</Flex>
 					<Flex flex={1} mt={5}>
 						<VStack spacing={5} width={'100%'} alignItems={'flex-start'}>
-							<ComboBox
-								items={items}
-								searchKey={'name'}
-								itemIdKey={'id'}
-								name={'itemName'}
-								value={(item?.itemName || selectedItem?.item.itemName) as string}
-								setValue={setValue}
-							/>
+							<VStack alignItems={'flex-start'}>
+								<Text fontWeight={700} fontSize={'sm'}>
+									Item
+								</Text>
+								<ComboBox
+									items={cbItems}
+									searchKey={'itemName'}
+									itemIdKey={'itemId'}
+									name={'item'}
+									value={item?.itemName as string}
+									setValue={setValue}
+								/>
+							</VStack>
 							<EditableNumberInput
-								name='rentedQuantity'
+								isEditing
+								min={1}
+								name='rentQuantity'
 								label={'Quantity'}
-								value={(rentQuantity || selectedItem?.rentQuantity) as number}
+								value={rentQuantity as number}
 								register={register as UseFormRegister<FormValues>}
+								handleChange={(_, value) => setValue('rentQuantity', value)}
 							/>
 						</VStack>
 					</Flex>

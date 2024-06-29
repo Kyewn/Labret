@@ -9,12 +9,13 @@ import {
 	Heading,
 	Spacer,
 	Tag,
+	TagLabel,
 	Text,
 	VStack,
 	useColorMode,
 	useToast
 } from '@chakra-ui/react';
-import {Combine, HandCoins, Moon, PackageCheck, PackagePlus, ScanFace, Sun} from 'lucide-react';
+import {Combine, Moon, PackageCheck, PackagePlus, ScanFace, Sun, User2} from 'lucide-react';
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 
@@ -74,6 +75,14 @@ export const UserMenu = () => {
 		navigate(paths.sub.userHistory);
 	};
 
+	const handleVerifyAddRental = () => {
+		// FIXME:
+		// - Check user not having 3 pending/rent status records
+		// - Check user not having 3 debt records
+
+		handleRentClick();
+	};
+
 	const handleLogout = () => {
 		appDispatch({type: 'SET_USER', payload: null});
 	};
@@ -106,22 +115,19 @@ export const UserMenu = () => {
 						<Tag size={'lg'} colorScheme={getUserTypeColor('user')}>
 							User
 						</Tag>
-						<Button variant={'outline'} leftIcon={<HandCoins />}>
-							Top Up
+						<Button variant={'outline'} leftIcon={<User2 />}>
+							Edit Profile
 						</Button>
 					</HStack>
 				</Flex>
-				<HStack>
-					<Button variant={'outline'}>Edit Profile</Button>
-					<Button variant={'outline'}>Unsettled rentals</Button>
-				</HStack>
+
 				<HStack justifyContent={'flex-start'} paddingY={5} width={'100%'}>
 					{/* TODO If user type */}
 					<LargeIconButton
 						icon={PackagePlus}
 						iconW={10}
 						iconH={10}
-						onClick={handleRentClick}
+						onClick={handleVerifyAddRental}
 						label='Add Rental'
 						variant='solid'
 					/>
@@ -167,6 +173,25 @@ export const UserMenu = () => {
 						variant='outline'
 					/> */}
 				</HStack>
+
+				<Box position={'relative'}>
+					<Button variant={'outline'}>Debts</Button>
+					<Tag
+						position={'absolute'}
+						size={'sm'}
+						outline={'none'}
+						border={'none'}
+						backgroundColor='lrRed.200'
+						paddingY={1}
+						borderRadius={'50%'}
+						right={'-0.5rem'}
+						top={'-0.5rem'}
+					>
+						<TagLabel color='whiteDarkMode' fontWeight={700}>
+							{/* {FIXME: Change to unpaid records count} */}3
+						</TagLabel>
+					</Tag>
+				</Box>
 			</VStack>
 		</Flex>
 	);

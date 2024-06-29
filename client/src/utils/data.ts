@@ -7,9 +7,16 @@ export type AddUserFormValues = {
 	email: string;
 };
 
-export type NewRentedItemFormValues = {
+export type NewRentingItemFormValues = {
 	item?: Item;
-	rentQuantity?: number;
+	rentQuantity?: string | number;
+};
+
+export type NewRentFormValues = {
+	recordTitle?: string;
+	recordNotes?: string;
+	recordReturnDate?: Date;
+	isReadTnC?: boolean;
 };
 
 // Table record info
@@ -45,37 +52,39 @@ export type UserEditableFields = {
 export type Item = {
 	itemId: string;
 	itemName: string;
-	itemImages: string;
-	itemQuantity?: string | number; // Referenced by rented item and should be opt in
+	itemImages: string[];
+	itemQuantity: string | number;
 	itemCategory?: string;
 	itemDescription?: string;
 	createdAt?: string | Date;
 	createdBy?: string;
 };
 
-export type RentedItem = {
+export type RentingItem = {
 	item: Item;
 	rentQuantity: string | number;
-	proofOfReturn?: string;
+	proofOfReturn?: string | Blob;
 };
 
 export type RentalRecord = {
 	recordId: string;
 	recordTitle: string;
 	renterId: string | number;
-	rentedItems: RentedItem[];
+	rentingItems: RentingItem[];
 	rentImages: string[];
 	notes: string;
 	rentStatus: string;
 	rentedAt: string | Date;
+	expectedReturnedAt?: string | Date;
 	returnedAt?: string | Date;
 	returnImages?: Record<string, unknown>[];
 	returnLocation?: string;
+	unpaidAmount?: number;
 };
 
 export type Verification = {
 	verificationId: string;
-	rentId: string;
+	recordId: string; // Rental record id
 	verificationType: string;
 	verificationStatus: string;
 	createdAt: string | Date;
@@ -96,11 +105,16 @@ export const mapUserStatus = (status: string) => {
 	}
 };
 
-export type FormValues = AddUserFormValues | UserInfoValues | NewRentedItemFormValues;
+export type FormValues =
+	| AddUserFormValues
+	| UserInfoValues
+	| NewRentingItemFormValues
+	| NewRentFormValues;
 export type FormKeys =
 	| keyof AddUserFormValues
 	| keyof UserInfoValues
-	| keyof NewRentedItemFormValues;
+	| keyof NewRentingItemFormValues
+	| keyof NewRentFormValues;
 export type TableData = User;
 
 // Others
