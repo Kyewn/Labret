@@ -185,7 +185,7 @@ export function ViewUsers() {
 							<Tooltip
 								hasArrow
 								label={
-									'Enable after checking annotations. User recognition model needs to be updated everytime a new Roboflow version is published.'
+									'Enable after checking annotations. User recognition model needs to be updated everytime new users are added and after a new Roboflow version is published.'
 								}
 								placement='bottom-start'
 								borderRadius={5}
