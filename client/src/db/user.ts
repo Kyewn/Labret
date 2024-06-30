@@ -7,9 +7,14 @@ export const userCollection = collection(db, 'users');
 export const getAllUsers = async () => {
 	const querySnapshot = await getDocs(userCollection);
 	const users = querySnapshot.docs.map((doc) => {
-		return {id: doc.id, ...doc.data()};
+		const user = doc.data() as User;
+		return {
+			...(doc.data() as Omit<User, 'id' | 'createdAt'>),
+			id: doc.id,
+			createdAt: new Date(user.createdAt) as Date
+		};
 	});
-	return users;
+	return users as User[];
 };
 
 export const getUser = async (userId: string) => {

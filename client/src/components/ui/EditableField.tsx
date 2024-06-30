@@ -33,7 +33,7 @@ export const EditableField: React.FC<Props> = ({
 	return (
 		<VStack spacing={1} alignItems={'flex-start'}>
 			<Text fontWeight={700} fontSize={'sm'}>
-				{rules?.required ? label + ' *' : label}
+				{rules?.required && isEditing ? label + ' *' : label}
 			</Text>
 			{isEditing ? (
 				useTextArea || (value && value.length > 50) ? (

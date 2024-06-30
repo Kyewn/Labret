@@ -24,15 +24,15 @@ export const FaceLogin: React.FC = () => {
 	}
 
 	const handleRescan = () => {
-		handleCloseExistingPeerConnection();
 		appDispatch({type: 'SET_DETECTED_USER', payload: null});
 		appDispatch({type: 'SET_DETECTED_USER_IMAGE_URL', payload: null});
+		handleCloseExistingPeerConnection();
 	};
 	const handleConfirmIdentity = () => {
-		handleCloseExistingPeerConnection();
 		appDispatch({type: 'SET_USER', payload: detectedUser});
 		appDispatch({type: 'SET_DETECTED_USER', payload: null});
 		appDispatch({type: 'SET_DETECTED_USER_IMAGE_URL', payload: null});
+		handleCloseExistingPeerConnection();
 	};
 
 	return detectedUser ? (

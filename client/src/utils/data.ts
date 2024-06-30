@@ -29,7 +29,7 @@ export type UserInfoValues = {
 // DB Data Structure
 // User
 export type User = {
-	id: string | number;
+	id: string;
 	name: string;
 	email: string;
 	status: string;

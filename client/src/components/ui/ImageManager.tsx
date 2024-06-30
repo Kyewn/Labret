@@ -26,7 +26,7 @@ import {ArrowLeft, CircleHelp, Ellipsis, Trash} from 'lucide-react';
 import {useState} from 'react';
 
 type Props = {
-	specifiedImages?: Blob[];
+	specifiedImages?: Blob[] | string[];
 	isRemovable?: boolean;
 	currPreviewIndex?: number;
 	handlePreviewClick?: (index: number) => void;
@@ -42,8 +42,8 @@ const ImageManager: React.FC<Props> = ({
 	const registerContext = useRegisterContext();
 	const {imagesState, handleRemoveImage} = registerContext || scanContext || {};
 	const [contextImages, setImages] = imagesState || [];
-	const images = (specifiedImages || contextImages) as Blob[];
-	const [viewingImage, setViewingImage] = useState<Blob | null>(null);
+	const images = specifiedImages || contextImages || [];
+	const [viewingImage, setViewingImage] = useState<Blob | string | null>(null);
 	const {isOpen, onOpen, onClose} = useDisclosure(); // Image modal
 	const {
 		isOpen: isConfirmModalOpen,
@@ -59,7 +59,9 @@ const ImageManager: React.FC<Props> = ({
 			return images.slice(currPageNum * 5, currPageNum * 5 + 5).map((image, index) => (
 				<Box position={'relative'} key={`list-${index}`}>
 					<img
-						src={URL.createObjectURL(image)}
+						src={
+							(image as Blob).arrayBuffer ? URL.createObjectURL(image as Blob) : (image as string)
+						}
 						alt={`Image ${index}`}
 						style={{
 							cursor: 'pointer',
@@ -92,7 +94,7 @@ const ImageManager: React.FC<Props> = ({
 		return images.slice(0, 5).map((image, index) => (
 			<Box position={'relative'} key={`list-${index}`}>
 				<img
-					src={URL.createObjectURL(image)}
+					src={(image as Blob).arrayBuffer ? URL.createObjectURL(image as Blob) : (image as string)}
 					alt={`Image ${index}`}
 					style={{
 						cursor: 'pointer',
@@ -123,7 +125,9 @@ const ImageManager: React.FC<Props> = ({
 			{images.map((image, index) => (
 				<GridItem position={'relative'} key={`grid-${index}`} w={100} h={100}>
 					<img
-						src={URL.createObjectURL(image)}
+						src={
+							(image as Blob).arrayBuffer ? URL.createObjectURL(image as Blob) : (image as string)
+						}
 						alt={`Image ${index}`}
 						style={{
 							cursor: 'pointer',
@@ -153,7 +157,11 @@ const ImageManager: React.FC<Props> = ({
 
 	const renderViewingImage = () => (
 		<img
-			src={URL.createObjectURL(viewingImage as Blob)}
+			src={
+				(viewingImage as Blob).arrayBuffer
+					? URL.createObjectURL(viewingImage as Blob)
+					: (viewingImage as string)
+			}
 			alt={`Image`}
 			style={{
 				border: '1px solid',

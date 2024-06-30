@@ -14,6 +14,7 @@ type AppContextState = {
 	handleOpenExistingPeerConnection: () => void;
 	handleCloseExistingPeerConnection: () => void;
 	handleCloseNormalCamera: () => void;
+	handleRemoveFacePredict: () => void;
 };
 type AppContextActionType =
 	| 'SET_PAGE_LOADING'
@@ -28,7 +29,8 @@ type AppContextActionType =
 	| 'ADD_MEDIA_STREAM'
 	| 'SET_OPEN_EXISTING_PEER_CONNECTION'
 	| 'SET_CLOSE_EXISTING_PEER_CONNECTION'
-	| 'SET_CLOSE_NORMAL_CAMERA';
+	| 'SET_CLOSE_NORMAL_CAMERA'
+	| 'SET_REMOVE_FACE_PREDICT';
 type AppContextActionPayload =
 	| User
 	| string
@@ -55,7 +57,8 @@ export const appContextInitialState: AppContextState = {
 	videoLoading: false,
 	handleOpenExistingPeerConnection: () => {},
 	handleCloseExistingPeerConnection: () => {},
-	handleCloseNormalCamera: () => {}
+	handleCloseNormalCamera: () => {},
+	handleRemoveFacePredict: () => {}
 };
 export const appContextReducer = (
 	state: AppContextState,
@@ -92,6 +95,11 @@ export const appContextReducer = (
 			return {
 				...state,
 				handleCloseNormalCamera: action.payload as () => void
+			};
+		case 'SET_REMOVE_FACE_PREDICT':
+			return {
+				...state,
+				handleRemoveFacePredict: action.payload as () => void
 			};
 
 		default:

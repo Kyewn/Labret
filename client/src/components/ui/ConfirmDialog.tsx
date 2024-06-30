@@ -11,14 +11,19 @@ import {
 } from '@chakra-ui/react';
 import {useRef} from 'react';
 
-type Props = {
+export type ConfirmDialogProps = {
 	disclosure: ReturnType<typeof useDisclosure>;
 	title: string;
 	description: string;
 	onConfirm: () => void;
 };
 
-export const ConfirmDialog: React.FC<Props> = ({disclosure, title, description, onConfirm}) => {
+export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
+	disclosure,
+	title,
+	description,
+	onConfirm
+}) => {
 	const {isOpen, onClose} = disclosure;
 	const leastDestructiveRef = useRef<HTMLButtonElement | null>(null);
 
