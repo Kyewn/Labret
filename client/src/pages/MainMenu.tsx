@@ -27,25 +27,39 @@ export function MainMenu() {
 			if (!detectedUser && !detectedUserImageURL && !intervalId) {
 				// Predict faces heartbeat
 				const id = setInterval(async () => {
-					const imageCapture = new ImageCapture(streams[0].getVideoTracks()[0]);
-					const photoBlob = await imageCapture.takePhoto().then((blob) => {
-						return blob;
-					});
+					try {
+						const imageCapture = new ImageCapture(streams[0].getVideoTracks()[0]);
+						const photoBlob = await imageCapture.takePhoto().then((blob) => {
+							return blob;
+						});
 
-					const parsedResult = await predictFaces([photoBlob]);
+						const parsedResult = await predictFaces([photoBlob]);
 
-					const {labels, scores} = parsedResult;
+						const {labels, scores} = parsedResult;
 
-					if (!labels.length) return;
+						if (!labels.length) return;
 
-					const predictedUser = await getUser(labels[0]);
-					if (predictedUser && scores[0] > face_conf_threshold) {
-						appDispatch({type: 'SET_DETECTED_USER', payload: predictedUser});
-						const currPhotoURL = URL.createObjectURL(photoBlob);
-						appDispatch({type: 'SET_DETECTED_USER_IMAGE_URL', payload: currPhotoURL});
+						// Old model may throw error reading deleted user labels
+						const predictedUser = await getUser(labels[0]);
+						if (predictedUser && scores[0] > face_conf_threshold) {
+							appDispatch({type: 'SET_DETECTED_USER', payload: predictedUser});
+							const currPhotoURL = URL.createObjectURL(photoBlob);
+							appDispatch({type: 'SET_DETECTED_USER_IMAGE_URL', payload: currPhotoURL});
+						}
+					} catch {
+						console.log('Error in face prediction');
 					}
 				}, 2000);
 				setIntervalId(id);
+
+				// Set clear face predict interval for cleanup on navigation
+				appDispatch({
+					type: 'SET_REMOVE_FACE_PREDICT',
+					payload: () => {
+						clearInterval(id);
+						setIntervalId(null);
+					}
+				});
 			} else if (detectedUser && intervalId) {
 				clearInterval(intervalId);
 				setIntervalId(null);
@@ -56,12 +70,6 @@ export function MainMenu() {
 
 		handlePredictFace(mediaStreams, detectedUser, detectedUserImageURL);
 	}, [mediaStreams, detectedUser, detectedUserImageURL, intervalId, user]);
-
-	// useEffect(() => {
-	// 	if (detectedUser && intervalId) {
-	// 		clearInterval(intervalId);
-	// 	}
-	// }, [detectedUser, intervalId]);
 
 	return (
 		<>

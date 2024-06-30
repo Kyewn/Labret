@@ -17,14 +17,12 @@ declare module '@tanstack/table-core' {
 export const getUserColumns: (
 	openSelectionModal: () => void,
 	closeSelectionModal: () => void,
-	handlePrimaryClick: (e: SyntheticEvent, userId: string) => void,
-	handleSecondaryClick: (e: SyntheticEvent, userId: string) => void,
-	handleDelete: (e: SyntheticEvent, userId: string) => void
+	handleSetActive: (e: SyntheticEvent, user: User) => void,
+	handleDelete: (e: SyntheticEvent, user: User) => void
 ) => ColumnDef<User>[] = (
 	openSelectionModal,
 	closeSelectionModal,
-	handlePrimaryClick,
-	handleSecondaryClick,
+	handleSetActive,
 	handleDelete
 ) => [
 	{
@@ -32,14 +30,15 @@ export const getUserColumns: (
 		header: ({table}) => (
 			<Flex>
 				<Checkbox
-					isChecked={table.getIsSomeRowsSelected()}
+					isChecked={table.getIsAllRowsSelected()}
 					onChange={(e) => {
 						// Only select pending rows
 						const rows = table.getCoreRowModel().rows;
+						const hasPendingRows = rows.some((row) => row.original.status === 'pending');
 						rows.forEach((row) => {
 							if (row.original.status === 'pending') row.toggleSelected(!!e.target.checked);
 						});
-						if (e.target.checked) openSelectionModal();
+						if (e.target.checked && hasPendingRows) openSelectionModal();
 						else closeSelectionModal();
 					}}
 					aria-label='Select all'
@@ -162,16 +161,10 @@ export const getUserColumns: (
 
 			return (
 				<ButtonGroup>
-					<Button
-						fontSize={'sm'}
-						onClick={(e) => handlePrimaryClick(e, (user.id as string) || user.id.toString())}
-					>
+					<Button fontSize={'sm'} onClick={(e) => handleSetActive(e, user)}>
 						Set Active
 					</Button>
-					<Button
-						variant={'secondary'}
-						onClick={(e) => handleSecondaryClick(e, (user.id as string) || user.id.toString())}
-					>
+					<Button variant={'secondary'} onClick={(e) => handleDelete(e, user)}>
 						Reject
 					</Button>
 				</ButtonGroup>
@@ -183,12 +176,14 @@ export const getUserColumns: (
 		cell: ({row}) => {
 			const user = row.original;
 
+			if (user.status === 'pending') return;
+
 			return (
 				<IconButton
 					aria-label={'delete'}
 					icon={<Trash />}
 					variant={'criticalOutline'}
-					onClick={(e) => handleDelete(e, (user.id as string) || user.id.toString())}
+					onClick={(e) => handleDelete(e, user)}
 				/>
 			);
 		}

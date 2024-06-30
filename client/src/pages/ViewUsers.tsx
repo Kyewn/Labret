@@ -1,10 +1,11 @@
+import {ConfirmDialog} from '@/components/ui/ConfirmDialog';
 import {DataTable} from '@/components/ui/DataTable/DataTable';
 import {UserFilters} from '@/components/view_users/UserFilters';
-import {UserRecordModal} from '@/components/view_users/UserRecordModal';
+import {UserItemModal} from '@/components/view_users/UserItemModal';
 import {getUserColumns} from '@/utils/columns';
 import {useAppContext} from '@/utils/context/AppContext';
 import {useMultiEditableContext} from '@/utils/context/MultiEditableContext';
-import {UserTableContext, useUserTableContext} from '@/utils/context/UsersTableContext';
+import {UserTableContext, useInitialUserTableContext} from '@/utils/context/UsersTableContext';
 import {User} from '@/utils/data';
 import {
 	Button,
@@ -21,24 +22,25 @@ import {
 	useDisclosure,
 	useToast
 } from '@chakra-ui/react';
-import {ChevronDown, SquareCheck, Trash} from 'lucide-react';
+import {ChevronDown, SquareCheck} from 'lucide-react';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {Helmet} from 'react-helmet-async';
 import {Link} from 'react-router-dom';
 
 export function ViewUsers() {
 	const {appDispatch} = useAppContext();
-	const usersTableContext = useUserTableContext();
-	const {isOpen, onOpen, onClose} = useDisclosure(); // Selection actions modal
+	const usersTableContext = useInitialUserTableContext();
 	const infoDisclosure = useDisclosure(); // Selection actions modal
 	const {onOpen: onInfoOpen} = infoDisclosure; // Selection actions modal
 	const [canNext, setCanNext] = useState(false);
 	const [canPrev, setCanPrev] = useState(false);
 
 	const {
+		data,
 		selectedDataState,
 		tableState,
-		dataState,
+		selectionDisclosure,
+		initialFilterValueState,
 		paginationState,
 		rowSelectionState,
 		searchTextState,
@@ -47,16 +49,23 @@ export function ViewUsers() {
 		handleInitTable,
 		refetch,
 		handleDelete,
-		handleReject,
-		handleSetActive
+		handleSetActive,
+		handleSetActiveForRows,
+		handleDeleteForRows,
+		confirmDialogState,
+		confirmDialogDisclosure
 	} = usersTableContext;
-	const [table] = tableState;
-	const [data] = dataState;
-	const [rowSelection] = rowSelectionState;
+	const {isOpen, onOpen, onClose} = selectionDisclosure;
 	const [selectedData, setSelectedData] = selectedDataState;
 	const multiEditableContext = useMultiEditableContext(selectedData);
-	const [isAnnotationButtonClicked, setIsAnnotationButtonClicked] = useState(false);
 	const toast = useToast();
+	const [isAnnotationButtonClicked, setIsAnnotationButtonClicked] = useState(false);
+	const [table] = tableState;
+	const [rowSelection] = rowSelectionState;
+	const [, setInitialFilterValue] = initialFilterValueState;
+	const [, setFilters] = tableFiltersState;
+	const confirmDisclosure = confirmDialogDisclosure;
+	const [{title: confirmTitle, description: confirmDescription, onConfirm}] = confirmDialogState;
 
 	const pageBottomRef = useRef<HTMLDivElement | null>(null);
 	const pageIndex = useMemo(() => paginationState[0].pageIndex, [paginationState]);
@@ -101,8 +110,26 @@ export function ViewUsers() {
 	};
 
 	useEffect(() => {
-		handleRefetch();
-	}, []);
+		if (!data) {
+			handleRefetch();
+		} else {
+			const oldestDate = new Date(
+				data.reduce((currOld, curr) => {
+					return new Date(curr.createdAt) < new Date(currOld.createdAt) ? curr : currOld;
+				}).createdAt
+			);
+			oldestDate.setHours(0, 0, 0, 0);
+			// Overwrite default date filter to include past registration dates
+			setFilters((prev) => {
+				const otherFilters = prev.filter((f) => f.id !== 'createdAt');
+				return [...otherFilters, {id: 'createdAt', value: {from: oldestDate}}];
+			});
+			setInitialFilterValue((prev) => {
+				const otherFilters = prev.filter((f) => f.id !== 'createdAt');
+				return [...otherFilters, {id: 'createdAt', value: {from: oldestDate}}];
+			});
+		}
+	}, [data]);
 
 	// Update pagination state as they change
 	useEffect(() => {
@@ -125,7 +152,13 @@ export function ViewUsers() {
 			</Helmet>
 
 			<UserTableContext.Provider value={usersTableContext}>
-				<UserRecordModal multiEditableContext={multiEditableContext} disclosure={infoDisclosure} />
+				<ConfirmDialog
+					disclosure={confirmDisclosure}
+					title={confirmTitle}
+					description={confirmDescription}
+					onConfirm={onConfirm}
+				/>
+				<UserItemModal multiEditableContext={multiEditableContext} disclosure={infoDisclosure} />
 
 				<Flex flex={1} flexDirection={'column'} justifyContent={'center'} p={3} paddingX={10}>
 					<Flex marginY={3} alignItems={'center'}>
@@ -166,7 +199,7 @@ export function ViewUsers() {
 					<Divider orientation='horizontal' />
 					<UserFilters />
 					<DataTable
-						columns={getUserColumns(onOpen, onClose, handleSetActive, handleReject, handleDelete)}
+						columns={getUserColumns(onOpen, onClose, handleSetActive, handleDelete)}
 						data={data || []}
 						paginationState={paginationState}
 						rowSelectionState={rowSelectionState}
@@ -250,9 +283,31 @@ export function ViewUsers() {
 							</Text>
 							<Spacer />
 							<ButtonGroup>
-								<Button>Set Active</Button>
-								<Button variant={'secondary'}>Reject</Button>
-								<IconButton aria-label={'delete'} icon={<Trash />} variant={'criticalOutline'} />
+								<Button
+									onClick={() => {
+										const selectedUsers = Object.keys(rowSelection).map((key) => {
+											const user = table?.getRow(key).original;
+											return user as User;
+										});
+
+										handleSetActiveForRows(selectedUsers);
+									}}
+								>
+									Set Active
+								</Button>
+								<Button
+									variant={'secondary'}
+									onClick={() => {
+										const selectedUsers = Object.keys(rowSelection).map((key) => {
+											const user = table?.getRow(key).original;
+											return user as User;
+										});
+
+										handleDeleteForRows(selectedUsers);
+									}}
+								>
+									Reject
+								</Button>
 							</ButtonGroup>
 						</Flex>
 					</HStack>

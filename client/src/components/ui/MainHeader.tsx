@@ -37,10 +37,11 @@ const MainHeader: React.FC = () => {
 	const {colorMode, toggleColorMode} = useColorMode();
 	const {appState} = useAppContext();
 
-	const {handleCloseExistingPeerConnection} = appState;
+	const {handleCloseExistingPeerConnection, handleRemoveFacePredict} = appState;
 
 	const handleCloseMainMenuCamera = () => {
 		handleCloseExistingPeerConnection?.();
+		handleRemoveFacePredict?.();
 	};
 
 	return (

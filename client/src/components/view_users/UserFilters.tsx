@@ -1,5 +1,5 @@
 import {DatePickerWithRange} from '@/components/ui/dateRangePicker';
-import {UserTableContext, useUserTableContext} from '@/utils/context/UsersTableContext';
+import {useInitialUserTableContext, useUserTableContext} from '@/utils/context/UsersTableContext';
 import {
 	Button,
 	Flex,
@@ -14,27 +14,31 @@ import {
 	Spacer
 } from '@chakra-ui/react';
 import {ChevronDown, Search} from 'lucide-react';
-import {useContext} from 'react';
+import {useMemo} from 'react';
 import {DateRange} from 'react-day-picker';
 
 export const UserFilters: React.FC = () => {
-	const userTableContext = useContext(UserTableContext);
 	const {
 		tableState,
 		tableFiltersState,
 		searchTextState,
-		initialFilterState,
+		initialFilterValueState,
 		initialSortingState,
 		paginationState
-	} = userTableContext as ReturnType<typeof useUserTableContext>;
+	} = useUserTableContext() as ReturnType<typeof useInitialUserTableContext>;
 	const [table] = tableState;
 	const [pagination] = paginationState;
 	const [filters] = tableFiltersState;
 	const [searchText] = searchTextState;
+	const [initialFilterValue] = initialFilterValueState;
+	const dateFilterValue = useMemo(
+		() => filters.find((f) => f.id === 'createdAt')?.value as DateRange,
+		[filters]
+	);
 
 	const onClear = () => {
 		table?.resetGlobalFilter();
-		table?.setColumnFilters(initialFilterState);
+		table?.setColumnFilters(initialFilterValue);
 		table?.setSorting(initialSortingState);
 	};
 
@@ -56,7 +60,7 @@ export const UserFilters: React.FC = () => {
 					/>
 				</InputGroup>
 				<DatePickerWithRange
-					drValue={filters.find((f) => f.id === 'createdAt')?.value as DateRange}
+					drValue={dateFilterValue}
 					onSelectRange={(dateRange: DateRange) => {
 						table?.setColumnFilters((prev) => {
 							const otherFilters = prev.filter((f) => f.id !== 'createdAt');

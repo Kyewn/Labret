@@ -1,7 +1,7 @@
 import {AddRentingItemModal} from '@/components/rent_equipment/AddRentingItemModal';
 import {EditRentingItemModal} from '@/components/rent_equipment/EditRentingItemModal';
 import {ScannedItem} from '@/components/rent_equipment/ScannedItem';
-import {ConfirmDialog} from '@/components/ui/AlertDialog';
+import {ConfirmDialog} from '@/components/ui/ConfirmDialog';
 import {useAppContext} from '@/utils/context/AppContext';
 import {useInitialScanContext, useScanContext} from '@/utils/context/ScanContext';
 import {Button, Center, Flex, Heading, Spacer, Text, VStack} from '@chakra-ui/react';
