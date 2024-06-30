@@ -1,3 +1,4 @@
+import {UserProfileModal} from '@/components/main_menu/UserProfileModal';
 import {LargeIconButton} from '@/components/ui/LargeIconButton';
 import {useAppContext} from '@/utils/context/AppContext';
 import {paths} from '@/utils/paths';
@@ -13,6 +14,7 @@ import {
 	Text,
 	VStack,
 	useColorMode,
+	useDisclosure,
 	useToast
 } from '@chakra-ui/react';
 import {Combine, Moon, PackageCheck, PackagePlus, ScanFace, Sun, User2} from 'lucide-react';
@@ -23,9 +25,11 @@ export const UserMenu = () => {
 	const navigate = useNavigate();
 	const {colorMode} = useColorMode();
 	const {appState, appDispatch} = useAppContext();
+	const toast = useToast();
 	const {user, handleCloseExistingPeerConnection} = appState;
 	const [hasUserRecords, setHasUserRecords] = useState<boolean>(false);
-	const toast = useToast();
+	const profileDisclosure = useDisclosure();
+	const {onOpen} = profileDisclosure;
 
 	const getUserTypeColor = (type: string) => {
 		switch (type) {
@@ -33,6 +37,14 @@ export const UserMenu = () => {
 				return 'green';
 			case 'admin':
 				return 'blue';
+		}
+	};
+	const getUserTypeLabel = (type: string) => {
+		switch (type) {
+			case 'user':
+				return 'User';
+			case 'admin':
+				return 'Admin';
 		}
 	};
 
@@ -88,67 +100,69 @@ export const UserMenu = () => {
 	};
 
 	return (
-		<Flex flexDirection={'column'} flex={0.7} overflowX={'hidden'} overflowY={'auto'}>
-			<VStack alignItems={'flex-start'}>
-				<Button
-					variant={'criticalOutline'}
-					alignSelf={'flex-end'}
-					leftIcon={<ScanFace />}
-					onClick={handleLogout}
-				>
-					Logout
-				</Button>
-				<HStack>
-					<Text fontWeight={'700'} color={'lrBrown.700'}>
-						Hi,
-					</Text>
-					<Box display={'inline-block'}>{colorMode == 'dark' ? <Moon /> : <Sun />}</Box>
-				</HStack>
-				<Flex width={'100%'} alignItems={'center'}>
-					<VStack alignItems={'flex-start'}>
-						<Heading size={'lg'} maxW={'14em'} overflow={'hidden'}>
-							{user?.name}
-						</Heading>
-					</VStack>
-					<Spacer />
+		<>
+			<UserProfileModal disclosure={profileDisclosure} />
+			<Flex flexDirection={'column'} flex={0.7} overflowX={'hidden'} overflowY={'auto'}>
+				<VStack alignItems={'flex-start'}>
+					<Button
+						variant={'criticalOutline'}
+						alignSelf={'flex-end'}
+						leftIcon={<ScanFace />}
+						onClick={handleLogout}
+					>
+						Logout
+					</Button>
 					<HStack>
-						<Tag size={'lg'} colorScheme={getUserTypeColor('user')}>
-							User
-						</Tag>
-						<Button variant={'outline'} leftIcon={<User2 />}>
-							Edit Profile
-						</Button>
+						<Text fontWeight={'700'} color={'lrBrown.700'}>
+							Hi,
+						</Text>
+						<Box display={'inline-block'}>{colorMode == 'dark' ? <Moon /> : <Sun />}</Box>
 					</HStack>
-				</Flex>
+					<Flex width={'100%'} alignItems={'center'}>
+						<VStack alignItems={'flex-start'}>
+							<Heading size={'lg'} maxW={'14em'} overflow={'hidden'}>
+								{user?.name}
+							</Heading>
+						</VStack>
+						<Spacer />
+						<HStack>
+							<Tag size={'lg'} colorScheme={getUserTypeColor(user?.type || 'user')}>
+								{getUserTypeLabel(user?.type || 'user')}
+							</Tag>
+							<Button variant={'outline'} leftIcon={<User2 />} onClick={onOpen}>
+								View Profile
+							</Button>
+						</HStack>
+					</Flex>
 
-				<HStack justifyContent={'flex-start'} paddingY={5} width={'100%'}>
-					{/* TODO If user type */}
-					<LargeIconButton
-						icon={PackagePlus}
-						iconW={10}
-						iconH={10}
-						onClick={handleVerifyAddRental}
-						label='Add Rental'
-						variant='solid'
-					/>
-					<LargeIconButton
-						icon={PackageCheck}
-						iconW={10}
-						iconH={10}
-						onClick={handleReturnClick}
-						label='Return Equipment'
-						variant='outline'
-					/>
-					<LargeIconButton
-						icon={Combine}
-						iconW={10}
-						iconH={10}
-						onClick={handleRentalHistoryClick}
-						label='User History'
-						variant='outline'
-					/>
-					{/* TODO If admin type  */}
-					{/* <LargeIconButton
+					<HStack justifyContent={'flex-start'} paddingY={5} width={'100%'}>
+						{/* TODO If user type */}
+						<LargeIconButton
+							icon={PackagePlus}
+							iconW={10}
+							iconH={10}
+							onClick={handleVerifyAddRental}
+							label='Add Rental'
+							variant='solid'
+						/>
+						<LargeIconButton
+							icon={PackageCheck}
+							iconW={10}
+							iconH={10}
+							onClick={handleReturnClick}
+							label='Return Equipment'
+							variant='outline'
+						/>
+						<LargeIconButton
+							icon={Combine}
+							iconW={10}
+							iconH={10}
+							onClick={handleRentalHistoryClick}
+							label='User History'
+							variant='outline'
+						/>
+						{/* TODO If admin type  */}
+						{/* <LargeIconButton
 						icon={BadgeCheck}
 						iconW={10}
 						iconH={10}
@@ -172,27 +186,28 @@ export const UserMenu = () => {
 						label='Critical records'
 						variant='outline'
 					/> */}
-				</HStack>
+					</HStack>
 
-				<Box position={'relative'}>
-					<Button variant={'outline'}>Debts</Button>
-					<Tag
-						position={'absolute'}
-						size={'sm'}
-						outline={'none'}
-						border={'none'}
-						backgroundColor='lrRed.200'
-						paddingY={1}
-						borderRadius={'50%'}
-						right={'-0.5rem'}
-						top={'-0.5rem'}
-					>
-						<TagLabel color='whiteDarkMode' fontWeight={700}>
-							{/* {FIXME: Change to unpaid records count} */}3
-						</TagLabel>
-					</Tag>
-				</Box>
-			</VStack>
-		</Flex>
+					<Box position={'relative'}>
+						<Button variant={'outline'}>Debts</Button>
+						<Tag
+							position={'absolute'}
+							size={'sm'}
+							outline={'none'}
+							border={'none'}
+							backgroundColor='lrRed.200'
+							paddingY={1}
+							borderRadius={'50%'}
+							right={'-0.5rem'}
+							top={'-0.5rem'}
+						>
+							<TagLabel color='whiteDarkMode' fontWeight={700}>
+								{/* {FIXME: Change to unpaid records count} */}3
+							</TagLabel>
+						</Tag>
+					</Box>
+				</VStack>
+			</Flex>
+		</>
 	);
 };

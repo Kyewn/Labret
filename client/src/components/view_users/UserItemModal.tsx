@@ -47,7 +47,7 @@ export const UserItemModal: React.FC<{
 	const handleEdit = async () => {
 		const mHandleEdit = async (newData: User) => {
 			const editRecord = async () => {
-				await editUser((selectedUser?.id as number).toString(), {
+				await editUser(selectedUser?.id as string, {
 					...newData,
 					createdAt: (newData.createdAt as Date).toISOString()
 				});
