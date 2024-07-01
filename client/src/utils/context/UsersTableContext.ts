@@ -1,5 +1,5 @@
 import {ConfirmDialogProps} from '@/components/ui/ConfirmDialog';
-import {deleteUser, editUser, getAllUsers} from '@/db/user';
+import {deleteUser, editUser, getAllAdmins, getAllUsers} from '@/db/user';
 import {User} from '@/utils/data';
 import {useDisclosure, useToast} from '@chakra-ui/react';
 import {
@@ -13,7 +13,7 @@ import {addDays} from 'date-fns';
 import {SyntheticEvent, createContext, useContext, useState} from 'react';
 
 // TABLE STRUCTURES
-export const useInitialUserTableContext = () => {
+export const useInitialUserTableContext = (page: string = 'register') => {
 	// Table data states
 	const dataState = useState<User[] | undefined>(undefined);
 	const selectedDataState = useState<User | undefined>(undefined);
@@ -67,7 +67,7 @@ export const useInitialUserTableContext = () => {
 	};
 
 	const refetch = async () => {
-		const data = await getAllUsers();
+		const data = page == 'register' ? await getAllUsers() : await getAllAdmins();
 		setData([...data]);
 	};
 

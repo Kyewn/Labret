@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import {Helmet} from 'react-helmet-async';
 
-export function Register() {
+export function RegisterAdmin() {
 	const initialRegisterContext = useInitialRegisterContext();
 	const {activeStep, steps} = initialRegisterContext;
 
@@ -48,7 +48,7 @@ export function Register() {
 				</Flex>
 
 				{activeStep === 0 && <AcquireImageStep />}
-				{activeStep === 1 && <RegisterFormStep page='register' />}
+				{activeStep === 1 && <RegisterFormStep page='registerAdmin' />}
 			</RegisterContext.Provider>
 		</>
 	);

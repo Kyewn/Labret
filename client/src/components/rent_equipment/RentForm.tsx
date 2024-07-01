@@ -34,10 +34,6 @@ export const RentForm: React.FC = () => {
 		});
 	}, []);
 
-	useEffect(() => {
-		console.log(recordTitle, recordNotes, recordReturnDate, isReadTnC);
-	}, [recordTitle, recordNotes, recordReturnDate, isReadTnC]);
-
 	return (
 		<>
 			<TermsConditionsModal disclosure={tcDisclosure} />

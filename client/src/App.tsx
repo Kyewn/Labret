@@ -1,10 +1,12 @@
 import {Error404} from '@/pages/Error404';
 import {Register} from '@/pages/Register';
+import {RegisterAdmin} from '@/pages/RegisterAdmin';
 import {Rent} from '@/pages/Rent';
 import {RentResult} from '@/pages/RentResult';
 import {Return} from '@/pages/Return';
 import {ReturnResult} from '@/pages/ReturnResult';
 import {UserHistory} from '@/pages/UserHistory';
+import {ViewAdmins} from '@/pages/ViewAdmins';
 import {ViewUsers} from '@/pages/ViewUsers';
 import MainPageLayout from '@/pages/layout/MainPageLayout';
 import SubPageLayout from '@/pages/layout/SubPageLayout';
@@ -34,8 +36,8 @@ import {MainMenu} from './pages/MainMenu';
 function AuthCheck() {
 	const {appState} = useAppContext();
 	const {user} = appState;
-	// const hasUser = !!Object.entries(user || {}).length; //FIXME: Correct format, change to this after development
-	const hasUser = !Object.entries(user || {}).length;
+	const hasUser = !!Object.entries(user || {}).length; //FIXME: Correct format, change to this after development
+	// const hasUser = !Object.entries(user || {}).length;
 
 	if (!hasUser) {
 		return <Navigate to={paths.main.root} />;
@@ -64,9 +66,9 @@ const router = createBrowserRouter(
 					<Route path={paths.sub.returnResult} element={<ReturnResult />} />
 					<Route path={paths.sub.userHistory} element={<UserHistory />} />
 					<Route path={paths.sub.users} element={<ViewUsers />} />
-					<Route path={paths.sub.admins} /*element={}*/ />
+					<Route path={paths.sub.admins} element={<ViewAdmins />} />
+					<Route path={paths.sub.registerAdmin} element={<RegisterAdmin />} />
 					<Route path={paths.sub.equipment} /*element={}*/ />
-					<Route path={paths.sub.registerAdmin} /* element={} */ />
 					<Route path={paths.sub.addItem} /* element={} */ />
 					<Route path={paths.sub.verifications} /*element={}*/ />
 					<Route path={paths.sub.criticalRecords} /*element={}*/ />

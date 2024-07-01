@@ -68,7 +68,7 @@ const AcquireImageStep: React.FC = () => {
 						videoId={'registerCamera'}
 						useNormalMode
 						mediaResolution={resolution}
-						centerBox={{width: '310px', height: '300px'}}
+						// centerBox={{width: '310px', height: '300px'}}
 					/>
 				</Flex>
 			</Flex>
@@ -86,9 +86,9 @@ const AcquireImageStep: React.FC = () => {
 							</Tooltip>
 						</HStack>
 						<Text>
-							Act natural as you would when using the system, fit your face in the highlighted
-							region and take facial images using the buttons. Take as many images as you can to
-							include different face views.
+							Act natural as you would when using the system and take facial images using the
+							buttons. Take as many additional images as you can to include different perspectives
+							and angles.
 						</Text>
 						<ButtonGroup marginY={5}>
 							<Button onClick={handleImageCapture}>Capture image</Button>

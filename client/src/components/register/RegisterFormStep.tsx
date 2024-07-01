@@ -1,6 +1,6 @@
 import {EditableField} from '@/components/ui/EditableField';
 import ImageManager from '@/components/ui/ImageManager';
-import {createUser, editUser, userCollection} from '@/db/user';
+import {createAdmin, createUser, editUser, userCollection} from '@/db/user';
 import {useAppContext} from '@/utils/context/AppContext';
 import {useInitialRegisterContext, useRegisterContext} from '@/utils/context/RegisterContext';
 import {AddUserFormValues, FormValues} from '@/utils/data';
@@ -21,8 +21,9 @@ type ImageInfo = {
 	};
 };
 
-const RegisterFormStep: React.FC = () => {
-	const {appDispatch} = useAppContext();
+const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}) => {
+	const {appState, appDispatch} = useAppContext();
+	const {user: appUser} = appState;
 	const {
 		imagesState,
 		formState: {isSubmitting, errors},
@@ -54,9 +55,10 @@ const RegisterFormStep: React.FC = () => {
 			UserAlreadyExistsError.name = 'UserAlreadyExists';
 			throw UserAlreadyExistsError;
 		}
-		const user = await createUser(data);
-		const userData = (await getDoc(user)).data() as AddUserFormValues;
 
+		const user =
+			page == 'register' ? await createUser(data) : await createAdmin(data, appUser?.id as string);
+		const userData = (await getDoc(user)).data() as AddUserFormValues;
 		// Convert images to base64 strings
 		const imageStrings = await Promise.all(
 			images.map(async (img) => {
