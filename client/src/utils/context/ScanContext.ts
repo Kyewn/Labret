@@ -72,7 +72,6 @@ export const useInitialScanContext = () => {
 				}
 				return sr;
 			});
-			console.log(newRentQuantity, newSR);
 
 			return newSR || [];
 		});

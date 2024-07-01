@@ -18,12 +18,14 @@ export const getUserColumns: (
 	openSelectionModal: () => void,
 	closeSelectionModal: () => void,
 	handleSetActive: (e: SyntheticEvent, user: User) => void,
-	handleDelete: (e: SyntheticEvent, user: User) => void
+	handleDelete: (e: SyntheticEvent, user: User) => void,
+	isViewAdminPage?: boolean
 ) => ColumnDef<User>[] = (
 	openSelectionModal,
 	closeSelectionModal,
 	handleSetActive,
-	handleDelete
+	handleDelete,
+	isViewAdminPage = false
 ) => [
 	{
 		id: 'select',
@@ -132,6 +134,29 @@ export const getUserColumns: (
 		enableColumnFilter: true,
 		filterFn: 'withinUserDateRange'
 	},
+	...(isViewAdminPage
+		? ([
+				{
+					accessorKey: 'createdBy',
+					header: ({column}) => {
+						return (
+							<Button
+								variant={'ghost'}
+								fontSize={'sm'}
+								onClick={() => {
+									column.toggleSorting(column.getIsSorted() == 'asc');
+								}}
+								rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+							>
+								Created By
+							</Button>
+						);
+					},
+					cell: ({row}) => (row.original.createdBy as User).name,
+					enableGlobalFilter: true
+				}
+		  ] as ColumnDef<User>[])
+		: []),
 	{
 		accessorKey: 'status',
 		header: ({column}) => {

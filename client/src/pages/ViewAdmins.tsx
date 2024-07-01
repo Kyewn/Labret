@@ -27,9 +27,9 @@ import {useEffect, useMemo, useRef, useState} from 'react';
 import {Helmet} from 'react-helmet-async';
 import {Link} from 'react-router-dom';
 
-export function ViewUsers() {
+export function ViewAdmins() {
 	const {appDispatch} = useAppContext();
-	const usersTableContext = useInitialUserTableContext();
+	const usersTableContext = useInitialUserTableContext('registerAdmin');
 	const infoDisclosure = useDisclosure(); // Selection actions modal
 	const {onOpen: onInfoOpen} = infoDisclosure; // Selection actions modal
 	const [canNext, setCanNext] = useState(false);
@@ -153,7 +153,7 @@ export function ViewUsers() {
 	return (
 		<>
 			<Helmet>
-				<title>View Users</title>
+				<title>View Admins</title>
 			</Helmet>
 
 			<UserTableContext.Provider value={usersTableContext}>
@@ -167,7 +167,7 @@ export function ViewUsers() {
 
 				<Flex flex={1} flexDirection={'column'} justifyContent={'center'} p={3} paddingX={10}>
 					<Flex marginY={3} alignItems={'center'}>
-						<Heading size={'md'}>Users</Heading>
+						<Heading size={'md'}>Admins</Heading>
 						<Spacer />
 						<HStack>
 							<Tooltip
@@ -204,7 +204,7 @@ export function ViewUsers() {
 					<Divider orientation='horizontal' />
 					<UserFilters />
 					<DataTable
-						columns={getUserColumns(onOpen, onClose, handleSetActive, handleDelete)}
+						columns={getUserColumns(onOpen, onClose, handleSetActive, handleDelete, true)}
 						data={data || []}
 						paginationState={paginationState}
 						rowSelectionState={rowSelectionState}

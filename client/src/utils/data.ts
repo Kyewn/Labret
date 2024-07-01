@@ -37,6 +37,7 @@ export type User = {
 	createdAt: string | Date;
 	imageUrls: string[];
 	lastRentalAt?: string | Date;
+	createdBy?: string | User;
 };
 
 export type UserEditableFields = {
