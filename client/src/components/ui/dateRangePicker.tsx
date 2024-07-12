@@ -11,11 +11,13 @@ import {cn} from '@/utils/utils';
 import {CalendarDays} from 'lucide-react';
 
 type Props = {
+	placeholder?: string;
 	drValue?: DateRange;
 	onSelectRange: (dateRange: DateRange) => void;
 };
 
 export const DatePickerWithRange: React.FC<Props & React.HTMLAttributes<HTMLDivElement>> = ({
+	placeholder,
 	drValue,
 	onSelectRange,
 	...htmlAttributes
@@ -63,7 +65,7 @@ export const DatePickerWithRange: React.FC<Props & React.HTMLAttributes<HTMLDivE
 								<>{format(drValue.from, 'LLL dd, y')} - ??</>
 							)
 						) : (
-							<span>Pick a date</span>
+							<span>{placeholder}</span>
 						)}
 					</Button>
 				</PopoverTrigger>

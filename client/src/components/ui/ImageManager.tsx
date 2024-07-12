@@ -26,6 +26,7 @@ import {ArrowLeft, CircleHelp, Ellipsis, Trash} from 'lucide-react';
 import {useState} from 'react';
 
 type Props = {
+	label?: string;
 	specifiedImages?: Blob[] | string[];
 	isRemovable?: boolean;
 	currPreviewIndex?: number;
@@ -33,6 +34,7 @@ type Props = {
 };
 
 const ImageManager: React.FC<Props> = ({
+	label,
 	specifiedImages,
 	currPreviewIndex,
 	isRemovable,
@@ -228,6 +230,7 @@ const ImageManager: React.FC<Props> = ({
 					<ModalBody>{viewingImage ? renderViewingImage() : renderAllImages()}</ModalBody>
 				</ModalContent>
 			</Modal>
+			{label && <Text fontWeight={700}>{label}</Text>}
 			<VStack alignItems={'flex-start'}>
 				{images.length ? (
 					<HStack marginY={5} spacing={5}>

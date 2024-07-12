@@ -1,7 +1,8 @@
-import {ConfirmDialogProps} from '@/components/ui/ConfirmDialog';
-import {deleteUser, editUser, getAllAdmins, getAllUsers} from '@/db/user';
-import {User} from '@/utils/data';
-import {useDisclosure, useToast} from '@chakra-ui/react';
+import { ConfirmDialogProps } from '@/components/ui/ConfirmDialog';
+import { deleteUser, editUser, getAllAdmins, getAllUsers } from '@/db/user';
+import { User } from '@/utils/data';
+import { createNewDate } from '@/utils/utils';
+import { useDisclosure, useToast } from '@chakra-ui/react';
 import {
 	ColumnFiltersState,
 	PaginationState,
@@ -9,11 +10,10 @@ import {
 	SortingState,
 	Table
 } from '@tanstack/react-table';
-import {addDays} from 'date-fns';
-import {SyntheticEvent, createContext, useContext, useState} from 'react';
+import { SyntheticEvent, createContext, useContext, useState } from 'react';
 
 // TABLE STRUCTURES
-export const useInitialUserTableContext = (page: string = 'register') => {
+export const useInitialUserTableContext = (page: string = 'users') => {
 	// Table data states
 	const dataState = useState<User[] | undefined>(undefined);
 	const selectedDataState = useState<User | undefined>(undefined);
@@ -38,21 +38,10 @@ export const useInitialUserTableContext = (page: string = 'register') => {
 	const rowSelectionState = useState<RowSelectionState>({});
 
 	// Filters
-	const getInitDate = () => {
-		const fromDate = new Date();
-		fromDate.setHours(0, 0, 0, 0);
-		const toDate = addDays(new Date(), 20);
-		toDate.setHours(23, 59, 59, 999);
-
-		return {
-			from: fromDate,
-			to: toDate
-		};
-	};
 	const initialFilterValueState = useState<ColumnFiltersState>([
 		{
 			id: 'createdAt',
-			value: getInitDate()
+			value: createNewDate(true)
 		}
 	]);
 	const [initialFilterValue] = initialFilterValueState;
@@ -67,7 +56,7 @@ export const useInitialUserTableContext = (page: string = 'register') => {
 	};
 
 	const refetch = async () => {
-		const data = page == 'register' ? await getAllUsers() : await getAllAdmins();
+		const data = page == 'users' ? await getAllUsers() : await getAllAdmins();
 		setData([...data]);
 	};
 

@@ -66,12 +66,15 @@ export const AddRentingItemModal: React.FC<{
 			rentQuantity: 30
 		}
 	];
-	const cbItems: Item[] = items.map((item) => ({
-		itemId: item.item.itemId,
-		itemName: item.item.itemName,
-		itemImages: item.item.itemImages,
-		itemQuantity: item.item.itemQuantity
-	}));
+	const cbItems: Item[] = items.map((item) => {
+		const currItem = item.item as Item;
+		return {
+			itemId: currItem.itemId,
+			itemName: currItem.itemName,
+			itemImages: currItem.itemImages,
+			itemQuantity: currItem.itemQuantity
+		};
+	});
 	const {addDisclosure} = useScanContext() as ReturnType<typeof useInitialScanContext>;
 	const {isOpen, onClose} = addDisclosure;
 	const {watch, register, setValue} = useForm<NewRentingItemFormValues>();
