@@ -1,6 +1,6 @@
 import {EditableNumberInput} from '@/components/ui/EditableNumberInput';
 import {useInitialScanContext, useScanContext} from '@/utils/context/ScanContext';
-import {FormValues, NewRentingItemFormValues, RentingItem} from '@/utils/data';
+import {FormValues, Item, NewRentingItemFormValues, RentingItem} from '@/utils/data';
 
 import {
 	Button,
@@ -38,7 +38,7 @@ export const EditRentingItemModal: React.FC<{
 
 	useEffect(() => {
 		if (isOpen && selectedItem) {
-			setValue('item', selectedItem.item);
+			setValue('item', selectedItem.item as Item);
 			setValue('rentQuantity', selectedItem.rentQuantity as number);
 		}
 	}, [isOpen, selectedItem]);
@@ -77,7 +77,7 @@ export const EditRentingItemModal: React.FC<{
 								<Text fontWeight={700} fontSize={'sm'}>
 									Item
 								</Text>
-								<Text>{selectedItem?.item.itemName}</Text>
+								<Text>{(selectedItem?.item as Item | undefined)?.itemName}</Text>
 							</VStack>
 							<EditableNumberInput
 								isEditing

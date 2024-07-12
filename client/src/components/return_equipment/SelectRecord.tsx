@@ -17,7 +17,7 @@ const dummyRecords: RentalRecord[] = [
 		renterId: '',
 		rentImages: [],
 		notes: '',
-		rentStatus: '',
+		recordStatus: '',
 		recordId: '1',
 		rentingItems: []
 	},
@@ -27,7 +27,7 @@ const dummyRecords: RentalRecord[] = [
 		renterId: '',
 		rentImages: [],
 		notes: '',
-		rentStatus: '',
+		recordStatus: '',
 		recordId: '2',
 		rentingItems: []
 	},
@@ -37,7 +37,7 @@ const dummyRecords: RentalRecord[] = [
 		renterId: '',
 		rentImages: [],
 		notes: '',
-		rentStatus: '',
+		recordStatus: '',
 		recordId: '3',
 		rentingItems: []
 	}

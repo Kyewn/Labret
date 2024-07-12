@@ -47,9 +47,10 @@ export const UserItemModal: React.FC<{
 	const handleEdit = async () => {
 		const mHandleEdit = async (newData: User) => {
 			const editRecord = async () => {
-				await editUser(selectedUser?.id as string, {
+				await editUser((selectedUser as User | undefined)?.id as string, {
 					...newData,
-					createdAt: (newData.createdAt as Date).toISOString()
+					createdAt: (newData.createdAt as Date).toISOString(),
+					...(newData.createdBy && {createdBy: (newData.createdBy as User).id})
 				});
 				refetch();
 				return true;
@@ -79,7 +80,7 @@ export const UserItemModal: React.FC<{
 			}
 			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 		};
-		multiEditableContext.onSubmit(async (nNewData) => await mHandleEdit(nNewData));
+		multiEditableContext.onSubmit(async (nNewData) => await mHandleEdit(nNewData as User));
 	};
 
 	const getStatusColor = (status: string) => {
@@ -104,11 +105,13 @@ export const UserItemModal: React.FC<{
 					<Flex>
 						<HStack spacing={5}>
 							<Tag colorScheme={'orange'} fontWeight={'bold'}>
-								ID {selectedUser?.id}
+								ID {(selectedUser as User | undefined)?.id as string}
 							</Tag>
-							{selectedUser?.status && (
-								<Tag colorScheme={getStatusColor(selectedUser?.status)}>
-									{mapUserStatus(selectedUser?.status)}
+							{(selectedUser as User | undefined)?.status && (
+								<Tag
+									colorScheme={getStatusColor((selectedUser as User | undefined)?.status as string)}
+								>
+									{mapUserStatus((selectedUser as User | undefined)?.status as string)}
 								</Tag>
 							)}
 						</HStack>
@@ -143,7 +146,7 @@ export const UserItemModal: React.FC<{
 								<EditableField
 									name='name'
 									label={'Name'}
-									value={selectedUser?.name}
+									value={(selectedUser as User | undefined)?.name}
 									isEditing={multiEditableContext.isEditing}
 									register={register as UseFormRegister<FormValues>}
 									rules={{required: 'Name is required'}}
@@ -153,7 +156,7 @@ export const UserItemModal: React.FC<{
 								<EditableField
 									name='email'
 									label={'Email'}
-									value={selectedUser?.email}
+									value={(selectedUser as User | undefined)?.email}
 									isEditing={multiEditableContext.isEditing}
 									register={register as UseFormRegister<FormValues>}
 									rules={{required: 'Email is required'}}
@@ -163,9 +166,9 @@ export const UserItemModal: React.FC<{
 								<EditableDate
 									label={'Creation Date'}
 									name='createdAt'
-									value={selectedUser?.createdAt as Date}
+									value={(selectedUser as User | undefined)?.createdAt as Date}
 								/>
-								<ImageManager specifiedImages={selectedUser?.imageUrls} />
+								<ImageManager specifiedImages={(selectedUser as User | undefined)?.imageUrls} />
 							</VStack>
 						</form>
 					</Flex>

@@ -4,6 +4,7 @@ import {ScannedItem} from '@/components/rent_equipment/ScannedItem';
 import {ConfirmDialog} from '@/components/ui/ConfirmDialog';
 import {useAppContext} from '@/utils/context/AppContext';
 import {useInitialScanContext, useScanContext} from '@/utils/context/ScanContext';
+import {Item} from '@/utils/data';
 import {Button, Center, Flex, Heading, Spacer, Text, VStack} from '@chakra-ui/react';
 import {useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
@@ -33,7 +34,8 @@ export const EditScanResult: React.FC = () => {
 		newScanResult?.map((rentingItem) => {
 			return (
 				<ScannedItem
-					key={rentingItem.item.itemId}
+					isEditingImageEnabled={false}
+					key={(rentingItem.item as Item).itemId}
 					itemInfo={rentingItem}
 					onOpenEditItem={() => {
 						setSelectedItem(rentingItem);

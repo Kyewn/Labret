@@ -17,6 +17,9 @@ export const paths = {
 		admins: '/admins',
 		equipment: '/equipment',
 		verifications: '/verifications',
-		criticalRecords: '/critical-records'
+		criticalRecords: '/critical-records',
+
+		editRentRecord: '/edit-rent-record',
+		editReturnRecord: '/edit-return-record'
 	}
 };

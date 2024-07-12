@@ -29,7 +29,7 @@ import {Link} from 'react-router-dom';
 
 export function ViewAdmins() {
 	const {appDispatch} = useAppContext();
-	const usersTableContext = useInitialUserTableContext('registerAdmin');
+	const usersTableContext = useInitialUserTableContext('admins');
 	const infoDisclosure = useDisclosure(); // Selection actions modal
 	const {onOpen: onInfoOpen} = infoDisclosure; // Selection actions modal
 	const [canNext, setCanNext] = useState(false);

@@ -1,14 +1,14 @@
 import {DatePicker} from '@/components/ui/DatePicker/DatePicker';
 import {TableData} from '@/components/ui/Table/TableGroup';
 import {FormKeys, FormValues} from '@/utils/data';
-import {formatDate} from '@/utils/utils';
+import {createNewDate, formatDate} from '@/utils/utils';
 import {Text, VStack} from '@chakra-ui/react';
 import {RegisterOptions, UseFormReturn} from 'react-hook-form';
 
 type Props = Partial<Pick<UseFormReturn<FormValues>, 'setValue'>> & {
 	label: string;
-	name: FormKeys;
-	value: Date;
+	name: FormKeys | string;
+	value?: Date;
 	maxDate?: Date; // For single
 	minDate?: Date; // For single
 	isEditing?: boolean;
@@ -36,11 +36,11 @@ export const EditableDate: React.FC<Props> = ({
 				// Editing
 				isEditing ? (
 					<DatePicker
-						date={value}
+						date={value || (createNewDate() as Date)}
 						maxDate={maxDate}
 						minDate={minDate}
 						onSelectedDateChanged={(date) => {
-							setValue && setValue(name, date);
+							setValue && setValue(name as FormKeys, date);
 							handleChange && handleChange({[name]: date});
 						}}
 					/>
