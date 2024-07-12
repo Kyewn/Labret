@@ -67,7 +67,7 @@ export function DataTable<TData, TValue>({
 			getFilteredRowModel: getFilteredRowModel()
 		}),
 		filterFns: {
-			withinUserDateRange: userFilterFns.withinUserDateRange
+			withinDateRange: userFilterFns.withinDateRange
 		},
 		...(sortingState && {
 			onSortingChange: setSorts,

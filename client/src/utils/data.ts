@@ -11,7 +11,6 @@ export type NewRentingItemFormValues = {
 	item?: Item;
 	rentQuantity?: string | number;
 };
-
 export type NewRentFormValues = {
 	recordTitle?: string;
 	recordNotes?: string;
@@ -25,7 +24,11 @@ export type UserInfoValues = {
 	email?: string;
 	createdAt?: string | Date;
 };
-
+export type RecordInfoValues = {
+	title?: string;
+	email?: string;
+	createdAt?: string | Date;
+};
 // DB Data Structure
 // User
 export type User = {
@@ -62,25 +65,24 @@ export type Item = {
 };
 
 export type RentingItem = {
-	item: Item;
+	item: string | Item;
 	rentQuantity: string | number;
 	proofOfReturn?: string | Blob;
 };
 
 export type RentalRecord = {
+	renterId: string | number;
 	recordId: string;
 	recordTitle: string;
-	renterId: string | number;
+	notes?: string;
+	recordStatus: string;
 	rentingItems: RentingItem[];
 	rentImages: string[];
-	notes: string;
-	rentStatus: string;
 	rentedAt: string | Date;
-	expectedReturnedAt?: string | Date;
+	expectedReturnAt: string | Date;
 	returnedAt?: string | Date;
 	returnImages?: Record<string, unknown>[];
 	returnLocation?: string;
-	unpaidAmount?: number;
 };
 
 export type Verification = {
@@ -91,6 +93,30 @@ export type Verification = {
 	createdAt: string | Date;
 	verifiedAt?: string | Date;
 	verifiedBy?: string;
+};
+
+export type FormValues =
+	| AddUserFormValues
+	| UserInfoValues
+	| NewRentingItemFormValues
+	| NewRentFormValues;
+export type FormKeys =
+	| keyof AddUserFormValues
+	| keyof UserInfoValues
+	| keyof NewRentingItemFormValues
+	| keyof NewRentFormValues;
+export type TableData = User | RentalRecord | Item | Verification;
+
+// Others
+export type MiscObject = {
+	[key: string]: string | number | boolean | Date;
+};
+export type InputData = TableData | MiscObject;
+
+// Prediction API
+export type FaceResult = {
+	labels: string[];
+	scores: number[];
 };
 
 // Data Utils
@@ -106,26 +132,29 @@ export const mapUserStatus = (status: string) => {
 	}
 };
 
-export type FormValues =
-	| AddUserFormValues
-	| UserInfoValues
-	| NewRentingItemFormValues
-	| NewRentFormValues;
-export type FormKeys =
-	| keyof AddUserFormValues
-	| keyof UserInfoValues
-	| keyof NewRentingItemFormValues
-	| keyof NewRentFormValues;
-export type TableData = User;
+export const mapRecordStatus = (status: string) => {
+	switch (status) {
+		case 'pending':
+			return 'Pending';
 
-// Others
-export type MiscObject = {
-	[key: string]: string | number | boolean | Date;
-};
-export type InputData = TableData | MiscObject;
+		case 'active':
+			return 'Active';
 
-// Prediction API
-export type FaceResult = {
-	labels: string[];
-	scores: number[];
+		case 'returning':
+			return 'Returning';
+
+		case 'rent_reverifying':
+		case 'return_reverifying':
+			return 'Reverifying';
+
+		case 'completed':
+			return 'Completed';
+
+		case 'rent_rejected':
+		case 'return_rejected':
+			return 'Rejected';
+
+		default:
+			return status;
+	}
 };

@@ -1,4 +1,4 @@
-import {RentingItem} from '@/utils/data';
+import {Item, RentingItem} from '@/utils/data';
 import {
 	Button,
 	Flex,
@@ -15,24 +15,24 @@ import React from 'react';
 
 type Props = {
 	itemInfo: RentingItem;
-	onOpenEditItem: () => void;
-	onDeleteItem: () => void;
+	onOpenEditItem?: () => void;
+	onDeleteItem?: () => void;
 	// Return page props
-	imageBlob?: Blob;
 	onOpenProofCapture?: () => void;
 	onOpenImageBlob?: () => void;
+	isEditingImageEnabled?: boolean;
 };
 
 export const ScannedItem: React.FC<Props> = ({
 	itemInfo,
 	onOpenEditItem,
 	onDeleteItem,
-	imageBlob,
 	onOpenProofCapture,
-	onOpenImageBlob
+	onOpenImageBlob,
+	isEditingImageEnabled = true
 }) => {
 	const {item, rentQuantity} = itemInfo;
-	const {itemId, itemName} = item;
+	const {itemId, itemName} = item as Item;
 
 	return (
 		<Flex w={'100%'} key={itemId}>
@@ -54,43 +54,45 @@ export const ScannedItem: React.FC<Props> = ({
 			</HStack>
 			<Spacer />
 			<HStack spacing={1}>
-				{!!imageBlob &&
-					(itemInfo.proofOfReturn ? (
-						<Tooltip label={'Show image proof'}>
-							<IconButton
-								isRound
-								icon={<Check />}
-								color={'green'}
-								_hover={{color: 'green', backgroundColor: 'grey.100'}}
-								variant={'iconButton'}
-								aria-label={'show-image-proof'}
-								onClick={onOpenImageBlob}
-							/>
-						</Tooltip>
-					) : (
-						<Button variant={'outline'} onClick={onOpenProofCapture}>
-							Attach image proof
-						</Button>
-					))}
-				<Tooltip label={'Edit'}>
-					<IconButton
-						isRound
-						icon={<Pen />}
-						variant={'iconButton'}
-						aria-label={'edit-item'}
-						onClick={onOpenEditItem}
-					/>
-				</Tooltip>
-
-				<Tooltip label={'Delete'}>
-					<IconButton
-						isRound
-						icon={<Trash />}
-						variant={'criticalIconButton'}
-						aria-label={'delete-item'}
-						onClick={onDeleteItem}
-					/>
-				</Tooltip>
+				{itemInfo.proofOfReturn ? (
+					<Tooltip label={'Show image proof'}>
+						<IconButton
+							isRound
+							icon={<Check />}
+							color={'green'}
+							_hover={{color: 'green', backgroundColor: 'grey.100'}}
+							variant={'iconButton'}
+							aria-label={'show-image-proof'}
+							onClick={onOpenImageBlob}
+						/>
+					</Tooltip>
+				) : isEditingImageEnabled ? (
+					<Button variant={'outline'} onClick={onOpenProofCapture}>
+						Attach image proof
+					</Button>
+				) : undefined}
+				{onOpenEditItem && (
+					<Tooltip label={'Edit'}>
+						<IconButton
+							isRound
+							icon={<Pen />}
+							variant={'iconButton'}
+							aria-label={'edit-item'}
+							onClick={onOpenEditItem}
+						/>
+					</Tooltip>
+				)}
+				{onDeleteItem && (
+					<Tooltip label={'Delete'}>
+						<IconButton
+							isRound
+							icon={<Trash />}
+							variant={'criticalIconButton'}
+							aria-label={'delete-item'}
+							onClick={onDeleteItem}
+						/>
+					</Tooltip>
+				)}
 			</HStack>
 		</Flex>
 	);

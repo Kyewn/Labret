@@ -1,8 +1,8 @@
-import {User, mapUserStatus} from '@/utils/data';
+import {RentalRecord, TableData, User, mapRecordStatus, mapUserStatus} from '@/utils/data';
 import {formatDate} from '@/utils/utils';
 import {Button, ButtonGroup, Checkbox, Flex, IconButton} from '@chakra-ui/react';
 import {ColumnDef, CustomFilterFns, FilterFn, Row} from '@tanstack/react-table';
-import {ArrowBigDown, ArrowBigUp, Trash} from 'lucide-react';
+import {ArrowBigDown, ArrowBigUp, Check, Trash} from 'lucide-react';
 import {SyntheticEvent} from 'react';
 import {DateRange} from 'react-day-picker';
 
@@ -10,7 +10,7 @@ import {DateRange} from 'react-day-picker';
 // User
 declare module '@tanstack/table-core' {
 	interface FilterFns {
-		withinUserDateRange?: FilterFn<User>;
+		withinDateRange?: FilterFn<TableData>;
 	}
 }
 
@@ -132,7 +132,7 @@ export const getUserColumns: (
 		},
 		cell: ({row}) => formatDate(row.original.createdAt as Date),
 		enableColumnFilter: true,
-		filterFn: 'withinUserDateRange'
+		filterFn: 'withinDateRange'
 	},
 	...(isViewAdminPage
 		? ([
@@ -215,18 +215,245 @@ export const getUserColumns: (
 	}
 ];
 
+export const getUserHistoryActiveRecordColumns: () => ColumnDef<RentalRecord>[] = () => [
+	{
+		accessorKey: 'recordId',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					ID
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'recordTitle',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Record Title
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'rentedAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Rented At
+				</Button>
+			);
+		},
+		cell: ({row}) => (row.original.rentedAt ? formatDate(row.original.rentedAt as Date) : '--'),
+		enableGlobalFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		accessorKey: 'expectedReturnAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Expected Return At
+				</Button>
+			);
+		},
+		cell: ({row}) =>
+			row.original.expectedReturnAt ? formatDate(row.original.expectedReturnAt as Date) : '--',
+		enableColumnFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		accessorKey: 'recordStatus',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Status
+				</Button>
+			);
+		},
+		cell: ({row}) => mapRecordStatus(row.original.recordStatus),
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'isReverify',
+		header: () => 'Reverifying',
+		cell: ({row}) =>
+			row.original.recordStatus === 'rent_reverifying' ||
+			row.original.recordStatus === 'return_reverifying' ? (
+				<Check />
+			) : null
+	}
+];
+
+export const getUserHistoryCompletedRecordColumns: () => ColumnDef<RentalRecord>[] = () => [
+	{
+		accessorKey: 'recordId',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					ID
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'recordTitle',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Record Title
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'rentedAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Rented At
+				</Button>
+			);
+		},
+		cell: ({row}) => (row.original.rentedAt ? formatDate(row.original.rentedAt as Date) : '--'),
+		enableGlobalFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		accessorKey: 'expectedReturnAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Expected Return At
+				</Button>
+			);
+		},
+		cell: ({row}) =>
+			row.original.expectedReturnAt ? formatDate(row.original.expectedReturnAt as Date) : '--',
+		enableColumnFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		accessorKey: 'returnedAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Returned At
+				</Button>
+			);
+		},
+		cell: ({row}) => (row.original.returnedAt ? formatDate(row.original.returnedAt as Date) : '--'),
+		enableColumnFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		accessorKey: 'recordStatus',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Status
+				</Button>
+			);
+		},
+		cell: ({row}) => mapRecordStatus(row.original.recordStatus),
+		enableGlobalFilter: true
+	}
+];
+
 // FILTERS
 // User
-export const userFilterFns: CustomFilterFns<User> = {
-	withinUserDateRange: (row: Row<User>, columnId: string, filterValue: DateRange) => {
-		const createdAt = row.getValue(columnId) as Date;
+export const userFilterFns: CustomFilterFns<TableData> = {
+	withinDateRange: (row: Row<TableData>, columnId: string, filterValue: DateRange) => {
+		const date = row.getValue(columnId) as Date;
 		const {from, to} = filterValue;
 
 		if (!from) return false;
 
-		if (from && !to) return createdAt >= from;
+		if (from && !to) return date >= from;
 
-		if (from && to) return createdAt >= from && createdAt <= to;
+		if (from && to) return date >= from && date <= to;
 
 		return true; // unused, important parts above
 	}

@@ -11,7 +11,8 @@ import {Helmet} from 'react-helmet-async';
 import {useNavigate} from 'react-router-dom';
 
 export function Return() {
-	const {appDispatch} = useAppContext();
+	const {appState, appDispatch} = useAppContext();
+	const {handleCloseExistingPeerConnection} = appState;
 	const scanContext = useInitialScanContext();
 	const {returningRecordState, activeStep, imagesState} = scanContext;
 	const [records, setRecords] = useState<RentalRecord[]>([]);
@@ -37,6 +38,7 @@ export function Return() {
 	const handleScan = () => {
 		appDispatch({type: 'SET_PAGE_LOADING', payload: true});
 		setTimeout(() => {
+			handleCloseExistingPeerConnection();
 			navigate(paths.sub.returnResult, {
 				state: {
 					images

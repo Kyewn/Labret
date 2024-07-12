@@ -1,5 +1,6 @@
 import {FaceResult} from '@/utils/data';
 import {clsx, type ClassValue} from 'clsx';
+import {addDays} from 'date-fns';
 import {twMerge} from 'tailwind-merge';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,6 +34,20 @@ export const formatDateAndTime = (date: Date) =>
 		minute: 'numeric',
 		second: 'numeric'
 	});
+
+export const createNewDate = (isDateRange: boolean = false) => {
+	const date = new Date();
+	date.setHours(0, 0, 0, 0);
+	const toDate = addDays(new Date(), 20);
+	toDate.setHours(23, 59, 59, 999);
+
+	return isDateRange
+		? {
+				from: date,
+				to: toDate
+		  }
+		: date;
+};
 
 export const predictFaces = async (faceBlob: Blob[]) => {
 	const faceBase64s = await Promise.all(

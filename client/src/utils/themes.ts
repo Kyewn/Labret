@@ -3,7 +3,8 @@ import {
 	listAnatomy,
 	menuAnatomy,
 	numberInputAnatomy,
-	stepperAnatomy
+	stepperAnatomy,
+	tabsAnatomy
 } from '@chakra-ui/anatomy';
 import {
 	createMultiStyleConfigHelpers,
@@ -247,6 +248,21 @@ const Stepper = createMultiStyleConfigHelpers(stepperAnatomy.keys).defineMultiSt
 	}
 });
 
+const Tabs = createMultiStyleConfigHelpers(tabsAnatomy.keys).defineMultiStyleConfig({
+	baseStyle: {
+		tab: {
+			_selected: {
+				color: 'whiteDarkMode',
+				backgroundColor: 'lrBrown.600',
+				borderRadius: 5
+			}
+		},
+		tablist: {
+			border: 'none !important'
+		}
+	}
+});
+
 export const CardList = createMultiStyleConfigHelpers(listAnatomy.keys).defineMultiStyleConfig({
 	baseStyle: {
 		item: {
@@ -346,6 +362,7 @@ export const themes = extendTheme({
 		Input,
 		NumberInput,
 		Menu,
-		Stepper
+		Stepper,
+		Tabs
 	}
 });
