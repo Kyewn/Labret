@@ -4,8 +4,9 @@ import {EditableField} from '@/components/ui/EditableField';
 import {useAppContext} from '@/utils/context/AppContext';
 import {useInitialScanContext, useScanContext} from '@/utils/context/ScanContext';
 import {FormValues, NewRentFormValues} from '@/utils/data';
+import {createNewDate} from '@/utils/utils';
 import {Button, ButtonGroup, Checkbox, Spacer, Text, VStack, useDisclosure} from '@chakra-ui/react';
-import {addDays} from 'date-fns';
+import {addMonths} from 'date-fns';
 import {useEffect} from 'react';
 import {UseFormRegister, UseFormSetValue, useForm} from 'react-hook-form';
 
@@ -21,7 +22,7 @@ export const RentForm: React.FC = () => {
 		handleSubmit,
 		formState: {errors}
 	} = useForm<NewRentFormValues>();
-	const {recordTitle, recordNotes, recordReturnDate, isReadTnC} = watch();
+	const {recordTitle, recordNotes, expectedReturnAt, isReadTnC} = watch();
 	const tcDisclosure = useDisclosure();
 	const {onOpen} = tcDisclosure;
 
@@ -41,7 +42,7 @@ export const RentForm: React.FC = () => {
 				id='form'
 				style={{flex: 1}}
 				onSubmit={handleSubmit(() =>
-					handleAddRent({recordTitle, recordNotes, recordReturnDate, isReadTnC})
+					handleAddRent({recordTitle, recordNotes, expectedReturnAt, isReadTnC})
 				)}
 			>
 				<VStack height={'100%'} flex={1} paddingY={5} spacing={3} alignItems={'flex-start'}>
@@ -62,9 +63,11 @@ export const RentForm: React.FC = () => {
 						isEditing
 					/>
 					<EditableDate
-						label={'Return Date'}
-						name={'recordReturnDate'}
-						value={recordReturnDate || addDays(new Date(), 3)}
+						label={'Expected return date'}
+						name={'expectedReturnAt'}
+						minDate={createNewDate() as Date}
+						maxDate={addMonths(createNewDate() as Date, 6)}
+						value={expectedReturnAt || (createNewDate() as Date)}
 						isEditing
 						setValue={setValue as UseFormSetValue<FormValues>}
 					/>

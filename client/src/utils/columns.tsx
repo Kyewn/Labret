@@ -442,6 +442,84 @@ export const getUserHistoryCompletedRecordColumns: () => ColumnDef<RentalRecord>
 	}
 ];
 
+export const getUserHistoryRejectedRecordColumns: () => ColumnDef<RentalRecord>[] = () => [
+	{
+		accessorKey: 'recordId',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					ID
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'recordTitle',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Record Title
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'rentedAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Rented At
+				</Button>
+			);
+		},
+		cell: ({row}) => (row.original.rentedAt ? formatDate(row.original.rentedAt as Date) : '--'),
+		enableGlobalFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		accessorKey: 'recordStatus',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Status
+				</Button>
+			);
+		},
+		cell: ({row}) => mapRecordStatus(row.original.recordStatus),
+		enableGlobalFilter: true
+	}
+];
+
 // FILTERS
 // User
 export const userFilterFns: CustomFilterFns<TableData> = {

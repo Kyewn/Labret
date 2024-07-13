@@ -411,7 +411,7 @@ const dummyItems: RentalRecord[] = [
 	},
 	{
 		recordId: 'ABC123',
-		recordTitle: 'Hello',
+		recordTitle: 'Return',
 		renterId: 'PJtSBgLgeBtbgg5NES2Z',
 		rentingItems: [
 			{
@@ -435,7 +435,7 @@ const dummyItems: RentalRecord[] = [
 		],
 		rentImages: [],
 		notes: 'World, hello!',
-		recordStatus: 'rent_reverifying',
+		recordStatus: 'return_reverifying',
 		rentedAt: new Date('2023-2-1'),
 		expectedReturnAt: new Date('2023-2-5'),
 		returnedAt: new Date(),
@@ -699,6 +699,38 @@ const dummyItems: RentalRecord[] = [
 		rentImages: [],
 		notes: 'World, hello!',
 		recordStatus: 'rent_rejected',
+		rentedAt: new Date('2023-1-1'),
+		expectedReturnAt: new Date('2023-1-5'),
+		returnImages: [],
+		returnLocation: ''
+	},
+	{
+		recordId: 'R123',
+		recordTitle: 'ReturnRej',
+		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		rentingItems: [
+			{
+				item: {
+					itemId: 'ABC123',
+					itemName: 'Beaker',
+					itemImages: [],
+					itemQuantity: 123
+				},
+				rentQuantity: 10
+			},
+			{
+				item: {
+					itemId: 'ABC1234',
+					itemName: 'Airhorn',
+					itemImages: [],
+					itemQuantity: 123
+				},
+				rentQuantity: 12
+			}
+		],
+		rentImages: [],
+		notes: 'World, hello!',
+		recordStatus: 'return_rejected',
 		rentedAt: new Date('2023-1-1'),
 		expectedReturnAt: new Date('2023-1-5'),
 		returnImages: [],

@@ -1,3 +1,4 @@
+import {EditRecord} from '@/components/user_history/EditRecord';
 import {Error404} from '@/pages/Error404';
 import {Register} from '@/pages/Register';
 import {RegisterAdmin} from '@/pages/RegisterAdmin';
@@ -64,10 +65,11 @@ const router = createBrowserRouter(
 				<Route element={<AuthCheck />}>
 					<Route path={paths.sub.rentResult} element={<RentResult />} />
 					<Route path={paths.sub.returnResult} element={<ReturnResult />} />
-					<Route path={paths.sub.userHistory} element={<UserHistory />} />
 					<Route path={paths.sub.users} element={<ViewUsers />} />
 					<Route path={paths.sub.admins} element={<ViewAdmins />} />
 					<Route path={paths.sub.registerAdmin} element={<RegisterAdmin />} />
+					<Route path={paths.sub.userHistory} element={<UserHistory />} />
+					<Route path={paths.sub.editRecord} element={<EditRecord />} />
 					<Route path={paths.sub.equipment} /*element={}*/ />
 					<Route path={paths.sub.addItem} /* element={} */ />
 					<Route path={paths.sub.verifications} /*element={}*/ />

@@ -17,7 +17,7 @@ import {
 	VStack
 } from '@chakra-ui/react';
 import {Check, X} from 'lucide-react';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {UseFormRegister, useForm} from 'react-hook-form';
 
 export const AddRentingItemModal: React.FC<{
@@ -25,58 +25,54 @@ export const AddRentingItemModal: React.FC<{
 	handleConfirm?: (item: RentingItem) => void;
 }> = ({title, handleConfirm}) => {
 	// FIXME: Fetch from db
-	const items: RentingItem[] = [
+	const items: Item[] = [
 		{
-			item: {
-				itemId: '1',
-				itemName: 'item1',
-				itemImages: [],
-				itemQuantity: 0,
-				itemCategory: undefined,
-				itemDescription: undefined,
-				createdAt: undefined,
-				createdBy: undefined
-			},
-			rentQuantity: 10
+			itemId: '1',
+			itemName: 'item1',
+			itemImages: [],
+			itemQuantity: 50,
+			itemCategory: undefined,
+			itemDescription: undefined,
+			createdAt: undefined,
+			createdBy: undefined,
+			remainingQuantity: 50
 		},
 		{
-			item: {
-				itemId: '2',
-				itemName: 'item2',
-				itemImages: [],
-				itemQuantity: 0,
-				itemCategory: undefined,
-				itemDescription: undefined,
-				createdAt: undefined,
-				createdBy: undefined
-			},
-			rentQuantity: 20
+			itemId: '2',
+			itemName: 'item2',
+			itemImages: [],
+			itemQuantity: 40,
+			itemCategory: undefined,
+			itemDescription: undefined,
+			createdAt: undefined,
+			createdBy: undefined,
+			remainingQuantity: 50
 		},
 		{
-			item: {
-				itemId: '3',
-				itemName: 'item3',
-				itemImages: [],
-				itemQuantity: 0,
-				itemCategory: undefined,
-				itemDescription: undefined,
-				createdAt: undefined,
-				createdBy: undefined
-			},
-			rentQuantity: 30
+			itemId: '3',
+			itemName: 'item3',
+			itemImages: [],
+			itemQuantity: 30,
+			itemCategory: undefined,
+			itemDescription: undefined,
+			createdAt: undefined,
+			createdBy: undefined,
+			remainingQuantity: 50
 		}
 	];
 	const cbItems: Item[] = items.map((item) => {
-		const currItem = item.item as Item;
+		const currItem = item as Item;
 		return {
 			itemId: currItem.itemId,
 			itemName: currItem.itemName,
 			itemImages: currItem.itemImages,
-			itemQuantity: currItem.itemQuantity
+			itemQuantity: currItem.itemQuantity,
+			remainingQuantity: currItem.remainingQuantity
 		};
 	});
 	const {addDisclosure} = useScanContext() as ReturnType<typeof useInitialScanContext>;
 	const {isOpen, onClose} = addDisclosure;
+	const [maxQuantity, setMaxQuantity] = useState<number>(100);
 	const {watch, register, setValue} = useForm<NewRentingItemFormValues>();
 	const {item, rentQuantity} = watch();
 
@@ -90,6 +86,17 @@ export const AddRentingItemModal: React.FC<{
 			setValue('rentQuantity', 1);
 		}
 	}, [isOpen]);
+
+	useEffect(() => {
+		if (item) {
+			setMaxQuantity(() => {
+				if (rentQuantity && rentQuantity > item.remainingQuantity) {
+					setValue('rentQuantity', item.remainingQuantity);
+				}
+				return item.remainingQuantity as number;
+			});
+		}
+	}, [item]);
 
 	return (
 		<Modal scrollBehavior={'inside'} isOpen={isOpen} onClose={handleClose}>
@@ -137,6 +144,7 @@ export const AddRentingItemModal: React.FC<{
 							<EditableNumberInput
 								isEditing
 								min={1}
+								max={maxQuantity}
 								name='rentQuantity'
 								label={'Quantity'}
 								value={rentQuantity as number}

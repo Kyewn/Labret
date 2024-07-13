@@ -4,14 +4,15 @@ import {ChevronLeft, ChevronRight} from 'lucide-react';
 import {useEffect, useState} from 'react';
 
 type Props = {
-	images: Blob[];
+	images?: Blob[];
+	specificImageUrls?: string[];
 	handlePreviewChange?: (index: number) => void;
 };
 
-export const ImageGallery: React.FC<Props> = ({images, handlePreviewChange}) => {
+export const ImageGallery: React.FC<Props> = ({images, handlePreviewChange, specificImageUrls}) => {
 	const [imageIndex, setImageIndex] = useState(0);
 	const [currPage, setCurrPage] = useState(0);
-	const imageUrls = images.map((image) => URL.createObjectURL(image));
+	const imageUrls = specificImageUrls || images?.map((image) => URL.createObjectURL(image)) || [];
 
 	const handleNextPreview = () => {
 		setImageIndex((prev) => {
@@ -40,7 +41,7 @@ export const ImageGallery: React.FC<Props> = ({images, handlePreviewChange}) => 
 
 	return (
 		<VStack flex={1} p={5}>
-			<Image flex={1} src={imageUrls[imageIndex]} h={'75%'} />
+			<Image flex={1} src={specificImageUrls?.[imageIndex] || imageUrls[imageIndex]} h={'75%'} />
 			<HStack>
 				<Flex>
 					<IconButton
@@ -53,7 +54,7 @@ export const ImageGallery: React.FC<Props> = ({images, handlePreviewChange}) => 
 				</Flex>
 				<Box flex={1}>
 					<ImageManager
-						specifiedImages={images}
+						specifiedImages={specificImageUrls || images}
 						currPreviewIndex={imageIndex}
 						handlePreviewClick={handlePreviewClick}
 					/>

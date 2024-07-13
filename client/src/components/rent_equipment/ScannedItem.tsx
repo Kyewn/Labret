@@ -20,6 +20,7 @@ type Props = {
 	// Return page props
 	onOpenProofCapture?: () => void;
 	onOpenImageBlob?: () => void;
+	isEditing?: boolean;
 	isEditingImageEnabled?: boolean;
 };
 
@@ -29,6 +30,7 @@ export const ScannedItem: React.FC<Props> = ({
 	onDeleteItem,
 	onOpenProofCapture,
 	onOpenImageBlob,
+	isEditing = true,
 	isEditingImageEnabled = true
 }) => {
 	const {item, rentQuantity} = itemInfo;
@@ -53,47 +55,49 @@ export const ScannedItem: React.FC<Props> = ({
 				<Text fontWeight={700}>{itemName}</Text>
 			</HStack>
 			<Spacer />
-			<HStack spacing={1}>
-				{itemInfo.proofOfReturn ? (
-					<Tooltip label={'Show image proof'}>
-						<IconButton
-							isRound
-							icon={<Check />}
-							color={'green'}
-							_hover={{color: 'green', backgroundColor: 'grey.100'}}
-							variant={'iconButton'}
-							aria-label={'show-image-proof'}
-							onClick={onOpenImageBlob}
-						/>
-					</Tooltip>
-				) : isEditingImageEnabled ? (
-					<Button variant={'outline'} onClick={onOpenProofCapture}>
-						Attach image proof
-					</Button>
-				) : undefined}
-				{onOpenEditItem && (
-					<Tooltip label={'Edit'}>
-						<IconButton
-							isRound
-							icon={<Pen />}
-							variant={'iconButton'}
-							aria-label={'edit-item'}
-							onClick={onOpenEditItem}
-						/>
-					</Tooltip>
-				)}
-				{onDeleteItem && (
-					<Tooltip label={'Delete'}>
-						<IconButton
-							isRound
-							icon={<Trash />}
-							variant={'criticalIconButton'}
-							aria-label={'delete-item'}
-							onClick={onDeleteItem}
-						/>
-					</Tooltip>
-				)}
-			</HStack>
+			{isEditing && (
+				<HStack spacing={1}>
+					{itemInfo.proofOfReturn ? (
+						<Tooltip label={'Show image proof'}>
+							<IconButton
+								isRound
+								icon={<Check />}
+								color={'green'}
+								_hover={{color: 'green', backgroundColor: 'grey.100'}}
+								variant={'iconButton'}
+								aria-label={'show-image-proof'}
+								onClick={onOpenImageBlob}
+							/>
+						</Tooltip>
+					) : isEditingImageEnabled ? (
+						<Button variant={'outline'} onClick={onOpenProofCapture}>
+							Attach image proof
+						</Button>
+					) : undefined}
+					{onOpenEditItem && (
+						<Tooltip label={'Edit'}>
+							<IconButton
+								isRound
+								icon={<Pen />}
+								variant={'iconButton'}
+								aria-label={'edit-item'}
+								onClick={onOpenEditItem}
+							/>
+						</Tooltip>
+					)}
+					{onDeleteItem && (
+						<Tooltip label={'Delete'}>
+							<IconButton
+								isRound
+								icon={<Trash />}
+								variant={'criticalIconButton'}
+								aria-label={'delete-item'}
+								onClick={onDeleteItem}
+							/>
+						</Tooltip>
+					)}
+				</HStack>
+			)}
 		</Flex>
 	);
 };

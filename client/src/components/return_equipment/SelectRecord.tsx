@@ -1,5 +1,5 @@
 import {useAppContext} from '@/utils/context/AppContext';
-import {useScanContext} from '@/utils/context/ScanContext';
+import {useInitialScanContext, useScanContext} from '@/utils/context/ScanContext';
 import {RentalRecord} from '@/utils/data';
 import {formatDateAndTime} from '@/utils/utils';
 import {HStack, Heading, IconButton, Text, Tooltip, VStack} from '@chakra-ui/react';
@@ -46,8 +46,10 @@ const dummyRecords: RentalRecord[] = [
 export const SelectRecord: React.FC<Props> = ({records}) => {
 	const {appState} = useAppContext();
 	const {handleCloseExistingPeerConnection} = appState;
-	const {goToNext, returningRecordState} = useScanContext() || {};
-	const [, setReturningRecord] = returningRecordState || [];
+	const {goToNext, specificRecordState} = useScanContext() as ReturnType<
+		typeof useInitialScanContext
+	>;
+	const [, setSpecificRecord] = specificRecordState;
 	const navigate = useNavigate();
 
 	const handleSubHeaderBack = () => {
@@ -56,7 +58,7 @@ export const SelectRecord: React.FC<Props> = ({records}) => {
 	};
 
 	const handleRecordClick = (selectedRecord: RentalRecord) => {
-		setReturningRecord?.(selectedRecord);
+		setSpecificRecord(selectedRecord);
 		goToNext?.();
 	};
 

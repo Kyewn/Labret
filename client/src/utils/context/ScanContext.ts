@@ -21,7 +21,7 @@ export const useInitialScanContext = () => {
 	const imagesState = useState<Blob[]>([]);
 	const selectedItemState = useState<RentingItem | null>(null);
 	const dirtyFormState = useState<boolean>(false);
-	const returningRecordState = useState<RentalRecord | undefined>(undefined);
+	const specificRecordState = useState<RentalRecord | undefined>(undefined);
 	const [, setScanResult] = scanResultState;
 
 	const addDisclosure = useDisclosure();
@@ -90,7 +90,7 @@ export const useInitialScanContext = () => {
 	const handleAddRent = ({
 		recordTitle,
 		recordNotes,
-		recordReturnDate,
+		expectedReturnAt,
 		isReadTnC
 	}: NewRentFormValues) => {
 		// Only after isReadTnC is true
@@ -98,7 +98,7 @@ export const useInitialScanContext = () => {
 		// Validate inputs
 		// Check item count does not subtract beyond 0
 
-		console.log(recordTitle, recordNotes, recordReturnDate, isReadTnC);
+		console.log(recordTitle, recordNotes, expectedReturnAt, isReadTnC);
 	};
 
 	return {
@@ -110,7 +110,7 @@ export const useInitialScanContext = () => {
 		imagesState,
 		selectedItemState,
 		scanResultState,
-		returningRecordState,
+		specificRecordState,
 		dirtyFormState,
 
 		addDisclosure,
