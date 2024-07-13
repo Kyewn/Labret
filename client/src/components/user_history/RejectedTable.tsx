@@ -1,6 +1,6 @@
 import {DataTable} from '@/components/ui/DataTable/DataTable';
 import {UserHistoryRejectedFilters} from '@/components/user_history/UserHistoryRejectedFilters';
-import {getUserHistoryActiveRecordColumns} from '@/utils/columns';
+import {getUserHistoryRejectedRecordColumns} from '@/utils/columns';
 import {
 	useInitialUserHistoryTableContext,
 	useUserHistoryTableContext
@@ -60,7 +60,7 @@ export const RejectedTable = () => {
 		<>
 			<UserHistoryRejectedFilters />
 			<DataTable
-				columns={getUserHistoryActiveRecordColumns()}
+				columns={getUserHistoryRejectedRecordColumns()}
 				data={tableData || []}
 				paginationState={paginationState_rejectedTable}
 				rowSelectionState={rowSelectionState_rejectedTable}

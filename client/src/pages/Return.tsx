@@ -14,10 +14,10 @@ export function Return() {
 	const {appState, appDispatch} = useAppContext();
 	const {handleCloseExistingPeerConnection} = appState;
 	const scanContext = useInitialScanContext();
-	const {returningRecordState, activeStep, imagesState} = scanContext;
+	const {specificRecordState, activeStep, imagesState} = scanContext;
 	const [records, setRecords] = useState<RentalRecord[]>([]);
 	const navigate = useNavigate();
-	const [returningRecord, setReturningRecord] = returningRecordState || [];
+	const [returningRecord, setSpecificRecord] = specificRecordState || [];
 
 	const [images] = imagesState;
 

@@ -39,10 +39,6 @@ export const UserHistoryRejectedFilters: React.FC = () => {
 		() => filters && (filters.find((f) => f.id === 'rentedAt')?.value as DateRange),
 		[filters]
 	);
-	const expectedReturnDateFilterValue = useMemo(
-		() => filters && (filters.find((f) => f.id === 'expectedReturnAt')?.value as DateRange),
-		[filters]
-	);
 
 	const onClear = () => {
 		table?.resetGlobalFilter();
@@ -79,26 +75,6 @@ export const UserHistoryRejectedFilters: React.FC = () => {
 										...otherFilters,
 										{
 											id: 'rentedAt',
-											value: dateRange
-										}
-								  ]
-								: [...otherFilters];
-						});
-					}}
-				/>
-				<DatePickerWithRange
-					placeholder='Expected return'
-					drValue={expectedReturnDateFilterValue}
-					onSelectRange={(dateRange: DateRange) => {
-						table?.setColumnFilters((prev) => {
-							const {from, to} = dateRange;
-							const otherFilters = prev.filter((f) => f.id !== 'expectedReturnAt');
-
-							return from || to
-								? [
-										...otherFilters,
-										{
-											id: 'expectedReturnAt',
 											value: dateRange
 										}
 								  ]

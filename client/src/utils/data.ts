@@ -14,8 +14,16 @@ export type NewRentingItemFormValues = {
 export type NewRentFormValues = {
 	recordTitle?: string;
 	recordNotes?: string;
-	recordReturnDate?: Date;
+	expectedReturnAt?: Date;
+	returnLocation?: string;
 	isReadTnC?: boolean;
+};
+export type EditRentalRecordFormValues = {
+	recordTitle?: string;
+	recordNotes?: string;
+	expectedReturnAt?: Date;
+	returnLocation?: string;
+	rentingItems?: RentingItem[];
 };
 
 // Table record info
@@ -57,7 +65,8 @@ export type Item = {
 	itemId: string;
 	itemName: string;
 	itemImages: string[];
-	itemQuantity: string | number;
+	itemQuantity: string | number; // Total quantity
+	remainingQuantity: string | number; // Derived quantity variable
 	itemCategory?: string;
 	itemDescription?: string;
 	createdAt?: string | Date;
@@ -151,8 +160,10 @@ export const mapRecordStatus = (status: string) => {
 			return 'Completed';
 
 		case 'rent_rejected':
+			return 'Rejected rent';
+
 		case 'return_rejected':
-			return 'Rejected';
+			return 'Rejected return';
 
 		default:
 			return status;
