@@ -23,9 +23,9 @@ export const EditableDate: React.FC<Props> = ({
 	maxDate,
 	minDate,
 	isEditing,
-	handleChange,
 	rules,
-	setValue
+	setValue,
+	handleChange
 }) => {
 	return (
 		<VStack width={'100%'} spacing={1} alignItems={'flex-start'}>

@@ -16,19 +16,20 @@ import {
 	VStack
 } from '@chakra-ui/react';
 import {Check, X} from 'lucide-react';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {UseFormRegister, useForm} from 'react-hook-form';
 
 export const EditRentingItemModal: React.FC<{
 	title: string;
 	handleConfirm?: (item: RentingItem) => void;
 }> = ({title, handleConfirm}) => {
-	// FIXME: Fetch from db
 	const {editDisclosure, selectedItemState} = useScanContext() as ReturnType<
 		typeof useInitialScanContext
 	>;
 	const {isOpen, onClose} = editDisclosure;
 	const [selectedItem] = selectedItemState;
+	const [updatedItemInfo, setUpdatedItemInfo] = useState<Item | undefined>(undefined);
+	const [maxQuantity, setMaxQuantity] = useState<number>(100);
 	const {watch, register, setValue} = useForm<NewRentingItemFormValues>();
 	const {item, rentQuantity} = watch();
 
@@ -37,11 +38,27 @@ export const EditRentingItemModal: React.FC<{
 	};
 
 	useEffect(() => {
+		// TODO: Refetch updated remaining quantity derived from records in db
+		// setUpdatedItemInfo()
+	}, [selectedItem]);
+
+	useEffect(() => {
 		if (isOpen && selectedItem) {
 			setValue('item', selectedItem.item as Item);
 			setValue('rentQuantity', selectedItem.rentQuantity as number);
 		}
 	}, [isOpen, selectedItem]);
+
+	useEffect(() => {
+		if (updatedItemInfo) {
+			setMaxQuantity(() => {
+				if (rentQuantity && rentQuantity > updatedItemInfo.remainingQuantity) {
+					setValue('rentQuantity', updatedItemInfo.remainingQuantity);
+				}
+				return updatedItemInfo.remainingQuantity as number;
+			});
+		}
+	}, [updatedItemInfo]);
 
 	return (
 		<Modal scrollBehavior={'inside'} isOpen={isOpen} onClose={handleClose}>
@@ -82,6 +99,7 @@ export const EditRentingItemModal: React.FC<{
 							<EditableNumberInput
 								isEditing
 								min={1}
+								max={maxQuantity}
 								name='rentQuantity'
 								label={'Quantity'}
 								value={selectedItem?.rentQuantity as number}

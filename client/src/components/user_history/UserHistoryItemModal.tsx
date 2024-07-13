@@ -8,6 +8,7 @@ import {
 	useUserHistoryTableContext
 } from '@/utils/context/UserHistoryTableContext';
 import {Item, mapRecordStatus, RentalRecord} from '@/utils/data';
+import {paths} from '@/utils/paths';
 
 import {
 	Box,
@@ -26,10 +27,12 @@ import {
 } from '@chakra-ui/react';
 import {Edit} from 'lucide-react';
 import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 export const UserHistoryItemModal: React.FC<{
 	disclosure: ReturnType<typeof useDisclosure>;
 }> = ({disclosure}) => {
+	const navigate = useNavigate();
 	const {isOpen, onClose} = disclosure;
 	const itemImageDisclosure = useDisclosure();
 	const {selectedDataState} = useUserHistoryTableContext() as ReturnType<
@@ -38,7 +41,13 @@ export const UserHistoryItemModal: React.FC<{
 	const [selectedRecord] = selectedDataState;
 	const [selectedItemImage, setSelectedItemImage] = useState<string | undefined>(undefined);
 
-	const handleEdit = () => {};
+	const handleEdit = () => {
+		navigate(paths.sub.editRecord, {
+			state: {
+				selectedRecord: selectedRecord
+			}
+		});
+	};
 
 	const getStatusColor = (status: string) => {
 		const lcStatus = status.toLowerCase();
@@ -116,9 +125,20 @@ export const UserHistoryItemModal: React.FC<{
 							</HStack>
 							<Spacer />
 
-							<Button leftIcon={<Edit />} onClick={handleEdit}>
-								Edit
-							</Button>
+							{
+								// Show edit only if record status is not completed/paid
+								(selectedRecord as RentalRecord | undefined)?.recordStatus !== 'completed' &&
+									(selectedRecord as RentalRecord | undefined)?.recordStatus !== 'paid' && (
+										<Button leftIcon={<Edit />} onClick={handleEdit}>
+											{(selectedRecord as RentalRecord | undefined)?.recordStatus ===
+												'rent_rejected' ||
+											(selectedRecord as RentalRecord | undefined)?.recordStatus ===
+												'return_rejected'
+												? 'Reverify'
+												: 'Edit'}
+										</Button>
+									)
+							}
 						</Flex>
 						<Flex flex={1} mt={5}>
 							<VStack flex={1} alignItems={'flex-start'} spacing={5}>

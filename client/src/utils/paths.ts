@@ -19,7 +19,6 @@ export const paths = {
 		verifications: '/verifications',
 		criticalRecords: '/critical-records',
 
-		editRentRecord: '/edit-rent-record',
-		editReturnRecord: '/edit-return-record'
+		editRecord: '/edit-record'
 	}
 };
