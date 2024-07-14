@@ -1,7 +1,6 @@
 import {ScannedItem} from '@/components/rent_equipment/ScannedItem';
 import {EditableDate} from '@/components/ui/EditableDate';
 import {EditableField} from '@/components/ui/EditableField';
-import ImageManager from '@/components/ui/ImageManager';
 import {SingleImageViewerModal} from '@/components/ui/SingleImageViewerModal';
 import {
 	useInitialPublicHistoryTableContext,
@@ -10,7 +9,6 @@ import {
 import {Item, mapRecordStatus, RentalRecord} from '@/utils/data';
 
 import {
-	Box,
 	Divider,
 	Flex,
 	HStack,
@@ -59,6 +57,9 @@ export const PublicHistoryItemModal: React.FC<{
 			case 'return_rejected':
 				return 'red';
 
+			case 'paid':
+				return 'gray';
+
 			default:
 				return 'yellow';
 		}
@@ -75,7 +76,7 @@ export const PublicHistoryItemModal: React.FC<{
 		return selectedRecord?.rentingItems?.map((rentingItem, i) => {
 			return (
 				<ScannedItem
-					isEditingImageEnabled={false}
+					isEditing={false}
 					key={(rentingItem.item as Item).itemId}
 					itemInfo={rentingItem}
 					onOpenImageBlob={() => handleOpenImageBlob(i)}
@@ -149,20 +150,6 @@ export const PublicHistoryItemModal: React.FC<{
 										/>
 									</VStack>
 								</HStack>
-
-								<Box width={'100%'}>
-									<ImageManager
-										label='Rent Images'
-										specifiedImages={(selectedRecord as RentalRecord | undefined)?.rentImages}
-									/>
-								</Box>
-
-								<Box width={'100%'}>
-									<ImageManager
-										label='Return Images'
-										specifiedImages={(selectedRecord as RentalRecord | undefined)?.rentImages}
-									/>
-								</Box>
 							</VStack>
 
 							<Divider orientation={'vertical'} marginX={5} />
