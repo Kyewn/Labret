@@ -1,5 +1,6 @@
 import {EditRecord} from '@/components/user_history/EditRecord';
 import {Error404} from '@/pages/Error404';
+import {PublicHistory} from '@/pages/PublicHistory';
 import {Register} from '@/pages/Register';
 import {RegisterAdmin} from '@/pages/RegisterAdmin';
 import {Rent} from '@/pages/Rent';
@@ -59,7 +60,7 @@ const router = createBrowserRouter(
 			</Route>
 
 			<Route element={<SubPageLayout />}>
-				<Route path={paths.sub.publicHistory} /*element={}*/ />
+				<Route path={paths.sub.publicHistory} element={<PublicHistory />} />
 				<Route path={paths.sub.equipmentAvailability} /*element={}*/ />
 				<Route path={paths.sub.register} element={<Register />} />
 				<Route element={<AuthCheck />}>
