@@ -54,7 +54,9 @@ export const ScannedItem: React.FC<Props> = ({
 						{rentQuantity}
 					</TagLabel>
 				</Tag>
-				<Text fontWeight={700}>{itemName}</Text>
+				<Text fontWeight={700} maxWidth={'20rem'} wordBreak={'break-word'}>
+					{itemName}
+				</Text>
 			</HStack>
 			<Spacer />
 			{isEditing && (
