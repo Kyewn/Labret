@@ -34,17 +34,17 @@ export type EditImageProofValues = {
 	imageProof: string;
 };
 
+// Custom table data type
+export type PublicHistoryRecordValues = RentalRecord & {
+	renterName?: string;
+};
 // Table record info
 export type UserInfoValues = {
 	name?: string;
 	email?: string;
 	createdAt?: string | Date;
 };
-export type RecordInfoValues = {
-	title?: string;
-	email?: string;
-	createdAt?: string | Date;
-};
+
 // DB Data Structure
 // User
 export type User = {
@@ -88,7 +88,7 @@ export type RentingItem = {
 };
 
 export type RentalRecord = {
-	renterId: string | number;
+	renterId: string;
 	recordId: string;
 	recordTitle: string;
 	notes?: string;
@@ -165,8 +165,10 @@ export const mapRecordStatus = (status: string) => {
 			return 'Returning';
 
 		case 'rent_reverifying':
+			return 'Reverifying rent';
+
 		case 'return_reverifying':
-			return 'Reverifying';
+			return 'Reverifying return';
 
 		case 'completed':
 			return 'Completed';
@@ -176,6 +178,9 @@ export const mapRecordStatus = (status: string) => {
 
 		case 'return_rejected':
 			return 'Rejected return';
+
+		case 'paid':
+			return 'Paid';
 
 		default:
 			return status;

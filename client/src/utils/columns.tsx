@@ -1,6 +1,13 @@
-import {RentalRecord, TableData, User, mapRecordStatus, mapUserStatus} from '@/utils/data';
+import {
+	PublicHistoryRecordValues,
+	RentalRecord,
+	TableData,
+	User,
+	mapRecordStatus,
+	mapUserStatus
+} from '@/utils/data';
 import {formatDate} from '@/utils/utils';
-import {Button, ButtonGroup, Checkbox, Flex, IconButton} from '@chakra-ui/react';
+import {Button, ButtonGroup, Checkbox, Flex, IconButton, Text} from '@chakra-ui/react';
 import {ColumnDef, CustomFilterFns, FilterFn, Row} from '@tanstack/react-table';
 import {ArrowBigDown, ArrowBigUp, Check, Trash} from 'lucide-react';
 import {SyntheticEvent} from 'react';
@@ -519,6 +526,226 @@ export const getUserHistoryRejectedRecordColumns: () => ColumnDef<RentalRecord>[
 		enableGlobalFilter: true
 	}
 ];
+
+export const getPublicHistoryActiveRecordColumns: () => ColumnDef<PublicHistoryRecordValues>[] =
+	() => [
+		{
+			accessorKey: 'renterName',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Name
+					</Button>
+				);
+			},
+			cell: ({row}) => {
+				if (row.original.recordStatus === 'returning') {
+					return <Text fontWeight={700}>{row.original.renterName}</Text>;
+				}
+				return row.original.renterName;
+			},
+			enableGlobalFilter: true
+		},
+
+		{
+			accessorKey: 'rentedAt',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Rented At
+					</Button>
+				);
+			},
+			cell: ({row}) => {
+				const dateString = row.original.rentedAt ? formatDate(row.original.rentedAt as Date) : '--';
+				if (row.original.recordStatus === 'returning') {
+					return <Text fontWeight={700}>{dateString}</Text>;
+				}
+				return dateString;
+			},
+			enableGlobalFilter: true,
+			filterFn: 'withinDateRange'
+		},
+		{
+			accessorKey: 'expectedReturnAt',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Expected Return At
+					</Button>
+				);
+			},
+
+			cell: ({row}) => {
+				const dateString = row.original.expectedReturnAt
+					? formatDate(row.original.expectedReturnAt as Date)
+					: '--';
+				if (row.original.recordStatus === 'returning') {
+					return <Text fontWeight={700}>{dateString}</Text>;
+				}
+				return dateString;
+			},
+			enableColumnFilter: true,
+			filterFn: 'withinDateRange'
+		},
+		{
+			accessorKey: 'recordStatus',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Status
+					</Button>
+				);
+			},
+			cell: ({row}) => {
+				const statusString = mapRecordStatus(row.original.recordStatus);
+				if (row.original.recordStatus === 'returning') {
+					return <Text fontWeight={700}>{statusString}</Text>;
+				}
+				return statusString;
+			},
+			enableGlobalFilter: true
+		}
+	];
+
+export const getPublicHistoryCompletedRecordColumns: () => ColumnDef<PublicHistoryRecordValues>[] =
+	() => [
+		{
+			accessorKey: 'renterName',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Name
+					</Button>
+				);
+			},
+			cell: ({row}) => {
+				if (row.original.recordStatus === 'returning') {
+					return <Text fontWeight={700}>{row.original.renterName}</Text>;
+				}
+				return row.original.renterName;
+			},
+			enableGlobalFilter: true
+		},
+		{
+			accessorKey: 'rentedAt',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Rented At
+					</Button>
+				);
+			},
+			cell: ({row}) => {
+				const dateString = (
+					row.original.rentedAt ? formatDate(row.original.rentedAt as Date) : '--'
+				)
+					? formatDate(row.original.rentedAt as Date)
+					: '--';
+				if (row.original.recordStatus === 'returning') {
+					return <Text fontWeight={700}>{dateString}</Text>;
+				}
+				return dateString;
+			},
+			enableGlobalFilter: true,
+			filterFn: 'withinDateRange'
+		},
+		{
+			accessorKey: 'returnedAt',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Completed At
+					</Button>
+				);
+			},
+			cell: ({row}) => {
+				const dateString = row.original.returnedAt
+					? formatDate(row.original.returnedAt as Date)
+					: '--';
+				if (row.original.recordStatus === 'returning') {
+					return <Text fontWeight={700}>{dateString}</Text>;
+				}
+				return dateString;
+			},
+			enableColumnFilter: true,
+			filterFn: 'withinDateRange'
+		},
+		{
+			accessorKey: 'recordStatus',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Status
+					</Button>
+				);
+			},
+			cell: ({row}) => {
+				const statusString = mapRecordStatus(row.original.recordStatus);
+				if (row.original.recordStatus === 'returning') {
+					return <Text fontWeight={700}>{statusString}</Text>;
+				}
+				return statusString;
+			},
+			enableGlobalFilter: true
+		}
+	];
 
 // FILTERS
 // User
