@@ -90,7 +90,7 @@ export const AddRentingItemModal: React.FC<{
 	useEffect(() => {
 		if (item) {
 			setMaxQuantity(() => {
-				if (rentQuantity && rentQuantity > item.remainingQuantity) {
+				if (rentQuantity && item.remainingQuantity && rentQuantity > item.remainingQuantity) {
 					setValue('rentQuantity', item.remainingQuantity);
 				}
 				return item.remainingQuantity as number;

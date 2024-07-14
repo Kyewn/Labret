@@ -1,9 +1,9 @@
-import {EditScanResult} from '@/components/rent_equipment/EditScanResult';
 import {ImageGallery} from '@/components/rent_equipment/ImageGallery';
-import {RentForm} from '@/components/rent_equipment/RentForm';
+import {EditReturnScanResult} from '@/components/return_equipment/EditReturnScanResult';
+import {ReturnForm} from '@/components/return_equipment/ReturnForm';
 import {useAppContext} from '@/utils/context/AppContext';
 import {ScanContext, useInitialScanContext} from '@/utils/context/ScanContext';
-import {RentingItem} from '@/utils/data';
+import {RentalRecord, RentingItem} from '@/utils/data';
 import {
 	Box,
 	Flex,
@@ -24,18 +24,20 @@ import {Helmet} from 'react-helmet-async';
 import {useLocation} from 'react-router-dom';
 
 type LocationState = {
-	scanResult: RentingItem[];
 	images: Blob[];
+	scanResult: RentingItem[];
+	targetRecord: RentalRecord;
 };
 
-export function RentResult() {
+export function ReturnScanResult() {
 	const {appState} = useAppContext();
 	const location = useLocation();
 	const scanContext = useInitialScanContext() as ReturnType<typeof useInitialScanContext>;
 	const {user} = appState;
-	const {images, scanResult} = location.state as LocationState;
-	const {steps, activeStep, scanResultState} = scanContext;
+	const {images, scanResult, targetRecord} = location.state as LocationState;
+	const {returnSteps, activeStep, scanResultState, specificRecordState} = scanContext;
 	const [, setNewScanResult] = scanResultState;
+	const [, setSpecificRecord] = specificRecordState;
 	const dummyItems: RentingItem[] = [
 		{
 			item: {
@@ -44,7 +46,9 @@ export function RentResult() {
 				itemImages: [],
 				itemQuantity: 123
 			},
-			rentQuantity: 2
+			rentQuantity: 2,
+			proofOfReturn:
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
 		},
 		{
 			item: {
@@ -70,6 +74,9 @@ export function RentResult() {
 		// FIXME:
 		// setNewScanResult(scanResult);
 		setNewScanResult(dummyItems);
+		setSpecificRecord(targetRecord);
+		// TODO
+		// setImageProofs(imageUrls from scanResult)
 	}, []);
 
 	return (
@@ -85,7 +92,7 @@ export function RentResult() {
 					<Flex flex={0.5} flexDirection={'column'} paddingX={5}>
 						<Flex w={'100%'} alignItems={'center'}>
 							<Heading fontSize={'1.5rem'} paddingY={5}>
-								New Rent
+								Return equipment
 							</Heading>
 							<Spacer />
 							<Text>{user?.name || 'Brian'}</Text>
@@ -93,7 +100,7 @@ export function RentResult() {
 						<Flex />
 						<Flex>
 							<Stepper index={activeStep} flex={0.5}>
-								{steps.map((step, index) => (
+								{returnSteps.map((step, index) => (
 									<Step key={index}>
 										<StepIndicator>
 											<StepStatus
@@ -112,8 +119,8 @@ export function RentResult() {
 								))}
 							</Stepper>
 						</Flex>
-						{activeStep == 0 && <EditScanResult />}
-						{activeStep == 1 && <RentForm />}
+						{activeStep == 0 && <EditReturnScanResult />}
+						{activeStep == 1 && <ReturnForm />}
 					</Flex>
 				</Flex>
 			</ScanContext.Provider>

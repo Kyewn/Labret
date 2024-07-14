@@ -1,15 +1,14 @@
-import {AddRentingItemModal} from '@/components/rent_equipment/AddRentingItemModal';
-import {EditRentingItemModal} from '@/components/rent_equipment/EditRentingItemModal';
 import {ScannedItem} from '@/components/rent_equipment/ScannedItem';
-import {ConfirmDialog} from '@/components/ui/ConfirmDialog';
+import {ImageProofCaptureModal} from '@/components/return_equipment/ImageProofCaptureModal';
+import {ImageProofViewerModal} from '@/components/return_equipment/ImageProofViewerModal';
 import {useAppContext} from '@/utils/context/AppContext';
 import {useInitialScanContext, useScanContext} from '@/utils/context/ScanContext';
-import {Item} from '@/utils/data';
+import {EditImageProofValues, Item} from '@/utils/data';
 import {Button, Center, Flex, Heading, Spacer, Text, VStack} from '@chakra-ui/react';
 import {useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 
-export const EditScanResult: React.FC = () => {
+export const EditReturnScanResult: React.FC = () => {
 	const navigate = useNavigate();
 	const {appDispatch} = useAppContext();
 	const scanContext = useScanContext() as ReturnType<typeof useInitialScanContext>;
@@ -17,33 +16,43 @@ export const EditScanResult: React.FC = () => {
 		goToNext,
 		selectedItemState,
 		scanResultState,
-		addDisclosure,
-		editDisclosure,
-		deleteDisclosure,
-		handleAddConfirm,
-		handleEditConfirm,
-		handleDeleteConfirm
+		imageProofsState,
+		imageProofCaptureDisclosure,
+		imageProofDisclosure
 	} = scanContext;
-	const {onOpen: onAddOpen} = addDisclosure;
-	const {onOpen: onEditOpen} = editDisclosure;
-	const {onOpen: onDeleteOpen} = deleteDisclosure;
-	const [selectedItem, setSelectedItem] = selectedItemState;
+	const {onOpen: onImageProofCaptureOpen} = imageProofCaptureDisclosure;
+	const {onOpen: onImageProofOpen} = imageProofDisclosure;
+	const [, setSelectedItem] = selectedItemState;
 	const [newScanResult] = scanResultState;
+	const [imageProofs] = imageProofsState;
+	const oldImageProofs: EditImageProofValues[] =
+		newScanResult?.map((item) => ({
+			itemId: (item.item as Item).itemId,
+			imageProof: item.proofOfReturn as string
+		})) || [];
 
 	const renderItemResult = () =>
 		newScanResult?.map((rentingItem) => {
+			const oldImageProofObj = oldImageProofs.find(
+				(proof) => proof.itemId === (rentingItem.item as Item).itemId
+			);
+			const newImageProofObj = imageProofs.find(
+				(proof) => proof.itemId === (rentingItem.item as Item).itemId
+			);
+			const {imageProof: oldImageProof} = oldImageProofObj || {};
+			const {imageProof: newImageProof} = newImageProofObj || {};
 			return (
 				<ScannedItem
-					isEditingImageEnabled={false}
 					key={(rentingItem.item as Item).itemId}
 					itemInfo={rentingItem}
-					onOpenEditItem={() => {
+					proofOfReturn={newImageProof || oldImageProof}
+					onOpenProofCapture={() => {
 						setSelectedItem(rentingItem);
-						onEditOpen();
+						onImageProofCaptureOpen();
 					}}
-					onDeleteItem={() => {
+					onOpenImageBlob={() => {
 						setSelectedItem(rentingItem);
-						onDeleteOpen();
+						onImageProofOpen();
 					}}
 				/>
 			);
@@ -62,22 +71,12 @@ export const EditScanResult: React.FC = () => {
 
 	return (
 		<>
-			{/* Add */}
-			<AddRentingItemModal title={'Add New Item'} handleConfirm={handleAddConfirm} />
-			{/* Edit */}
-			<EditRentingItemModal title={''} handleConfirm={handleEditConfirm} />
-			{/* Delete */}
-			<ConfirmDialog
-				disclosure={deleteDisclosure}
-				title={'Delete Item'}
-				description={'Are you sure?'}
-				onConfirm={() => selectedItem && handleDeleteConfirm(selectedItem)}
-			/>
+			<ImageProofCaptureModal />
+			<ImageProofViewerModal />
 
 			<Flex w={'100%'} paddingY={5} alignItems={'center'}>
 				<Text fontWeight={700}>Scan results</Text>
 				<Spacer />
-				<Button onClick={onAddOpen}>Add Item</Button>
 			</Flex>
 
 			<VStack overflowY={'auto'} flex={1} w={'100%'}>
