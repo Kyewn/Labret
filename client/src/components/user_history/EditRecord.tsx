@@ -7,13 +7,7 @@ import {EditableDate} from '@/components/ui/EditableDate';
 import {EditableField} from '@/components/ui/EditableField';
 import {useAppContext} from '@/utils/context/AppContext';
 import {ScanContext, useInitialScanContext} from '@/utils/context/ScanContext';
-import {
-	EditRentalRecordFormValues,
-	FormValues,
-	Item,
-	NewRentFormValues,
-	RentalRecord
-} from '@/utils/data';
+import {EditRentalRecordFormValues, FormValues, Item, RentalRecord} from '@/utils/data';
 import {
 	Box,
 	Button,
@@ -74,7 +68,7 @@ export const EditRecord: React.FC = () => {
 		setValue,
 		handleSubmit,
 		formState: {errors}
-	} = useForm<NewRentFormValues>();
+	} = useForm<EditRentalRecordFormValues>();
 	const {recordTitle, recordNotes, expectedReturnAt, returnLocation} = watch();
 
 	const editRecord = async (data: EditRentalRecordFormValues) => {

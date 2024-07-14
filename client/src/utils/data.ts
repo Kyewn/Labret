@@ -15,8 +15,11 @@ export type NewRentFormValues = {
 	recordTitle?: string;
 	recordNotes?: string;
 	expectedReturnAt?: Date;
-	returnLocation?: string;
 	isReadTnC?: boolean;
+};
+export type ReturnFormValues = {
+	returnLocation?: string;
+	returnNotes?: string;
 };
 export type EditRentalRecordFormValues = {
 	recordTitle?: string;
@@ -24,6 +27,11 @@ export type EditRentalRecordFormValues = {
 	expectedReturnAt?: Date;
 	returnLocation?: string;
 	rentingItems?: RentingItem[];
+};
+
+export type EditImageProofValues = {
+	itemId: string;
+	imageProof: string;
 };
 
 // Table record info
@@ -66,17 +74,17 @@ export type Item = {
 	itemName: string;
 	itemImages: string[];
 	itemQuantity: string | number; // Total quantity
-	remainingQuantity: string | number; // Derived quantity variable
 	itemCategory?: string;
 	itemDescription?: string;
 	createdAt?: string | Date;
 	createdBy?: string;
+	remainingQuantity?: string | number; // Derived quantity variable
 };
 
 export type RentingItem = {
 	item: string | Item;
 	rentQuantity: string | number;
-	proofOfReturn?: string | Blob;
+	proofOfReturn?: string;
 };
 
 export type RentalRecord = {
@@ -108,12 +116,16 @@ export type FormValues =
 	| AddUserFormValues
 	| UserInfoValues
 	| NewRentingItemFormValues
-	| NewRentFormValues;
+	| NewRentFormValues
+	| ReturnFormValues
+	| EditRentalRecordFormValues;
 export type FormKeys =
 	| keyof AddUserFormValues
 	| keyof UserInfoValues
 	| keyof NewRentingItemFormValues
-	| keyof NewRentFormValues;
+	| keyof NewRentFormValues
+	| keyof ReturnFormValues
+	| keyof EditRentalRecordFormValues;
 export type TableData = User | RentalRecord | Item | Verification;
 
 // Others
