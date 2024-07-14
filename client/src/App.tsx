@@ -3,9 +3,9 @@ import {Error404} from '@/pages/Error404';
 import {Register} from '@/pages/Register';
 import {RegisterAdmin} from '@/pages/RegisterAdmin';
 import {Rent} from '@/pages/Rent';
-import {RentResult} from '@/pages/RentResult';
+import {RentScanResult} from '@/pages/RentScanResult';
 import {Return} from '@/pages/Return';
-import {ReturnResult} from '@/pages/ReturnResult';
+import {ReturnScanResult} from '@/pages/ReturnScanResult';
 import {UserHistory} from '@/pages/UserHistory';
 import {ViewAdmins} from '@/pages/ViewAdmins';
 import {ViewUsers} from '@/pages/ViewUsers';
@@ -63,8 +63,8 @@ const router = createBrowserRouter(
 				<Route path={paths.sub.equipmentAvailability} /*element={}*/ />
 				<Route path={paths.sub.register} element={<Register />} />
 				<Route element={<AuthCheck />}>
-					<Route path={paths.sub.rentResult} element={<RentResult />} />
-					<Route path={paths.sub.returnResult} element={<ReturnResult />} />
+					<Route path={paths.sub.rentResult} element={<RentScanResult />} />
+					<Route path={paths.sub.returnResult} element={<ReturnScanResult />} />
 					<Route path={paths.sub.users} element={<ViewUsers />} />
 					<Route path={paths.sub.admins} element={<ViewAdmins />} />
 					<Route path={paths.sub.registerAdmin} element={<RegisterAdmin />} />

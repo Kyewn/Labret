@@ -18,6 +18,7 @@ type Props = {
 	onOpenEditItem?: () => void;
 	onDeleteItem?: () => void;
 	// Return page props
+	proofOfReturn?: string;
 	onOpenProofCapture?: () => void;
 	onOpenImageBlob?: () => void;
 	isEditing?: boolean;
@@ -28,6 +29,7 @@ export const ScannedItem: React.FC<Props> = ({
 	itemInfo,
 	onOpenEditItem,
 	onDeleteItem,
+	proofOfReturn,
 	onOpenProofCapture,
 	onOpenImageBlob,
 	isEditing = true,
@@ -57,18 +59,23 @@ export const ScannedItem: React.FC<Props> = ({
 			<Spacer />
 			{isEditing && (
 				<HStack spacing={1}>
-					{itemInfo.proofOfReturn ? (
-						<Tooltip label={'Show image proof'}>
-							<IconButton
-								isRound
-								icon={<Check />}
-								color={'green'}
-								_hover={{color: 'green', backgroundColor: 'grey.100'}}
-								variant={'iconButton'}
-								aria-label={'show-image-proof'}
-								onClick={onOpenImageBlob}
-							/>
-						</Tooltip>
+					{proofOfReturn ? (
+						<HStack>
+							<Button variant={'outline'} onClick={onOpenProofCapture}>
+								Retake
+							</Button>
+							<Tooltip label={'Show image proof'}>
+								<IconButton
+									isRound
+									icon={<Check />}
+									color={'green'}
+									_hover={{color: 'green', backgroundColor: 'grey.100'}}
+									variant={'iconButton'}
+									aria-label={'show-image-proof'}
+									onClick={onOpenImageBlob}
+								/>
+							</Tooltip>
+						</HStack>
 					) : isEditingImageEnabled ? (
 						<Button variant={'outline'} onClick={onOpenProofCapture}>
 							Attach image proof

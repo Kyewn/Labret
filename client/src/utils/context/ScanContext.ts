@@ -1,9 +1,16 @@
 import {useAppContext} from '@/utils/context/AppContext';
-import {Item, NewRentFormValues, RentalRecord, RentingItem} from '@/utils/data';
+import {
+	EditImageProofValues,
+	Item,
+	NewRentFormValues,
+	RentalRecord,
+	RentingItem,
+	ReturnFormValues
+} from '@/utils/data';
 import {useDisclosure, useSteps} from '@chakra-ui/react';
 import {createContext, useContext, useState} from 'react';
 
-const steps = [
+const rentSteps = [
 	{
 		title: 'Edit items'
 	},
@@ -12,13 +19,26 @@ const steps = [
 	}
 ];
 
-export const useInitialScanContext = () => {
+const returnSteps = [
+	{
+		title: 'Edit items'
+	},
+	{
+		title: 'Return Form'
+	}
+];
+
+// Shared context for rent/return
+export const useInitialScanContext = (type: string = 'rent') => {
 	const {
 		appState: {user}
 	} = useAppContext();
-	const {activeStep, goToNext, goToPrevious} = useSteps({count: steps.length});
+	const {activeStep, goToNext, goToPrevious} = useSteps({
+		count: type == 'rent' ? rentSteps.length : returnSteps.length
+	});
 	const scanResultState = useState<RentingItem[] | null>(null);
 	const imagesState = useState<Blob[]>([]);
+	const imageProofsState = useState<EditImageProofValues[]>([]);
 	const selectedItemState = useState<RentingItem | null>(null);
 	const dirtyFormState = useState<boolean>(false);
 	const specificRecordState = useState<RentalRecord | undefined>(undefined);
@@ -27,6 +47,7 @@ export const useInitialScanContext = () => {
 	const addDisclosure = useDisclosure();
 	const editDisclosure = useDisclosure();
 	const deleteDisclosure = useDisclosure();
+	const imageProofCaptureDisclosure = useDisclosure();
 	const imageProofDisclosure = useDisclosure();
 
 	const [images, setImages] = imagesState;
@@ -101,9 +122,22 @@ export const useInitialScanContext = () => {
 		console.log(recordTitle, recordNotes, expectedReturnAt, isReadTnC);
 	};
 
+	const handleReturnRecord = (
+		recordId: string,
+		{returnLocation, returnNotes}: ReturnFormValues
+	) => {
+		// Only after isReadTnC is true
+
+		// Validate inputs
+		// Check item count does not subtract beyond 0
+
+		console.log(returnLocation, returnNotes);
+	};
+
 	return {
 		activeStep,
-		steps,
+		rentSteps,
+		returnSteps,
 		goToNext,
 		goToPrevious,
 
@@ -111,18 +145,21 @@ export const useInitialScanContext = () => {
 		selectedItemState,
 		scanResultState,
 		specificRecordState,
+		imageProofsState,
 		dirtyFormState,
 
 		addDisclosure,
 		editDisclosure,
 		deleteDisclosure,
+		imageProofCaptureDisclosure,
 		imageProofDisclosure,
 
 		handleRemoveImage,
 		handleAddConfirm,
 		handleEditConfirm,
 		handleDeleteConfirm,
-		handleAddRent
+		handleAddRent,
+		handleReturnRecord
 	};
 };
 

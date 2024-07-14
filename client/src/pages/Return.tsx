@@ -17,7 +17,7 @@ export function Return() {
 	const {specificRecordState, activeStep, imagesState} = scanContext;
 	const [records, setRecords] = useState<RentalRecord[]>([]);
 	const navigate = useNavigate();
-	const [returningRecord, setSpecificRecord] = specificRecordState || [];
+	const [specificRecord, setSpecificRecord] = specificRecordState || [];
 
 	const [images] = imagesState;
 
@@ -41,7 +41,10 @@ export function Return() {
 			handleCloseExistingPeerConnection();
 			navigate(paths.sub.returnResult, {
 				state: {
-					images
+					images,
+					// TODO
+					// scanResult: ,
+					targetRecord: specificRecord
 				}
 			});
 			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
@@ -65,7 +68,7 @@ export function Return() {
 							{activeStep == 1 && (
 								<VisionScanner
 									backLabel='Return Equipment'
-									title={`Returning record titled: ${returningRecord?.recordTitle || 'Unknown'}`}
+									title={`Returning record titled: ${specificRecord?.recordTitle || 'Unknown'}`}
 									handleScan={handleScan}
 								/>
 							)}
@@ -74,7 +77,7 @@ export function Return() {
 						<>
 							<VisionScanner
 								backLabel='Return Equipment'
-								title={`Returning record titled: ${returningRecord?.recordTitle || 'Unknown'}`}
+								title={`Returning record titled: ${specificRecord?.recordTitle || 'Unknown'}`}
 								handleScan={handleScan}
 							/>
 						</>

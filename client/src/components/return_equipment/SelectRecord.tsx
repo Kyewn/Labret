@@ -19,7 +19,8 @@ const dummyRecords: RentalRecord[] = [
 		notes: '',
 		recordStatus: '',
 		recordId: '1',
-		rentingItems: []
+		rentingItems: [],
+		expectedReturnAt: new Date()
 	},
 	{
 		recordTitle: 'Record 2',
@@ -29,7 +30,8 @@ const dummyRecords: RentalRecord[] = [
 		notes: '',
 		recordStatus: '',
 		recordId: '2',
-		rentingItems: []
+		rentingItems: [],
+		expectedReturnAt: new Date()
 	},
 	{
 		recordTitle: 'Record 3',
@@ -39,7 +41,8 @@ const dummyRecords: RentalRecord[] = [
 		notes: '',
 		recordStatus: '',
 		recordId: '3',
-		rentingItems: []
+		rentingItems: [],
+		expectedReturnAt: new Date()
 	}
 ];
 
