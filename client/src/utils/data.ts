@@ -38,6 +38,15 @@ export type EditImageProofValues = {
 export type PublicHistoryRecordValues = RentalRecord & {
 	renterName?: string;
 };
+export type ItemAvailabilityRecordValues = Item & {
+	earliestReturnBy?: Date;
+};
+export type ItemAvailabilityRecordInfoValues = {
+	renterName?: string;
+	expectedReturnAt?: string | Date;
+	rentQuantity?: string | number;
+};
+
 // Table record info
 export type UserInfoValues = {
 	name?: string;

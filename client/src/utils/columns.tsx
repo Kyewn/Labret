@@ -1,4 +1,6 @@
 import {
+	ItemAvailabilityRecordInfoValues,
+	ItemAvailabilityRecordValues,
 	PublicHistoryRecordValues,
 	RentalRecord,
 	TableData,
@@ -744,6 +746,122 @@ export const getPublicHistoryCompletedRecordColumns: () => ColumnDef<PublicHisto
 				return statusString;
 			},
 			enableGlobalFilter: true
+		}
+	];
+
+export const getItemAvailabilityTableColumns: () => ColumnDef<ItemAvailabilityRecordValues>[] =
+	() => [
+		{
+			accessorKey: 'itemName',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Item
+					</Button>
+				);
+			},
+			enableGlobalFilter: true
+		},
+		{
+			accessorKey: 'remainingQuantity',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Remaining quantity
+					</Button>
+				);
+			},
+			enableGlobalFilter: true
+		},
+		{
+			accessorKey: 'earliestReturnBy',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Earliest return by
+					</Button>
+				);
+			},
+			cell: ({row}) => formatDate(row.original.earliestReturnBy as Date),
+			enableColumnFilter: true,
+			filterFn: 'withinDateRange'
+		}
+	];
+
+export const getItemAvailabilityRecordInfoColumns: () => ColumnDef<ItemAvailabilityRecordInfoValues>[] =
+	() => [
+		{
+			accessorKey: 'renterName',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Renter
+					</Button>
+				);
+			}
+		},
+		{
+			accessorKey: 'expectedReturnAt',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Expected return date
+					</Button>
+				);
+			},
+			cell: ({row}) => formatDate(row.original.expectedReturnAt as Date)
+		},
+		{
+			accessorKey: 'rentQuantity',
+			header: ({column}) => {
+				return (
+					<Button
+						variant={'ghost'}
+						fontSize={'sm'}
+						onClick={() => {
+							column.toggleSorting(column.getIsSorted() == 'asc');
+						}}
+						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+					>
+						Rented Quantity
+					</Button>
+				);
+			}
 		}
 	];
 

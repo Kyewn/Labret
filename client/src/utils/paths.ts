@@ -9,7 +9,7 @@ export const paths = {
 		returnResult: '/return-result',
 		userHistory: '/user-history',
 		publicHistory: '/public-history',
-		equipmentAvailability: '/equipment-availability',
+		itemAvailability: '/equipment-availability',
 		register: '/register',
 		registerAdmin: '/register-admin',
 		addItem: '/add-item',
