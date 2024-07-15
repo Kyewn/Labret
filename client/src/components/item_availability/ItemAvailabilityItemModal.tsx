@@ -15,6 +15,8 @@ import {
 	ModalOverlay,
 	useDisclosure
 } from '@chakra-ui/react';
+import {ColumnSort} from '@tanstack/react-table';
+import {useState} from 'react';
 
 export const ItemAvailabilityItemModal: React.FC<{
 	disclosure: ReturnType<typeof useDisclosure>;
@@ -23,8 +25,10 @@ export const ItemAvailabilityItemModal: React.FC<{
 	const {initRecordsState, selectedDataState} = useItemAvailabilityTableContext() as ReturnType<
 		typeof useInitialItemAvailabilityTableContext
 	>;
+	const relatedRecordSortingState = useState<ColumnSort[]>([{id: 'expectedReturnAt', desc: false}]);
 	const [records] = initRecordsState;
 	const [selectedItem] = selectedDataState;
+	const [, setRelatedRecordSorting] = relatedRecordSortingState;
 
 	const relatedRecords = records?.filter((record) =>
 		record.rentingItems.some(
@@ -47,7 +51,14 @@ export const ItemAvailabilityItemModal: React.FC<{
 
 	return (
 		<>
-			<Modal scrollBehavior={'inside'} isOpen={isOpen} onClose={onClose}>
+			<Modal
+				scrollBehavior={'inside'}
+				isOpen={isOpen}
+				onClose={() => {
+					setRelatedRecordSorting([{id: 'expectedReturnAt', desc: false}]);
+					onClose();
+				}}
+			>
 				<ModalOverlay />
 				<ModalContent width={'unset'} minWidth={'75%'} maxWidth={'90%'} height={'90%'}>
 					<ModalBody h={'100%'} p={5} overflow={'hidden'}>
@@ -56,7 +67,11 @@ export const ItemAvailabilityItemModal: React.FC<{
 								<Heading fontSize={'lg'}>Related records</Heading>
 							</Flex>
 							<Flex height={'100%'} paddingY={5}>
-								<DataTable data={data} columns={getItemAvailabilityRecordInfoColumns()} />
+								<DataTable
+									data={data}
+									columns={getItemAvailabilityRecordInfoColumns()}
+									sortingState={relatedRecordSortingState}
+								/>
 							</Flex>
 						</Flex>
 					</ModalBody>
