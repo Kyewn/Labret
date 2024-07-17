@@ -1,4 +1,5 @@
 import {EditRecord} from '@/components/user_history/EditRecord';
+import {AddItem} from '@/pages/AddItem';
 import {Error404} from '@/pages/Error404';
 import {ItemAvailability} from '@/pages/ItemAvailability';
 import {PublicHistory} from '@/pages/PublicHistory';
@@ -10,6 +11,7 @@ import {Return} from '@/pages/Return';
 import {ReturnScanResult} from '@/pages/ReturnScanResult';
 import {UserHistory} from '@/pages/UserHistory';
 import {ViewAdmins} from '@/pages/ViewAdmins';
+import {ViewItems} from '@/pages/ViewItems';
 import {ViewUsers} from '@/pages/ViewUsers';
 import MainPageLayout from '@/pages/layout/MainPageLayout';
 import SubPageLayout from '@/pages/layout/SubPageLayout';
@@ -72,10 +74,10 @@ const router = createBrowserRouter(
 					<Route path={paths.sub.registerAdmin} element={<RegisterAdmin />} />
 					<Route path={paths.sub.userHistory} element={<UserHistory />} />
 					<Route path={paths.sub.editRecord} element={<EditRecord />} />
-					<Route path={paths.sub.equipment} /*element={}*/ />
-					<Route path={paths.sub.addItem} /* element={} */ />
+					<Route path={paths.sub.items} element={<ViewItems />} />
+					<Route path={paths.sub.addItem} element={<AddItem />} />
 					<Route path={paths.sub.verifications} /*element={}*/ />
-					<Route path={paths.sub.criticalRecords} /*element={}*/ />
+					<Route path={paths.sub.debts} /*element={}*/ />
 				</Route>
 			</Route>
 		</Route>

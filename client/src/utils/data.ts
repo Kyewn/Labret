@@ -7,6 +7,13 @@ export type AddUserFormValues = {
 	email: string;
 };
 
+export type AddItemFormValues = {
+	itemName: string;
+	itemQuantity: string | number; // Total quantity
+	itemDescription?: string;
+	itemCategory?: string;
+};
+
 export type NewRentingItemFormValues = {
 	item?: Item;
 	rentQuantity?: string | number;
@@ -53,6 +60,12 @@ export type UserInfoValues = {
 	email?: string;
 	createdAt?: string | Date;
 };
+export type ItemInfoValues = {
+	itemName?: string;
+	itemDescription?: string;
+	itemCategory?: string;
+	itemQuantity?: string | number; // Total quantity
+};
 
 // DB Data Structure
 // User
@@ -65,7 +78,7 @@ export type User = {
 	createdAt: string | Date;
 	imageUrls: string[];
 	lastRentalAt?: string | Date;
-	createdBy?: string | User;
+	createdBy?: string | Omit<User, 'createdBy'>;
 };
 
 export type UserEditableFields = {
@@ -83,11 +96,23 @@ export type Item = {
 	itemName: string;
 	itemImages: string[];
 	itemQuantity: string | number; // Total quantity
+	itemStatus: string;
+	createdAt: string | Date;
+	createdBy: string | User;
 	itemCategory?: string;
 	itemDescription?: string;
-	createdAt?: string | Date;
-	createdBy?: string;
 	remainingQuantity?: string | number; // Derived quantity variable
+};
+
+export type ItemEditableFields = {
+	itemName?: string;
+	itemQuantity?: string | number;
+	itemCategory?: string;
+	itemDescription?: string;
+	itemStatus?: string;
+	createdAt?: string | Date;
+	createdBy?: string | User;
+	itemImages?: string[];
 };
 
 export type RentingItem = {
@@ -123,14 +148,18 @@ export type Verification = {
 
 export type FormValues =
 	| AddUserFormValues
+	| AddItemFormValues
 	| UserInfoValues
+	| ItemInfoValues
 	| NewRentingItemFormValues
 	| NewRentFormValues
 	| ReturnFormValues
 	| EditRentalRecordFormValues;
 export type FormKeys =
 	| keyof AddUserFormValues
+	| keyof AddItemFormValues
 	| keyof UserInfoValues
+	| keyof ItemInfoValues
 	| keyof NewRentingItemFormValues
 	| keyof NewRentFormValues
 	| keyof ReturnFormValues
@@ -152,6 +181,17 @@ export type FaceResult = {
 // Data Utils
 // User
 export const mapUserStatus = (status: string) => {
+	switch (status) {
+		case 'active':
+			return 'Active';
+		case 'pending':
+			return 'Pending';
+		default:
+			return status;
+	}
+};
+// Item
+export const mapItemStatus = (status: string) => {
 	switch (status) {
 		case 'active':
 			return 'Active';

@@ -167,7 +167,7 @@ export const UserMenu = () => {
 						iconW={10}
 						iconH={10}
 						onClick={() => {}}
-						label='Make Verifications'
+						label='Manage Verifications'
 						variant='solid'
 					/>
 					<LargeIconButton
@@ -175,7 +175,7 @@ export const UserMenu = () => {
 						iconW={10}
 						iconH={10}
 						onClick={() => {}}
-						label='View Equipment'
+						label='Manage Items'
 						variant='outline'
 					/>
 					<LargeIconButton
@@ -183,7 +183,7 @@ export const UserMenu = () => {
 						iconW={10}
 						iconH={10}
 						onClick={() => {}}
-						label='Critical records'
+						label='Clear Debts'
 						variant='outline'
 					/> */}
 					</HStack>

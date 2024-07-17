@@ -1,3 +1,4 @@
+import {useAddItemContext} from '@/utils/context/AddItemContext';
 import {useRegisterContext} from '@/utils/context/RegisterContext';
 import {useScanContext} from '@/utils/context/ScanContext';
 import {
@@ -5,6 +6,7 @@ import {
 	Button,
 	ButtonGroup,
 	Center,
+	Flex,
 	Grid,
 	GridItem,
 	HStack,
@@ -42,7 +44,8 @@ const ImageManager: React.FC<Props> = ({
 }) => {
 	const scanContext = useScanContext();
 	const registerContext = useRegisterContext();
-	const {imagesState, handleRemoveImage} = registerContext || scanContext || {};
+	const addItemContext = useAddItemContext();
+	const {imagesState, handleRemoveImage} = registerContext || scanContext || addItemContext || {};
 	const [contextImages, setImages] = imagesState || [];
 	const images = specifiedImages || contextImages || [];
 	const [viewingImage, setViewingImage] = useState<Blob | string | null>(null);
@@ -230,33 +233,39 @@ const ImageManager: React.FC<Props> = ({
 					<ModalBody>{viewingImage ? renderViewingImage() : renderAllImages()}</ModalBody>
 				</ModalContent>
 			</Modal>
-			{label && <Text fontWeight={700}>{label}</Text>}
-			<VStack alignItems={'flex-start'}>
-				{images.length ? (
-					<HStack marginY={5} spacing={5}>
-						{renderPreviewImages()}
-						{images.length > 5 && (
-							<Tooltip label={'More images'}>
-								<IconButton
-									variant='iconButton'
-									backgroundColor={'lrBrown.400'}
-									aria-label='More images'
-									icon={<Ellipsis />}
-									onClick={onOpen}
-								/>
-							</Tooltip>
-						)}
-					</HStack>
-				) : (
-					<Center flex={1} width={'100%'} mt={5} p={5} border={'2px dashed'} borderRadius={5}>
-						<Text fontWeight={700}>No images yet</Text>
-					</Center>
+			<VStack flex={1} w={'100%'} spacing={0} alignItems={'stretch'}>
+				{label && (
+					<Flex w={'100%'} alignItems='flex-start'>
+						<Text fontWeight={700}>{label}</Text>
+					</Flex>
 				)}
-				{isRemovable && images.length > 5 && (
-					<Button variant={'criticalOutline'} onClick={onConfirmModalOpen}>
-						Remove all images
-					</Button>
-				)}
+				<VStack alignItems={'flex-start'}>
+					{images.length ? (
+						<HStack marginTop={5} spacing={5}>
+							{renderPreviewImages()}
+							{images.length > 5 && (
+								<Tooltip label={'More images'}>
+									<IconButton
+										variant='iconButton'
+										backgroundColor={'lrBrown.400'}
+										aria-label='More images'
+										icon={<Ellipsis />}
+										onClick={onOpen}
+									/>
+								</Tooltip>
+							)}
+						</HStack>
+					) : (
+						<Center flex={1} width={'100%'} mt={5} p={5} border={'2px dashed'} borderRadius={5}>
+							<Text fontWeight={700}>No images yet</Text>
+						</Center>
+					)}
+					{isRemovable && images.length > 5 && (
+						<Button variant={'criticalOutline'} onClick={onConfirmModalOpen}>
+							Remove all images
+						</Button>
+					)}
+				</VStack>
 			</VStack>
 		</>
 	);

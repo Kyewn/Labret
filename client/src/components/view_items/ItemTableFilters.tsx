@@ -1,8 +1,5 @@
 import {DatePickerWithRange} from '@/components/ui/dateRangePicker';
-import {
-	useInitialItemAvailabilityTableContext,
-	useItemAvailabilityTableContext
-} from '@/utils/context/ItemAvailabilityTableContext';
+import {useInitialItemTableContext, useItemTableContext} from '@/utils/context/ItemTableContext';
 import {
 	Button,
 	Flex,
@@ -20,27 +17,27 @@ import {ChevronDown, Search} from 'lucide-react';
 import {useMemo} from 'react';
 import {DateRange} from 'react-day-picker';
 
-export const AvailabilityTableFilters: React.FC = () => {
+export const ItemTableFilters: React.FC = () => {
 	const {
-		availabilityTableState,
-		tableFiltersState_availabilityTable,
-		searchTextState_availabilityTable,
-		initialFilterValueState_availabilityTable,
-		initialSortingState_availabilityTable,
-		paginationState_availabilityTable
-	} = useItemAvailabilityTableContext() as ReturnType<
-		typeof useInitialItemAvailabilityTableContext
-	>;
-	const [table] = availabilityTableState;
-	const [initialFilterValue] = initialFilterValueState_availabilityTable;
-	const initialSortingValue = initialSortingState_availabilityTable;
-	const [pagination] = paginationState_availabilityTable;
-	const [filters] = tableFiltersState_availabilityTable;
-	const [searchText] = searchTextState_availabilityTable;
-	const earliestReturnDateFilterValue = useMemo(
-		() => filters && (filters.find((f) => f.id === 'earliestReturnBy')?.value as DateRange),
+		tableState,
+		tableFiltersState,
+		searchTextState,
+		initialFilterValueState,
+		initialSortingState,
+		paginationState
+	} = useItemTableContext() as ReturnType<typeof useInitialItemTableContext>;
+	const [table] = tableState;
+	const [initialFilterValue] = initialFilterValueState;
+	const initialSortingValue = initialSortingState;
+	const [pagination] = paginationState;
+	const [filters] = tableFiltersState;
+	const [searchText] = searchTextState;
+	const createdAtFilterValue = useMemo(
+		() => filters && (filters.find((f) => f.id === 'createdAt')?.value as DateRange),
 		[filters]
 	);
+
+	console.log(filters);
 
 	const onClear = () => {
 		table?.resetGlobalFilter();
@@ -66,17 +63,17 @@ export const AvailabilityTableFilters: React.FC = () => {
 					/>
 				</InputGroup>
 				<DatePickerWithRange
-					placeholder='Earliest return by'
-					drValue={earliestReturnDateFilterValue}
+					placeholder='Creation date'
+					drValue={createdAtFilterValue}
 					onSelectRange={(dateRange: DateRange) => {
 						table?.setColumnFilters((prev) => {
 							const {from, to} = dateRange;
-							const otherFilters = prev.filter((f) => f.id !== 'earliestReturnBy');
+							const otherFilters = prev.filter((f) => f.id !== 'createdAt');
 							return from || to
 								? [
 										...otherFilters,
 										{
-											id: 'earliestReturnBy',
+											id: 'createdAt',
 											value: dateRange
 										}
 								  ]

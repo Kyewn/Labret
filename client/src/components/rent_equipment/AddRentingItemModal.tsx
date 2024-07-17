@@ -33,9 +33,10 @@ export const AddRentingItemModal: React.FC<{
 			itemQuantity: 50,
 			itemCategory: undefined,
 			itemDescription: undefined,
-			createdAt: undefined,
-			createdBy: undefined,
-			remainingQuantity: 50
+			createdAt: new Date(),
+			createdBy: 'delpttcjBgZhHaPS5QuL',
+			remainingQuantity: 50,
+			itemStatus: 'pending'
 		},
 		{
 			itemId: '2',
@@ -44,9 +45,10 @@ export const AddRentingItemModal: React.FC<{
 			itemQuantity: 40,
 			itemCategory: undefined,
 			itemDescription: undefined,
-			createdAt: undefined,
-			createdBy: undefined,
-			remainingQuantity: 50
+			createdAt: new Date(),
+			createdBy: 'delpttcjBgZhHaPS5QuL',
+			remainingQuantity: 50,
+			itemStatus: 'pending'
 		},
 		{
 			itemId: '3',
@@ -55,9 +57,10 @@ export const AddRentingItemModal: React.FC<{
 			itemQuantity: 30,
 			itemCategory: undefined,
 			itemDescription: undefined,
-			createdAt: undefined,
-			createdBy: undefined,
-			remainingQuantity: 50
+			createdAt: new Date(),
+			createdBy: 'delpttcjBgZhHaPS5QuL',
+			remainingQuantity: 50,
+			itemStatus: 'pending'
 		}
 	];
 	const cbItems: Item[] = items.map((item) => {
@@ -67,6 +70,9 @@ export const AddRentingItemModal: React.FC<{
 			itemName: currItem.itemName,
 			itemImages: currItem.itemImages,
 			itemQuantity: currItem.itemQuantity,
+			createdAt: currItem.createdAt,
+			createdBy: currItem.createdBy,
+			itemStatus: currItem.itemStatus,
 			remainingQuantity: currItem.remainingQuantity
 		};
 	});

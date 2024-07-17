@@ -1,10 +1,12 @@
 import {
+	Item,
 	ItemAvailabilityRecordInfoValues,
 	ItemAvailabilityRecordValues,
 	PublicHistoryRecordValues,
 	RentalRecord,
 	TableData,
 	User,
+	mapItemStatus,
 	mapRecordStatus,
 	mapUserStatus
 } from '@/utils/data';
@@ -218,6 +220,182 @@ export const getUserColumns: (
 					icon={<Trash />}
 					variant={'criticalOutline'}
 					onClick={(e) => handleDelete(e, user)}
+				/>
+			);
+		}
+	}
+];
+
+export const getItemColumns: (
+	openSelectionModal: () => void,
+	closeSelectionModal: () => void,
+	handleSetActive: (e: SyntheticEvent, item: Item) => void,
+	handleDelete: (e: SyntheticEvent, item: Item) => void
+) => ColumnDef<Item>[] = (
+	openSelectionModal,
+	closeSelectionModal,
+	handleSetActive,
+	handleDelete
+) => [
+	{
+		id: 'select',
+		header: ({table}) => (
+			<Flex>
+				<Checkbox
+					isChecked={table.getIsAllRowsSelected()}
+					onChange={(e) => {
+						// Only select pending rows
+						const rows = table.getCoreRowModel().rows;
+						const hasPendingRows = rows.some((row) => row.original.itemStatus === 'pending');
+						rows.forEach((row) => {
+							if (row.original.itemStatus === 'pending') row.toggleSelected(!!e.target.checked);
+						});
+						if (e.target.checked && hasPendingRows) openSelectionModal();
+						else closeSelectionModal();
+					}}
+					aria-label='Select all'
+				/>
+			</Flex>
+		),
+		cell: ({row}) =>
+			row.original.itemStatus == 'pending' && (
+				<Flex>
+					<Checkbox
+						isChecked={row.getIsSelected()}
+						onChange={() => {
+							row.toggleSelected(!row.getIsSelected());
+						}}
+						aria-label='Select row'
+					/>
+				</Flex>
+			)
+	},
+	{
+		accessorKey: 'itemId',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					ID
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'itemName',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Label
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'createdAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Created At
+				</Button>
+			);
+		},
+		cell: ({row}) => formatDate(row.original.createdAt as Date),
+		filterFn: 'withinDateRange'
+	},
+	{
+		accessorKey: 'createdBy.name',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Created By
+				</Button>
+			);
+		},
+		cell: ({row}) => (row.original.createdBy as User).name,
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'itemStatus',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Status
+				</Button>
+			);
+		},
+		cell: ({row}) => mapItemStatus(row.original.itemStatus),
+		enableGlobalFilter: true
+	},
+	{
+		id: 'actions',
+		header: 'ACTIONS',
+		cell: ({row}) => {
+			const item = row.original;
+
+			if (item.itemStatus === 'active') return;
+
+			return (
+				<ButtonGroup>
+					<Button fontSize={'sm'} onClick={(e) => handleSetActive(e, item)}>
+						Set Active
+					</Button>
+					<Button variant={'secondary'} onClick={(e) => handleDelete(e, item)}>
+						Reject
+					</Button>
+				</ButtonGroup>
+			);
+		}
+	},
+	{
+		id: 'delete',
+		cell: ({row}) => {
+			const item = row.original;
+
+			if (item.itemStatus === 'pending') return;
+
+			return (
+				<IconButton
+					aria-label={'delete'}
+					icon={<Trash />}
+					variant={'criticalOutline'}
+					onClick={(e) => handleDelete(e, item)}
 				/>
 			);
 		}

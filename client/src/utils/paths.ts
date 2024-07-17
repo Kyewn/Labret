@@ -15,9 +15,9 @@ export const paths = {
 		addItem: '/add-item',
 		users: '/users',
 		admins: '/admins',
-		equipment: '/equipment',
+		items: '/items',
 		verifications: '/verifications',
-		criticalRecords: '/critical-records',
+		debts: '/debts',
 
 		editRecord: '/edit-record'
 	}

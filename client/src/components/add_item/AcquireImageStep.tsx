@@ -1,7 +1,7 @@
 import {Camera} from '@/components/ui/Camera/Camera';
 import ImageManager from '@/components/ui/ImageManager';
+import {useAddItemContext, useInitialAddItemContext} from '@/utils/context/AddItemContext';
 import {useAppContext} from '@/utils/context/AppContext';
-import {useInitialRegisterContext, useRegisterContext} from '@/utils/context/RegisterContext';
 import {
 	Box,
 	Button,
@@ -20,8 +20,8 @@ import {useNavigate} from 'react-router-dom';
 
 const AcquireImageStep: React.FC = () => {
 	const {appState, appDispatch} = useAppContext();
-	const {imagesState, goToNext} = useRegisterContext() as ReturnType<
-		typeof useInitialRegisterContext
+	const {imagesState, goToNext} = useAddItemContext() as ReturnType<
+		typeof useInitialAddItemContext
 	>;
 	const [images, setImages] = imagesState;
 	const resolution = {
@@ -33,6 +33,7 @@ const AcquireImageStep: React.FC = () => {
 	const fileButtonRef = useRef() as React.MutableRefObject<HTMLInputElement>;
 
 	const handleImageCapture = () => {
+		console.log('ads');
 		const imageCapture = new ImageCapture(mediaStreams![0].getVideoTracks()[0]);
 		imageCapture.takePhoto().then((blob) => {
 			setImages([...images, blob]);
@@ -76,18 +77,18 @@ const AcquireImageStep: React.FC = () => {
 				<VStack flex={1} alignItems={'flex-start'} spacing={5}>
 					<Box>
 						<HStack alignContent={'center'}>
-							<Heading size={'md'}>User image</Heading>
+							<Heading size={'md'}>Item image</Heading>
 							<Tooltip
 								placement='right-start'
 								hasArrow
-								label={`Please be aware that these images will be used for training the system's facial recognition model, so images should be meaningful for identifying the user. You need to take at least 5 face images to continue to the next section, more images makes the model more accurate in detecting your face.`}
+								label={`Please be aware that these images will be used for training the system's item detection model, so images should be meaningful for identifying the item. You need to take at least 5 item images to continue to the next section, more images makes the model more accurate in detecting the time.`}
 							>
 								<Icon as={Info} />
 							</Tooltip>
 						</HStack>
 						<Text>
-							Take pictures of yourself naturally as you would when using the system using the
-							buttons. Take as many additional images and you can allow the model to learn better by
+							Take pictures of the item naturally as they might appear when scanning using the
+							device. Take as many additional images and you can allow the model to learn better by
 							including different perspectives and view angles.
 						</Text>
 						<ButtonGroup marginY={5}>
