@@ -4,7 +4,7 @@ import {
 	useInitialItemAvailabilityTableContext,
 	useItemAvailabilityTableContext
 } from '@/utils/context/ItemAvailabilityTableContext';
-import {Item, ItemAvailabilityRecordInfoValues} from '@/utils/data';
+import {Item, ItemAvailabilityRecordInfoValues, User} from '@/utils/data';
 
 import {
 	Flex,
@@ -43,7 +43,7 @@ export const ItemAvailabilityItemModal: React.FC<{
 			const rentQuantity = rentingItem?.rentQuantity as number;
 
 			return {
-				renterName: record.renterName as string,
+				renterName: (record.renter as User).name,
 				expectedReturnAt: record.expectedReturnAt as Date,
 				rentQuantity
 			};

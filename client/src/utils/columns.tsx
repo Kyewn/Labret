@@ -2,20 +2,20 @@ import {
 	Item,
 	ItemAvailabilityRecordInfoValues,
 	ItemAvailabilityRecordValues,
-	PublicHistoryRecordValues,
 	RentalRecord,
 	TableData,
 	User,
+	Verification,
 	mapItemStatus,
 	mapRecordStatus,
 	mapUserStatus
 } from '@/utils/data';
-import {formatDate} from '@/utils/utils';
-import {Button, ButtonGroup, Checkbox, Flex, IconButton, Text} from '@chakra-ui/react';
-import {ColumnDef, CustomFilterFns, FilterFn, Row} from '@tanstack/react-table';
-import {ArrowBigDown, ArrowBigUp, Check, Trash} from 'lucide-react';
-import {SyntheticEvent} from 'react';
-import {DateRange} from 'react-day-picker';
+import { formatDate } from '@/utils/utils';
+import { Button, ButtonGroup, Checkbox, Flex, IconButton, Text } from '@chakra-ui/react';
+import { ColumnDef, CustomFilterFns, FilterFn, Row } from '@tanstack/react-table';
+import { ArrowBigDown, ArrowBigUp, Check, Trash } from 'lucide-react';
+import { SyntheticEvent } from 'react';
+import { DateRange } from 'react-day-picker';
 
 // Table column structures
 // User
@@ -189,7 +189,7 @@ export const getUserColumns: (
 	},
 	{
 		id: 'actions',
-		header: 'ACTIONS',
+		header: 'Actions',
 		cell: ({row}) => {
 			const user = row.original;
 
@@ -365,7 +365,7 @@ export const getItemColumns: (
 	},
 	{
 		id: 'actions',
-		header: 'ACTIONS',
+		header: 'Actions',
 		cell: ({row}) => {
 			const item = row.original;
 
@@ -707,225 +707,221 @@ export const getUserHistoryRejectedRecordColumns: () => ColumnDef<RentalRecord>[
 	}
 ];
 
-export const getPublicHistoryActiveRecordColumns: () => ColumnDef<PublicHistoryRecordValues>[] =
-	() => [
-		{
-			accessorKey: 'renterName',
-			header: ({column}) => {
-				return (
-					<Button
-						variant={'ghost'}
-						fontSize={'sm'}
-						onClick={() => {
-							column.toggleSorting(column.getIsSorted() == 'asc');
-						}}
-						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
-					>
-						Name
-					</Button>
-				);
-			},
-			cell: ({row}) => {
-				if (row.original.recordStatus === 'returning') {
-					return <Text fontWeight={700}>{row.original.renterName}</Text>;
-				}
-				return row.original.renterName;
-			},
-			enableGlobalFilter: true
+export const getPublicHistoryActiveRecordColumns: () => ColumnDef<RentalRecord>[] = () => [
+	{
+		accessorKey: 'renter.name',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Name
+				</Button>
+			);
+		},
+		cell: ({row}) => {
+			if (row.original.recordStatus === 'returning') {
+				return <Text fontWeight={700}>{(row.original.renter as User).name}</Text>;
+			}
+			return (row.original.renter as User).name;
+		},
+		enableGlobalFilter: true
+	},
+
+	{
+		accessorKey: 'rentedAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Rented At
+				</Button>
+			);
+		},
+		cell: ({row}) => {
+			const dateString = row.original.rentedAt ? formatDate(row.original.rentedAt as Date) : '--';
+			if (row.original.recordStatus === 'returning') {
+				return <Text fontWeight={700}>{dateString}</Text>;
+			}
+			return dateString;
+		},
+		enableGlobalFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		accessorKey: 'expectedReturnAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Expected Return At
+				</Button>
+			);
 		},
 
-		{
-			accessorKey: 'rentedAt',
-			header: ({column}) => {
-				return (
-					<Button
-						variant={'ghost'}
-						fontSize={'sm'}
-						onClick={() => {
-							column.toggleSorting(column.getIsSorted() == 'asc');
-						}}
-						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
-					>
-						Rented At
-					</Button>
-				);
-			},
-			cell: ({row}) => {
-				const dateString = row.original.rentedAt ? formatDate(row.original.rentedAt as Date) : '--';
-				if (row.original.recordStatus === 'returning') {
-					return <Text fontWeight={700}>{dateString}</Text>;
-				}
-				return dateString;
-			},
-			enableGlobalFilter: true,
-			filterFn: 'withinDateRange'
+		cell: ({row}) => {
+			const dateString = row.original.expectedReturnAt
+				? formatDate(row.original.expectedReturnAt as Date)
+				: '--';
+			if (row.original.recordStatus === 'returning') {
+				return <Text fontWeight={700}>{dateString}</Text>;
+			}
+			return dateString;
 		},
-		{
-			accessorKey: 'expectedReturnAt',
-			header: ({column}) => {
-				return (
-					<Button
-						variant={'ghost'}
-						fontSize={'sm'}
-						onClick={() => {
-							column.toggleSorting(column.getIsSorted() == 'asc');
-						}}
-						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
-					>
-						Expected Return At
-					</Button>
-				);
-			},
+		enableColumnFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		accessorKey: 'recordStatus',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Status
+				</Button>
+			);
+		},
+		cell: ({row}) => {
+			const statusString = mapRecordStatus(row.original.recordStatus);
+			if (row.original.recordStatus === 'returning') {
+				return <Text fontWeight={700}>{statusString}</Text>;
+			}
+			return statusString;
+		},
+		enableGlobalFilter: true
+	}
+];
 
-			cell: ({row}) => {
-				const dateString = row.original.expectedReturnAt
-					? formatDate(row.original.expectedReturnAt as Date)
-					: '--';
-				if (row.original.recordStatus === 'returning') {
-					return <Text fontWeight={700}>{dateString}</Text>;
-				}
-				return dateString;
-			},
-			enableColumnFilter: true,
-			filterFn: 'withinDateRange'
+export const getPublicHistoryCompletedRecordColumns: () => ColumnDef<RentalRecord>[] = () => [
+	{
+		accessorKey: 'renter.name',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Name
+				</Button>
+			);
 		},
-		{
-			accessorKey: 'recordStatus',
-			header: ({column}) => {
-				return (
-					<Button
-						variant={'ghost'}
-						fontSize={'sm'}
-						onClick={() => {
-							column.toggleSorting(column.getIsSorted() == 'asc');
-						}}
-						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
-					>
-						Status
-					</Button>
-				);
-			},
-			cell: ({row}) => {
-				const statusString = mapRecordStatus(row.original.recordStatus);
-				if (row.original.recordStatus === 'returning') {
-					return <Text fontWeight={700}>{statusString}</Text>;
-				}
-				return statusString;
-			},
-			enableGlobalFilter: true
-		}
-	];
-
-export const getPublicHistoryCompletedRecordColumns: () => ColumnDef<PublicHistoryRecordValues>[] =
-	() => [
-		{
-			accessorKey: 'renterName',
-			header: ({column}) => {
-				return (
-					<Button
-						variant={'ghost'}
-						fontSize={'sm'}
-						onClick={() => {
-							column.toggleSorting(column.getIsSorted() == 'asc');
-						}}
-						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
-					>
-						Name
-					</Button>
-				);
-			},
-			cell: ({row}) => {
-				if (row.original.recordStatus === 'returning') {
-					return <Text fontWeight={700}>{row.original.renterName}</Text>;
-				}
-				return row.original.renterName;
-			},
-			enableGlobalFilter: true
+		cell: ({row}) => {
+			if (row.original.recordStatus === 'returning') {
+				return <Text fontWeight={700}>{(row.original.renter as User).name}</Text>;
+			}
+			return (row.original.renter as User).name;
 		},
-		{
-			accessorKey: 'rentedAt',
-			header: ({column}) => {
-				return (
-					<Button
-						variant={'ghost'}
-						fontSize={'sm'}
-						onClick={() => {
-							column.toggleSorting(column.getIsSorted() == 'asc');
-						}}
-						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
-					>
-						Rented At
-					</Button>
-				);
-			},
-			cell: ({row}) => {
-				const dateString = (
-					row.original.rentedAt ? formatDate(row.original.rentedAt as Date) : '--'
-				)
-					? formatDate(row.original.rentedAt as Date)
-					: '--';
-				if (row.original.recordStatus === 'returning') {
-					return <Text fontWeight={700}>{dateString}</Text>;
-				}
-				return dateString;
-			},
-			enableGlobalFilter: true,
-			filterFn: 'withinDateRange'
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'rentedAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Rented At
+				</Button>
+			);
 		},
-		{
-			accessorKey: 'returnedAt',
-			header: ({column}) => {
-				return (
-					<Button
-						variant={'ghost'}
-						fontSize={'sm'}
-						onClick={() => {
-							column.toggleSorting(column.getIsSorted() == 'asc');
-						}}
-						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
-					>
-						Completed At
-					</Button>
-				);
-			},
-			cell: ({row}) => {
-				const dateString = row.original.returnedAt
-					? formatDate(row.original.returnedAt as Date)
-					: '--';
-				if (row.original.recordStatus === 'returning') {
-					return <Text fontWeight={700}>{dateString}</Text>;
-				}
-				return dateString;
-			},
-			enableColumnFilter: true,
-			filterFn: 'withinDateRange'
+		cell: ({row}) => {
+			const dateString = (row.original.rentedAt ? formatDate(row.original.rentedAt as Date) : '--')
+				? formatDate(row.original.rentedAt as Date)
+				: '--';
+			if (row.original.recordStatus === 'returning') {
+				return <Text fontWeight={700}>{dateString}</Text>;
+			}
+			return dateString;
 		},
-		{
-			accessorKey: 'recordStatus',
-			header: ({column}) => {
-				return (
-					<Button
-						variant={'ghost'}
-						fontSize={'sm'}
-						onClick={() => {
-							column.toggleSorting(column.getIsSorted() == 'asc');
-						}}
-						rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
-					>
-						Status
-					</Button>
-				);
-			},
-			cell: ({row}) => {
-				const statusString = mapRecordStatus(row.original.recordStatus);
-				if (row.original.recordStatus === 'returning') {
-					return <Text fontWeight={700}>{statusString}</Text>;
-				}
-				return statusString;
-			},
-			enableGlobalFilter: true
-		}
-	];
+		enableGlobalFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		accessorKey: 'returnedAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Completed At
+				</Button>
+			);
+		},
+		cell: ({row}) => {
+			const dateString = row.original.returnedAt
+				? formatDate(row.original.returnedAt as Date)
+				: '--';
+			if (row.original.recordStatus === 'returning') {
+				return <Text fontWeight={700}>{dateString}</Text>;
+			}
+			return dateString;
+		},
+		enableColumnFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		accessorKey: 'recordStatus',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Status
+				</Button>
+			);
+		},
+		cell: ({row}) => {
+			const statusString = mapRecordStatus(row.original.recordStatus);
+			if (row.original.recordStatus === 'returning') {
+				return <Text fontWeight={700}>{statusString}</Text>;
+			}
+			return statusString;
+		},
+		enableGlobalFilter: true
+	}
+];
 
 export const getItemAvailabilityTableColumns: () => ColumnDef<ItemAvailabilityRecordValues>[] =
 	() => [
@@ -1042,6 +1038,220 @@ export const getItemAvailabilityRecordInfoColumns: () => ColumnDef<ItemAvailabil
 			}
 		}
 	];
+
+export const getRentVerificationColumns: (
+	handleVerify: (e: SyntheticEvent, verification: Verification) => void,
+	handleReject: (e: SyntheticEvent, verification: Verification) => void
+) => ColumnDef<Verification>[] = (handleVerify, handleReject) => [
+	{
+		accessorKey: 'record.renterName',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					ID
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'record.recordTitle',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Record Title
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'createdAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Created At
+				</Button>
+			);
+		},
+		cell: ({row}) => formatDate(row.original.createdAt as Date),
+		enableColumnFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		accessorKey: 'record.expectedReturnAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Expected Return At
+				</Button>
+			);
+		},
+		cell: ({row}) => formatDate((row.original.record as RentalRecord).expectedReturnAt as Date),
+		enableColumnFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		id: 'isReverify',
+		header: () => 'Reverifying',
+		cell: ({row}) =>
+			(row.original.record as RentalRecord).recordStatus === 'rent_reverifying' ? <Check /> : null
+	},
+	// Actions
+	{
+		id: 'actions',
+		header: 'Actions',
+		cell: ({row}) => {
+			const verification = row.original;
+
+			return (
+				<ButtonGroup>
+					<Button fontSize={'sm'} onClick={(e) => handleVerify(e, verification)}>
+						Verify
+					</Button>
+					<Button variant={'secondary'} onClick={(e) => handleReject(e, verification)}>
+						Reject
+					</Button>
+				</ButtonGroup>
+			);
+		}
+	}
+];
+
+export const getReturnVerificationColumns: (
+	handleVerify: (e: SyntheticEvent, verification: Verification) => void,
+	handleReject: (e: SyntheticEvent, verification: Verification) => void
+) => ColumnDef<Verification>[] = (handleVerify, handleReject) => [
+	{
+		accessorKey: 'record.renterName',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					ID
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'record.recordTitle',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Record Title
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'createdAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Created At
+				</Button>
+			);
+		},
+		cell: ({row}) => formatDate(row.original.createdAt as Date),
+		enableColumnFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		accessorKey: 'record.expectedReturnAt',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Expected Return At
+				</Button>
+			);
+		},
+		cell: ({row}) => formatDate((row.original.record as RentalRecord).expectedReturnAt as Date),
+		enableColumnFilter: true,
+		filterFn: 'withinDateRange'
+	},
+	{
+		id: 'isReverify',
+		header: () => 'Reverifying',
+		cell: ({row}) =>
+			(row.original.record as RentalRecord).recordStatus === 'return_reverifying' ? <Check /> : null
+	},
+	// Actions
+	{
+		id: 'actions',
+		header: 'Actions',
+		cell: ({row}) => {
+			const verification = row.original;
+
+			return (
+				<ButtonGroup>
+					<Button fontSize={'sm'} onClick={(e) => handleVerify(e, verification)}>
+						Verify
+					</Button>
+					<Button variant={'secondary'} onClick={(e) => handleReject(e, verification)}>
+						Reject
+					</Button>
+				</ButtonGroup>
+			);
+		}
+	}
+];
 
 // FILTERS
 // User

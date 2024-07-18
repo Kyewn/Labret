@@ -2,6 +2,7 @@ import {EditRecord} from '@/components/user_history/EditRecord';
 import {AddItem} from '@/pages/AddItem';
 import {Error404} from '@/pages/Error404';
 import {ItemAvailability} from '@/pages/ItemAvailability';
+import {ManageVerifications} from '@/pages/ManageVerifications';
 import {PublicHistory} from '@/pages/PublicHistory';
 import {Register} from '@/pages/Register';
 import {RegisterAdmin} from '@/pages/RegisterAdmin';
@@ -76,7 +77,7 @@ const router = createBrowserRouter(
 					<Route path={paths.sub.editRecord} element={<EditRecord />} />
 					<Route path={paths.sub.items} element={<ViewItems />} />
 					<Route path={paths.sub.addItem} element={<AddItem />} />
-					<Route path={paths.sub.verifications} /*element={}*/ />
+					<Route path={paths.sub.verifications} element={<ManageVerifications />} />
 					<Route path={paths.sub.debts} /*element={}*/ />
 				</Route>
 			</Route>

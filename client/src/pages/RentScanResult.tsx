@@ -42,7 +42,20 @@ export function RentScanResult() {
 				itemId: 'ABC123',
 				itemName: 'Beaker',
 				itemImages: [],
-				itemQuantity: 123
+				itemQuantity: 123,
+				createdAt: new Date(),
+				createdBy: {
+					id: 'delpttcjBgZhHaPS5QuL',
+					name: 'delasd',
+					email: 'delEmail',
+					status: 'pending',
+					type: 'admin',
+					createdAt: new Date('2023-2-1'),
+					imageUrls: [
+						'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+					]
+				},
+				itemStatus: 'pending'
 			},
 			rentQuantity: 2
 		},
@@ -51,7 +64,20 @@ export function RentScanResult() {
 				itemId: 'AC123',
 				itemName: 'Balls',
 				itemImages: [],
-				itemQuantity: 1223
+				itemQuantity: 1223,
+				createdAt: new Date(),
+				createdBy: {
+					id: 'delpttcjBgZhHaPS5QuL',
+					name: 'delasd',
+					email: 'delEmail',
+					status: 'pending',
+					type: 'admin',
+					createdAt: new Date('2023-2-1'),
+					imageUrls: [
+						'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+					]
+				},
+				itemStatus: 'pending'
 			},
 			rentQuantity: 5
 		},
@@ -60,7 +86,20 @@ export function RentScanResult() {
 				itemId: 'A1333',
 				itemName: 'Cups',
 				itemImages: [],
-				itemQuantity: 12
+				itemQuantity: 12,
+				createdAt: new Date(),
+				createdBy: {
+					id: 'delpttcjBgZhHaPS5QuL',
+					name: 'delasd',
+					email: 'delEmail',
+					status: 'pending',
+					type: 'admin',
+					createdAt: new Date('2023-2-1'),
+					imageUrls: [
+						'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+					]
+				},
+				itemStatus: 'pending'
 			},
 			rentQuantity: 3
 		}

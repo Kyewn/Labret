@@ -42,9 +42,6 @@ export type EditImageProofValues = {
 };
 
 // Custom table data type
-export type PublicHistoryRecordValues = RentalRecord & {
-	renterName?: string;
-};
 export type ItemAvailabilityRecordValues = Item & {
 	earliestReturnBy?: Date;
 };
@@ -122,8 +119,8 @@ export type RentingItem = {
 };
 
 export type RentalRecord = {
-	renterId: string;
 	recordId: string;
+	renter: string | User;
 	recordTitle: string;
 	notes?: string;
 	recordStatus: string;
@@ -132,18 +129,18 @@ export type RentalRecord = {
 	rentedAt: string | Date;
 	expectedReturnAt: string | Date;
 	returnedAt?: string | Date;
-	returnImages?: Record<string, unknown>[];
+	returnImages?: string[];
 	returnLocation?: string;
 };
 
 export type Verification = {
 	verificationId: string;
-	recordId: string; // Rental record id
-	verificationType: string;
-	verificationStatus: string;
+	record: string | RentalRecord; // Rental record id
 	createdAt: string | Date;
 	verifiedAt?: string | Date;
-	verifiedBy?: string;
+	verifiedBy?: string | User;
+	isRecordSerious?: boolean;
+	verificationComments?: string;
 };
 
 export type FormValues =

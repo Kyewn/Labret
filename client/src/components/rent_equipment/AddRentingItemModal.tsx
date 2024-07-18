@@ -34,7 +34,17 @@ export const AddRentingItemModal: React.FC<{
 			itemCategory: undefined,
 			itemDescription: undefined,
 			createdAt: new Date(),
-			createdBy: 'delpttcjBgZhHaPS5QuL',
+			createdBy: {
+				id: 'delpttcjBgZhHaPS5QuL',
+				name: 'delasd',
+				email: 'delEmail',
+				status: 'pending',
+				type: 'admin',
+				createdAt: new Date('2023-2-1'),
+				imageUrls: [
+					'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+				]
+			},
 			remainingQuantity: 50,
 			itemStatus: 'pending'
 		},
@@ -46,7 +56,17 @@ export const AddRentingItemModal: React.FC<{
 			itemCategory: undefined,
 			itemDescription: undefined,
 			createdAt: new Date(),
-			createdBy: 'delpttcjBgZhHaPS5QuL',
+			createdBy: {
+				id: 'delpttcjBgZhHaPS5QuL',
+				name: 'delasd',
+				email: 'delEmail',
+				status: 'pending',
+				type: 'admin',
+				createdAt: new Date('2023-2-1'),
+				imageUrls: [
+					'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+				]
+			},
 			remainingQuantity: 50,
 			itemStatus: 'pending'
 		},
@@ -58,7 +78,17 @@ export const AddRentingItemModal: React.FC<{
 			itemCategory: undefined,
 			itemDescription: undefined,
 			createdAt: new Date(),
-			createdBy: 'delpttcjBgZhHaPS5QuL',
+			createdBy: {
+				id: 'delpttcjBgZhHaPS5QuL',
+				name: 'delasd',
+				email: 'delEmail',
+				status: 'pending',
+				type: 'admin',
+				createdAt: new Date('2023-2-1'),
+				imageUrls: [
+					'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+				]
+			},
 			remainingQuantity: 50,
 			itemStatus: 'pending'
 		}

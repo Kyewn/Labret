@@ -12,12 +12,31 @@ import {addDoc, collection, deleteDoc, getDocs, updateDoc} from 'firebase/firest
 
 export const itemCollection = collection(db, 'items');
 
+export const getAllBaseItems = async () => {
+	const querySnapshot = await getDocs(itemCollection);
+	const users = await getAllUsers();
+	const items = querySnapshot.docs.map((doc) => {
+		const item = doc.data() as Item;
+		const createdBy = users.find((user) => user.id === item.createdBy) as User;
+
+		return {
+			...item,
+			itemId: doc.id,
+			createdAt: new Date(doc.data().createdAt) as Date,
+			createdBy
+		};
+	});
+	return items as Item[];
+};
+
 export const getAllItems = async () => {
 	const querySnapshot = await getDocs(itemCollection);
 	const users = await getAllUsers();
 	const records = (await getAllRecords()) as RentalRecord[];
 	const items = querySnapshot.docs.map((doc) => {
 		const item = doc.data() as Item;
+		const {createdAt} = item;
+
 		// Get createdBy user
 		const createdBy = users.find((user) => user.id === item.createdBy) as User;
 		// Calculate remaining quantity
@@ -37,11 +56,11 @@ export const getAllItems = async () => {
 		);
 
 		return {
-			...(doc.data() as Omit<Item, 'id' | 'createdAt'>),
-			id: doc.id,
-			createdAt: new Date(item.createdAt) as Date,
+			...item,
+			itemId: doc.id,
+			remainingQuantity,
 			createdBy,
-			remainingQuantity
+			createdAt: new Date(createdAt)
 		};
 	});
 	return items as Item[];
@@ -53,6 +72,7 @@ export const getItem = async (itemId: string) => {
 
 	const queryResult = (await getDocs(itemCollection)).docs.filter((doc) => itemId == doc.id)[0];
 	const item = queryResult.data() as Item;
+	const {createdAt} = item;
 
 	// Get createdBy user
 	const createdBy = users.find((user) => user.id === item.createdBy) as User;
@@ -74,9 +94,9 @@ export const getItem = async (itemId: string) => {
 	return {
 		...item,
 		itemId,
-		createdAt: new Date(item.createdAt) as Date,
+		remainingQuantity,
 		createdBy,
-		remainingQuantity
+		createdAt: new Date(createdAt)
 	} as Item;
 };
 

@@ -1,5 +1,4 @@
-import {getUser} from '@/db/user';
-import {PublicHistoryRecordValues} from '@/utils/data';
+import {RentalRecord} from '@/utils/data';
 import {useDisclosure} from '@chakra-ui/react';
 import {
 	ColumnFiltersState,
@@ -16,9 +15,9 @@ import {createContext, useContext, useState} from 'react';
 export const useInitialPublicHistoryTableContext = () => {
 	// Table data states
 	const tabState = useState<number>(0);
-	const initDataState = useState<PublicHistoryRecordValues[] | undefined>(undefined);
-	const tableDataState = useState<PublicHistoryRecordValues[] | undefined>(undefined);
-	const selectedDataState = useState<PublicHistoryRecordValues | undefined>(undefined);
+	const initDataState = useState<RentalRecord[] | undefined>(undefined);
+	const tableDataState = useState<RentalRecord[] | undefined>(undefined);
+	const selectedDataState = useState<RentalRecord | undefined>(undefined);
 
 	const infoDisclosure = useDisclosure(); // Item modal
 
@@ -27,7 +26,7 @@ export const useInitialPublicHistoryTableContext = () => {
 	const [tab] = tabState;
 
 	// Separate states for each table
-	const activeTableState = useState<Table<PublicHistoryRecordValues> | undefined>(undefined);
+	const activeTableState = useState<Table<RentalRecord> | undefined>(undefined);
 	const searchTextState_activeTable = useState('');
 	const initialFilterValueState_activeTable = useState<ColumnFiltersState>([]);
 	const [initialFilterValue_activeTable] = initialFilterValueState_activeTable;
@@ -42,7 +41,7 @@ export const useInitialPublicHistoryTableContext = () => {
 	});
 	const rowSelectionState_activeTable = useState<RowSelectionState>({});
 
-	const nearDueTableState = useState<Table<PublicHistoryRecordValues> | undefined>(undefined);
+	const nearDueTableState = useState<Table<RentalRecord> | undefined>(undefined);
 	const searchTextState_nearDueTable = useState('');
 	const initialFilterValueState_nearDueTable = useState<ColumnFiltersState>([]);
 	const [initialFilterValue_nearDueTable] = initialFilterValueState_nearDueTable;
@@ -57,7 +56,7 @@ export const useInitialPublicHistoryTableContext = () => {
 	});
 	const rowSelectionState_nearDueTable = useState<RowSelectionState>({});
 
-	const completedTableState = useState<Table<PublicHistoryRecordValues> | undefined>(undefined);
+	const completedTableState = useState<Table<RentalRecord> | undefined>(undefined);
 	const searchTextState_completedTable = useState('');
 	const initialFilterValueState_completedTable = useState<ColumnFiltersState>([]);
 	const [initialFilterValue_completedTable] = initialFilterValueState_completedTable;
@@ -78,7 +77,7 @@ export const useInitialPublicHistoryTableContext = () => {
 	const [, setNearDueTable] = nearDueTableState;
 	const [, setCompletedTable] = completedTableState;
 
-	const handleInitTable = (tableIdx: number, table: Table<PublicHistoryRecordValues>) => {
+	const handleInitTable = (tableIdx: number, table: Table<RentalRecord>) => {
 		switch (tableIdx) {
 			case 0:
 				setActiveTable(table);
@@ -93,16 +92,7 @@ export const useInitialPublicHistoryTableContext = () => {
 	};
 
 	const refetch = async () => {
-		const data = await Promise.all(
-			dummyItems.map(async (record) => {
-				const renter = await getUser(record.renterId);
-				const renterName = renter.name;
-				return {
-					...record,
-					renterName
-				};
-			})
-		);
+		const data = dummyItems;
 
 		setInitData(() => {
 			switch (tab) {
@@ -183,18 +173,41 @@ export const useInitialPublicHistoryTableContext = () => {
 	};
 };
 
-const dummyItems: PublicHistoryRecordValues[] = [
+const dummyItems: RentalRecord[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'Hello',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -203,7 +216,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -220,14 +246,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'Hello1',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -236,7 +285,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -253,14 +315,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: '2',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -269,7 +354,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -286,14 +384,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'Returning',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -302,7 +423,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -318,14 +452,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'Returning1',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -334,7 +491,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -350,14 +520,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'Returning2',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -366,7 +559,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -383,14 +589,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'RentnearDue',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -399,7 +628,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -416,14 +658,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'RentnearDue1',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -432,7 +697,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -449,14 +727,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'RentnearDue2',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -465,7 +766,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -482,14 +796,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'ReturnnearDue',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -498,7 +835,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -515,14 +865,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'ReturnnearDue1',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -531,7 +904,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -548,14 +934,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'ReturnnearDue2',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -564,7 +973,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -581,14 +1003,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'Completed',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -597,7 +1042,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -614,14 +1072,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'Completed1',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -630,7 +1111,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -647,14 +1141,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'Completed2',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -663,7 +1180,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -680,14 +1210,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'Paid',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -696,7 +1249,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -713,14 +1279,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'Paid1',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -729,7 +1318,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
@@ -746,14 +1348,37 @@ const dummyItems: PublicHistoryRecordValues[] = [
 	{
 		recordId: 'ABC123',
 		recordTitle: 'Paid2',
-		renterId: 'PJtSBgLgeBtbgg5NES2Z',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentingItems: [
 			{
 				item: {
 					itemId: 'ABC123',
 					itemName: 'Beaker',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 10
 			},
@@ -762,7 +1387,20 @@ const dummyItems: PublicHistoryRecordValues[] = [
 					itemId: 'ABC1234',
 					itemName: 'Airhorn',
 					itemImages: [],
-					itemQuantity: 123
+					itemQuantity: 123,
+					createdAt: new Date(),
+					createdBy: {
+						id: 'delpttcjBgZhHaPS5QuL',
+						name: 'delasd',
+						email: 'delEmail',
+						status: 'pending',
+						type: 'admin',
+						createdAt: new Date('2023-2-1'),
+						imageUrls: [
+							'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+						]
+					},
+					itemStatus: 'pending'
 				},
 				rentQuantity: 12
 			}
