@@ -7,10 +7,12 @@ import {
 	useInitialVerificationTableContext,
 	useVerificationTableContext
 } from '@/utils/context/VerificationTableContext';
-import {Item, mapRecordStatus, RentalRecord} from '@/utils/data';
+import {Item, mapRecordStatus, RentalRecord, Verification} from '@/utils/data';
 
 import {
 	Box,
+	Button,
+	ButtonGroup,
 	Divider,
 	Flex,
 	HStack,
@@ -18,6 +20,7 @@ import {
 	ModalBody,
 	ModalContent,
 	ModalOverlay,
+	Spacer,
 	Tag,
 	useDisclosure,
 	VStack
@@ -28,10 +31,15 @@ export const VerificationItemModal: React.FC<{
 	disclosure: ReturnType<typeof useDisclosure>;
 }> = ({disclosure}) => {
 	const {isOpen, onClose} = disclosure;
-	const itemImageDisclosure = useDisclosure();
-	const {selectedDataState} = useVerificationTableContext() as ReturnType<
-		typeof useInitialVerificationTableContext
-	>;
+	const itemImageProofDisclosure = useDisclosure();
+	const {onOpen: onImageProofOpen} = itemImageProofDisclosure;
+	const {
+		selectedDataState,
+		handleVerifyRent,
+		handleVerifyReturn,
+		handleRejectRent,
+		handleRejectReturn
+	} = useVerificationTableContext() as ReturnType<typeof useInitialVerificationTableContext>;
 	const [selectedRecord] = selectedDataState;
 	const [selectedItemImage, setSelectedItemImage] = useState<string | undefined>(undefined);
 
@@ -53,21 +61,26 @@ export const VerificationItemModal: React.FC<{
 	};
 
 	const renderRentItems = () => {
-		const handleOpenImageBlob = (index: number) => {
+		const handleOpenImageBlob = (itemId: string) => {
 			if (!selectedRecord) return;
 			setSelectedItemImage(
-				(selectedRecord?.record as RentalRecord | undefined)?.rentImages[index] as string
+				(selectedRecord?.record as RentalRecord | undefined)?.rentingItems.find(
+					(rentingItem) => (rentingItem.item as Item).itemId == itemId
+				)?.proofOfReturn as string
 			);
+			onImageProofOpen();
 		};
 
 		return (selectedRecord?.record as RentalRecord | undefined)?.rentingItems?.map(
-			(rentingItem, i) => {
+			(rentingItem) => {
 				return (
 					<ScannedItem
+						isEditing={false}
 						isEditingImageEnabled={false}
+						proofOfReturn={rentingItem.proofOfReturn}
 						key={(rentingItem.item as Item).itemId}
 						itemInfo={rentingItem}
-						onOpenImageBlob={() => handleOpenImageBlob(i)}
+						onOpenImageBlob={() => handleOpenImageBlob((rentingItem.item as Item).itemId)}
 					/>
 				);
 			}
@@ -76,14 +89,14 @@ export const VerificationItemModal: React.FC<{
 
 	return (
 		<>
-			<SingleImageViewerModal disclosure={itemImageDisclosure} imageUrl={selectedItemImage} />
+			<SingleImageViewerModal disclosure={itemImageProofDisclosure} imageUrl={selectedItemImage} />
 
 			<Modal scrollBehavior={'inside'} isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
 				<ModalContent width={'unset'} minWidth={'75%'} maxWidth={'90%'} height={'90%'}>
 					<ModalBody p={5} display={'flex'} flexDirection={'column'}>
-						<Flex>
-							<HStack spacing={5}>
+						<Flex w={'100%'}>
+							<HStack w={'100%'} spacing={5}>
 								<Tag colorScheme={'orange'} fontWeight={'bold'}>
 									ID {(selectedRecord?.record as RentalRecord | undefined)?.recordId}
 								</Tag>
@@ -98,9 +111,40 @@ export const VerificationItemModal: React.FC<{
 										)}
 									</Tag>
 								)}
+								<Spacer />
+
+								<ButtonGroup spacing={3}>
+									<Button
+										variant='outline'
+										onClick={(e) =>
+											(selectedRecord &&
+												(selectedRecord?.record as RentalRecord | undefined)?.recordStatus ===
+													'returning') ||
+											(selectedRecord?.record as RentalRecord | undefined)?.recordStatus ===
+												'return_reverifying'
+												? handleRejectReturn(e, selectedRecord as Verification)
+												: handleRejectRent(e, selectedRecord as Verification)
+										}
+									>
+										Reject
+									</Button>
+									<Button
+										onClick={(e) =>
+											(selectedRecord &&
+												(selectedRecord?.record as RentalRecord | undefined)?.recordStatus ===
+													'returning') ||
+											(selectedRecord?.record as RentalRecord | undefined)?.recordStatus ===
+												'return_reverifying'
+												? handleVerifyReturn(e, selectedRecord as Verification)
+												: handleVerifyRent(e, selectedRecord as Verification)
+										}
+									>
+										Verify
+									</Button>
+								</ButtonGroup>
 							</HStack>
 						</Flex>
-						<Flex flex={1} mt={5}>
+						<Flex mt={5}>
 							<VStack flex={1} alignItems={'flex-start'} spacing={5}>
 								<HStack width={'100%'} flex={1} spacing={5} alignItems={'flex-start'}>
 									<VStack spacing={5} flex={1} alignItems={'flex-start'}>
@@ -158,14 +202,19 @@ export const VerificationItemModal: React.FC<{
 									/>
 								</Box>
 
-								<Box width={'100%'}>
-									<ImageManager
-										label='Return Images'
-										specifiedImages={
-											(selectedRecord?.record as RentalRecord | undefined)?.returnImages
-										}
-									/>
-								</Box>
+								{((selectedRecord?.record as RentalRecord | undefined)?.recordStatus ===
+									'returning' ||
+									(selectedRecord?.record as RentalRecord | undefined)?.recordStatus ===
+										'return_reverifying') && (
+									<Box width={'100%'}>
+										<ImageManager
+											label='Return Images'
+											specifiedImages={
+												(selectedRecord?.record as RentalRecord | undefined)?.returnImages
+											}
+										/>
+									</Box>
+								)}
 							</VStack>
 
 							<Divider orientation={'vertical'} marginX={5} />

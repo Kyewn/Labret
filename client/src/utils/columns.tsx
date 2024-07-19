@@ -10,12 +10,12 @@ import {
 	mapRecordStatus,
 	mapUserStatus
 } from '@/utils/data';
-import { formatDate } from '@/utils/utils';
-import { Button, ButtonGroup, Checkbox, Flex, IconButton, Text } from '@chakra-ui/react';
-import { ColumnDef, CustomFilterFns, FilterFn, Row } from '@tanstack/react-table';
-import { ArrowBigDown, ArrowBigUp, Check, Trash } from 'lucide-react';
-import { SyntheticEvent } from 'react';
-import { DateRange } from 'react-day-picker';
+import {formatDate} from '@/utils/utils';
+import {Button, ButtonGroup, Checkbox, Flex, IconButton, Text} from '@chakra-ui/react';
+import {ColumnDef, CustomFilterFns, FilterFn, Row} from '@tanstack/react-table';
+import {ArrowBigDown, ArrowBigUp, Check, Trash} from 'lucide-react';
+import {SyntheticEvent} from 'react';
+import {DateRange} from 'react-day-picker';
 
 // Table column structures
 // User
@@ -1040,11 +1040,50 @@ export const getItemAvailabilityRecordInfoColumns: () => ColumnDef<ItemAvailabil
 	];
 
 export const getRentVerificationColumns: (
+	openSelectionModal: () => void,
+	closeSelectionModal: () => void,
 	handleVerify: (e: SyntheticEvent, verification: Verification) => void,
 	handleReject: (e: SyntheticEvent, verification: Verification) => void
-) => ColumnDef<Verification>[] = (handleVerify, handleReject) => [
+) => ColumnDef<Verification>[] = (
+	openSelectionModal,
+	closeSelectionModal,
+	handleVerify,
+	handleReject
+) => [
 	{
-		accessorKey: 'record.renterName',
+		id: 'select',
+		header: ({table}) => (
+			<Flex>
+				<Checkbox
+					isChecked={table.getIsAllRowsSelected()}
+					onChange={(e) => {
+						// Only select pending rows
+						const rows = table.getCoreRowModel().rows;
+						const hasPendingRows = rows.length;
+						rows.forEach((row) => {
+							row.toggleSelected(!!e.target.checked);
+						});
+						if (e.target.checked && hasPendingRows) openSelectionModal();
+						else closeSelectionModal();
+					}}
+					aria-label='Select all'
+				/>
+			</Flex>
+		),
+		cell: ({row}) => (
+			<Flex>
+				<Checkbox
+					isChecked={row.getIsSelected()}
+					onChange={() => {
+						row.toggleSelected(!row.getIsSelected());
+					}}
+					aria-label='Select row'
+				/>
+			</Flex>
+		)
+	},
+	{
+		accessorKey: 'record.renter.name',
 		header: ({column}) => {
 			return (
 				<Button
@@ -1055,7 +1094,7 @@ export const getRentVerificationColumns: (
 					}}
 					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
 				>
-					ID
+					Renter
 				</Button>
 			);
 		},
@@ -1147,11 +1186,50 @@ export const getRentVerificationColumns: (
 ];
 
 export const getReturnVerificationColumns: (
+	openSelectionModal: () => void,
+	closeSelectionModal: () => void,
 	handleVerify: (e: SyntheticEvent, verification: Verification) => void,
 	handleReject: (e: SyntheticEvent, verification: Verification) => void
-) => ColumnDef<Verification>[] = (handleVerify, handleReject) => [
+) => ColumnDef<Verification>[] = (
+	openSelectionModal,
+	closeSelectionModal,
+	handleVerify,
+	handleReject
+) => [
 	{
-		accessorKey: 'record.renterName',
+		id: 'select',
+		header: ({table}) => (
+			<Flex>
+				<Checkbox
+					isChecked={table.getIsAllRowsSelected()}
+					onChange={(e) => {
+						// Only select pending rows
+						const rows = table.getCoreRowModel().rows;
+						const hasPendingRows = rows.length;
+						rows.forEach((row) => {
+							row.toggleSelected(!!e.target.checked);
+						});
+						if (e.target.checked && hasPendingRows) openSelectionModal();
+						else closeSelectionModal();
+					}}
+					aria-label='Select all'
+				/>
+			</Flex>
+		),
+		cell: ({row}) => (
+			<Flex>
+				<Checkbox
+					isChecked={row.getIsSelected()}
+					onChange={() => {
+						row.toggleSelected(!row.getIsSelected());
+					}}
+					aria-label='Select row'
+				/>
+			</Flex>
+		)
+	},
+	{
+		accessorKey: 'record.renter.name',
 		header: ({column}) => {
 			return (
 				<Button
@@ -1162,7 +1240,7 @@ export const getReturnVerificationColumns: (
 					}}
 					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
 				>
-					ID
+					Renter
 				</Button>
 			);
 		},

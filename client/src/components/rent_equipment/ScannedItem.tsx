@@ -59,13 +59,15 @@ export const ScannedItem: React.FC<Props> = ({
 				</Text>
 			</HStack>
 			<Spacer />
-			{isEditing && (
+			{isEditing ? (
 				<HStack spacing={1}>
 					{proofOfReturn ? (
 						<HStack>
-							<Button variant={'outline'} onClick={onOpenProofCapture}>
-								Retake
-							</Button>
+							{isEditingImageEnabled && (
+								<Button variant={'outline'} onClick={onOpenProofCapture}>
+									Retake
+								</Button>
+							)}
 							<Tooltip label={'Show image proof'}>
 								<IconButton
 									isRound
@@ -102,6 +104,22 @@ export const ScannedItem: React.FC<Props> = ({
 								variant={'criticalIconButton'}
 								aria-label={'delete-item'}
 								onClick={onDeleteItem}
+							/>
+						</Tooltip>
+					)}
+				</HStack>
+			) : (
+				<HStack>
+					{proofOfReturn && (
+						<Tooltip label={'Show image proof'}>
+							<IconButton
+								isRound
+								icon={<Check />}
+								color={'green'}
+								_hover={{color: 'green', backgroundColor: 'grey.100'}}
+								variant={'iconButton'}
+								aria-label={'show-image-proof'}
+								onClick={onOpenImageBlob}
 							/>
 						</Tooltip>
 					)}

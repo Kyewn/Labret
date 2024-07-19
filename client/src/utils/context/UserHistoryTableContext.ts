@@ -422,7 +422,7 @@ const dummyItems: RentalRecord[] = [
 	},
 	{
 		recordId: 'ABC123',
-		recordTitle: 'Hello',
+		recordTitle: 'Proof',
 		renter: {
 			id: 'PJtSBgLgeBtbgg5NES2Z',
 			name: 'pjt',
@@ -477,7 +477,9 @@ const dummyItems: RentalRecord[] = [
 					},
 					itemStatus: 'pending'
 				},
-				rentQuantity: 12
+				rentQuantity: 12,
+				proofOfReturn:
+					'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
 			}
 		],
 		rentImages: [],

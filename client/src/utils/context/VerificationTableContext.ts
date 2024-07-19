@@ -1,6 +1,7 @@
 import {ConfirmDialogProps} from '@/components/ui/ConfirmDialog';
-import {RentalRecord, Verification} from '@/utils/data';
-import {useDisclosure} from '@chakra-ui/react';
+import {editRecord} from '@/db/record';
+import {RentalRecord, User, Verification} from '@/utils/data';
+import {useDisclosure, useToast} from '@chakra-ui/react';
 import {
 	ColumnFiltersState,
 	PaginationState,
@@ -8,7 +9,7 @@ import {
 	SortingState,
 	Table
 } from '@tanstack/react-table';
-import {createContext, useContext, useState} from 'react';
+import {createContext, SyntheticEvent, useContext, useState} from 'react';
 
 // TABLE STRUCTURES
 export const useInitialVerificationTableContext = () => {
@@ -18,17 +19,20 @@ export const useInitialVerificationTableContext = () => {
 	const tableDataState = useState<Verification[] | undefined>(undefined);
 	const selectedDataState = useState<Verification | undefined>(undefined);
 
+	const toast = useToast();
 	const infoDisclosure = useDisclosure(); // Item modal
 	const selectionDisclosure = useDisclosure(); // Selection actions modal
 	const confirmDialogDisclosure = useDisclosure();
+	const verificationRejectConfirmDialogDiscloure = useDisclosure();
 	const confirmDialogState = useState<Omit<ConfirmDialogProps, 'disclosure'>>({
 		title: 'Are you sure?',
 		description: '',
 		onConfirm: () => {}
 	});
-
 	const [initData, setInitData] = initDataState;
 	const [tableData, setTableData] = tableDataState;
+	const {onClose} = selectionDisclosure;
+	const [, setConfirmDialog] = confirmDialogState;
 	const [tab] = tabState;
 
 	// Separate states for each table
@@ -101,6 +105,248 @@ export const useInitialVerificationTableContext = () => {
 		});
 	};
 
+	const handleVerifyRent = async (e: SyntheticEvent, verification: Verification) => {
+		e.stopPropagation();
+		const {record} = verification;
+		const {renter} = record as RentalRecord;
+		const {name} = renter as User;
+
+		confirmDialogDisclosure.onOpen();
+
+		const handleVerify = async () => {
+			try {
+				// TODO: Send general (reject or delete) email to user notifying verify
+				await editRecord((record as RentalRecord).recordId, {recordStatus: 'active'});
+				// Clear row selections
+				rentTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
+				onClose();
+				// Update data
+				refetch();
+				toast({
+					title: 'Record verified',
+					description: `Record of ${name} have been verified.`,
+					status: 'success',
+					duration: 3000
+				});
+			} catch {
+				toast({
+					title: 'Failed to verify record',
+					description: `Record of ${name} could not be verified, please try again.`,
+					status: 'error',
+					duration: 3000
+				});
+			}
+		};
+		setConfirmDialog((prev) => {
+			return {
+				...(prev || {}),
+				description: `Are you sure you want to verify this record?`,
+				onConfirm: handleVerify
+			};
+		});
+	};
+	const handleRejectRent = async (e: SyntheticEvent, verification: Verification) => {
+		e.stopPropagation();
+		const {record} = verification;
+		const {renter} = record as RentalRecord;
+		const {name} = renter as User;
+
+		verificationRejectConfirmDialogDiscloure.onOpen();
+
+		const handleReject = async () => {
+			try {
+				// TODO: Send general (reject or delete) email to user notifying verify
+				await editRecord((record as RentalRecord).recordId, {recordStatus: 'rent_rejected'});
+				// Clear row selections
+				rentTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
+				onClose();
+				// Update data
+				refetch();
+				toast({
+					title: 'Record rejected',
+					description: `Record of ${name} have been rejected.`,
+					status: 'success',
+					duration: 3000
+				});
+			} catch {
+				toast({
+					title: 'Failed to reject record',
+					description: `Record of ${name} could not be rejected, please try again.`,
+					status: 'error',
+					duration: 3000
+				});
+			}
+		};
+		setConfirmDialog((prev) => {
+			return {
+				...(prev || {}),
+				description: `Are you sure you want to reject this record?`,
+				onConfirm: handleReject
+			};
+		});
+	};
+
+	const handleVerifyReturn = async (e: SyntheticEvent, verification: Verification) => {
+		e.stopPropagation();
+		const {record} = verification;
+		const {renter} = record as RentalRecord;
+		const {name} = renter as User;
+
+		confirmDialogDisclosure.onOpen();
+
+		const handleVerify = async () => {
+			try {
+				// TODO: Send general (reject or delete) email to user notifying verify
+				await editRecord((record as RentalRecord).recordId, {recordStatus: 'completed'});
+				// Clear row selections
+				returnTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
+				onClose();
+				// Update data
+				refetch();
+				toast({
+					title: 'Record verified',
+					description: `Record of ${name} have been verified.`,
+					status: 'success',
+					duration: 3000
+				});
+			} catch {
+				toast({
+					title: 'Failed to verify record',
+					description: `Record of ${name} could not be verified, please try again.`,
+					status: 'error',
+					duration: 3000
+				});
+			}
+		};
+		setConfirmDialog((prev) => {
+			return {
+				...(prev || {}),
+				description: `Are you sure you want to verify this record?`,
+				onConfirm: handleVerify
+			};
+		});
+	};
+
+	const handleRejectReturn = async (e: SyntheticEvent, verification: Verification) => {
+		e.stopPropagation();
+		const {record} = verification;
+		const {renter} = record as RentalRecord;
+		const {name} = renter as User;
+
+		verificationRejectConfirmDialogDiscloure.onOpen();
+
+		const handleReject = async () => {
+			try {
+				// TODO: Send general (reject or delete) email to user notifying verify
+				await editRecord((record as RentalRecord).recordId, {recordStatus: 'return_rejected'});
+				// Clear row selections
+				returnTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
+				onClose();
+				// Update data
+				refetch();
+				toast({
+					title: 'Record rejected',
+					description: `Record of ${name} have been rejected.`,
+					status: 'success',
+					duration: 3000
+				});
+			} catch {
+				toast({
+					title: 'Failed to reject record',
+					description: `Record of ${name} could not be rejected, please try again.`,
+					status: 'error',
+					duration: 3000
+				});
+			}
+		};
+		setConfirmDialog((prev) => {
+			return {
+				...(prev || {}),
+				description: `Are you sure you want to reject this record?`,
+				onConfirm: handleReject
+			};
+		});
+	};
+
+	const handleVerifyRentForRows = async (verifications: Verification[]) => {
+		confirmDialogDisclosure.onOpen();
+
+		const handleVerify = async () => {
+			try {
+				for (const verification of verifications) {
+					const {record} = verification;
+					await editRecord((record as RentalRecord).recordId, {status: 'active'});
+				}
+
+				// Clear row selections
+				rentTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
+				onClose();
+				// Update data
+				refetch();
+				toast({
+					title: 'Records verified',
+					description: `Selected records have been verified.`,
+					status: 'success',
+					duration: 3000
+				});
+			} catch {
+				toast({
+					title: 'Failed to verify records',
+					description: `Selected records could not be verified, please try again.`,
+					status: 'error',
+					duration: 3000
+				});
+			}
+		};
+		setConfirmDialog((prev) => {
+			return {
+				...(prev || {}),
+				description: `Are you sure you want to verify all selected records?`,
+				onConfirm: handleVerify
+			};
+		});
+	};
+
+	const handleVerifyReturnForRows = async (verifications: Verification[]) => {
+		// TODO
+		confirmDialogDisclosure.onOpen();
+
+		const handleVerify = async () => {
+			try {
+				for (const verification of verifications) {
+					const {record} = verification;
+					await editRecord((record as RentalRecord).recordId, {status: 'completed'});
+				}
+
+				// Clear row selections
+				returnTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
+				onClose();
+				// Update data
+				refetch();
+				toast({
+					title: 'Records verified',
+					description: `Selected records have been verified.`,
+					status: 'success',
+					duration: 3000
+				});
+			} catch {
+				toast({
+					title: 'Failed to verify records',
+					description: `Selected records could not be verified, please try again.`,
+					status: 'error',
+					duration: 3000
+				});
+			}
+		};
+		setConfirmDialog((prev) => {
+			return {
+				...(prev || {}),
+				description: `Are you sure you want to verify all selected records?`,
+				onConfirm: handleVerify
+			};
+		});
+	};
+
 	return {
 		// DATA
 		initData,
@@ -134,15 +380,21 @@ export const useInitialVerificationTableContext = () => {
 		rowSelectionState_returnTable,
 
 		handleInitTable,
-		refetch
+		refetch,
 
 		// ACTIONS
+		handleVerifyRent,
+		handleRejectRent,
+		handleVerifyReturn,
+		handleRejectReturn,
+		handleVerifyRentForRows,
+		handleVerifyReturnForRows
 	};
 };
 
 const dummyVerifications: Verification[] = [
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'ABC123',
 			recordTitle: 'Hello',
@@ -227,7 +479,7 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'ABC123',
 			recordTitle: 'Hello',
@@ -313,7 +565,7 @@ const dummyVerifications: Verification[] = [
 	},
 
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'ABC123',
 			recordTitle: 'Hello',
@@ -398,7 +650,7 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'ABC123',
 			recordTitle: 'Hello',
@@ -483,7 +735,94 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
+		verificationId: 'V321',
+		record: {
+			recordId: 'ABC123',
+			recordTitle: 'Proof',
+			renter: {
+				id: 'PJtSBgLgeBtbgg5NES2Z',
+				name: 'pjt',
+				email: 'pjtEmail',
+				status: 'pending',
+				type: 'user',
+				createdAt: new Date('2023-2-1'),
+				imageUrls: [
+					'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+				]
+			},
+			rentingItems: [
+				{
+					item: {
+						itemId: 'ABC123',
+						itemName: 'Beaker',
+						itemImages: [],
+						itemQuantity: 123,
+						createdAt: new Date(),
+						createdBy: {
+							id: 'delpttcjBgZhHaPS5QuL',
+							name: 'delasd',
+							email: 'delEmail',
+							status: 'pending',
+							type: 'admin',
+							createdAt: new Date('2023-2-1'),
+							imageUrls: [
+								'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+							]
+						},
+						itemStatus: 'pending'
+					},
+					rentQuantity: 10
+				},
+				{
+					item: {
+						itemId: 'ABC1234',
+						itemName: 'Airhorn',
+						itemImages: [],
+						itemQuantity: 123,
+						createdAt: new Date(),
+						createdBy: {
+							id: 'delpttcjBgZhHaPS5QuL',
+							name: 'delasd',
+							email: 'delEmail',
+							status: 'pending',
+							type: 'admin',
+							createdAt: new Date('2023-2-1'),
+							imageUrls: [
+								'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+							]
+						},
+						itemStatus: 'pending'
+					},
+					rentQuantity: 12,
+					proofOfReturn:
+						'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+				}
+			],
+			rentImages: [],
+			notes: 'World, hello!',
+			recordStatus: 'rent_reverifying',
+			rentedAt: new Date('2023-2-1'),
+			expectedReturnAt: new Date('2023-2-5'),
+			returnedAt: new Date(),
+			returnImages: [],
+			returnLocation: ''
+		},
+		createdAt: new Date(),
+		verifiedAt: new Date('31-12-2024'),
+		verifiedBy: {
+			id: 'delpttcjBgZhHaPS5QuL',
+			name: 'delasd',
+			email: 'delEmail',
+			status: 'pending',
+			type: 'admin',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		}
+	},
+	{
+		verificationId: 'V321',
 		record: {
 			recordId: 'ABC123',
 			recordTitle: 'Hello',
@@ -546,7 +885,7 @@ const dummyVerifications: Verification[] = [
 			],
 			rentImages: [],
 			notes: 'World, hello!',
-			recordStatus: 'rent_reverifying',
+			recordStatus: 'pending',
 			rentedAt: new Date('2023-2-1'),
 			expectedReturnAt: new Date('2023-2-5'),
 			returnedAt: new Date(),
@@ -568,92 +907,7 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
-		record: {
-			recordId: 'ABC123',
-			recordTitle: 'Hello',
-			renter: {
-				id: 'PJtSBgLgeBtbgg5NES2Z',
-				name: 'pjt',
-				email: 'pjtEmail',
-				status: 'pending',
-				type: 'user',
-				createdAt: new Date('2023-2-1'),
-				imageUrls: [
-					'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-				]
-			},
-			rentingItems: [
-				{
-					item: {
-						itemId: 'ABC123',
-						itemName: 'Beaker',
-						itemImages: [],
-						itemQuantity: 123,
-						createdAt: new Date(),
-						createdBy: {
-							id: 'delpttcjBgZhHaPS5QuL',
-							name: 'delasd',
-							email: 'delEmail',
-							status: 'pending',
-							type: 'admin',
-							createdAt: new Date('2023-2-1'),
-							imageUrls: [
-								'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-							]
-						},
-						itemStatus: 'pending'
-					},
-					rentQuantity: 10
-				},
-				{
-					item: {
-						itemId: 'ABC1234',
-						itemName: 'Airhorn',
-						itemImages: [],
-						itemQuantity: 123,
-						createdAt: new Date(),
-						createdBy: {
-							id: 'delpttcjBgZhHaPS5QuL',
-							name: 'delasd',
-							email: 'delEmail',
-							status: 'pending',
-							type: 'admin',
-							createdAt: new Date('2023-2-1'),
-							imageUrls: [
-								'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-							]
-						},
-						itemStatus: 'pending'
-					},
-					rentQuantity: 12
-				}
-			],
-			rentImages: [],
-			notes: 'World, hello!',
-			recordStatus: 'rent_reverifying',
-			rentedAt: new Date('2023-2-1'),
-			expectedReturnAt: new Date('2023-2-5'),
-			returnedAt: new Date(),
-			returnImages: [],
-			returnLocation: ''
-		},
-		createdAt: new Date(),
-		verifiedAt: new Date('31-12-2024'),
-		verifiedBy: {
-			id: 'delpttcjBgZhHaPS5QuL',
-			name: 'delasd',
-			email: 'delEmail',
-			status: 'pending',
-			type: 'admin',
-			createdAt: new Date('2023-2-1'),
-			imageUrls: [
-				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-			]
-		}
-	},
-	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'ABC123',
 			recordTitle: 'Return',
@@ -738,7 +992,7 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'ABC123',
 			recordTitle: 'Hello',
@@ -823,7 +1077,7 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'ABC123',
 			recordTitle: 'Hello',
@@ -908,7 +1162,7 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'ABC123',
 			recordTitle: 'Hello',
@@ -993,7 +1247,7 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'ABC123',
 			recordTitle: 'Hello',
@@ -1078,7 +1332,7 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'ABC123',
 			recordTitle: 'Hello',
@@ -1163,7 +1417,7 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'ABC123',
 			recordTitle: 'Hello',
@@ -1248,7 +1502,7 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'B123',
 			recordTitle: 'Goodbye',
@@ -1332,7 +1586,7 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'R123',
 			recordTitle: 'Reject',
@@ -1416,7 +1670,7 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'R123',
 			recordTitle: 'ReturnRej',
@@ -1500,10 +1754,10 @@ const dummyVerifications: Verification[] = [
 		}
 	},
 	{
-		verificationId: '',
+		verificationId: 'V321',
 		record: {
 			recordId: 'A123',
-			recordTitle: 'Active',
+			recordTitle: 'Proof',
 			renter: {
 				id: 'PJtSBgLgeBtbgg5NES2Z',
 				name: 'pjt',

@@ -1,5 +1,5 @@
 import {DataTable} from '@/components/ui/DataTable/DataTable';
-import {UserHistoryActiveFilters} from '@/components/user_history/UserHistoryActiveFilters';
+import {ReturnVerificationFilters} from '@/components/verifications/ReturnVerificationsFilters';
 import {getReturnVerificationColumns} from '@/utils/columns';
 import {
 	useInitialVerificationTableContext,
@@ -17,6 +17,7 @@ export const ReturnTable = () => {
 		tableData,
 		selectedDataState,
 		infoDisclosure,
+		selectionDisclosure,
 
 		handleInitTable,
 		returnTableState,
@@ -26,7 +27,9 @@ export const ReturnTable = () => {
 		tableFiltersState_returnTable,
 		tableSortingState_returnTable,
 
-		selectionDisclosure
+		handleVerifyReturn,
+		handleRejectReturn,
+		handleVerifyReturnForRows
 	} = verificationTableContext as ReturnType<typeof useInitialVerificationTableContext>;
 	const [, setSelectedData] = selectedDataState;
 	const [table] = returnTableState;
@@ -58,9 +61,14 @@ export const ReturnTable = () => {
 
 	return (
 		<>
-			<UserHistoryActiveFilters />
+			<ReturnVerificationFilters />
 			<DataTable
-				columns={getReturnVerificationColumns()}
+				columns={getReturnVerificationColumns(
+					onOpen,
+					onClose,
+					handleVerifyReturn,
+					handleRejectReturn
+				)}
 				data={tableData || []}
 				paginationState={paginationState_returnTable}
 				rowSelectionState={rowSelectionState_returnTable}
@@ -143,7 +151,15 @@ export const ReturnTable = () => {
 							{Object.entries(rowSelection || {}).length} of {tableData?.length} record(s) selected
 						</Text>
 						<Spacer />
-						<></>
+						<Button
+							onClick={() => {
+								const selectedVerifications = Object.keys(rowSelection).map((key) => {
+									const verification = table?.getRow(key).original;
+									return verification as Verification;
+								});
+								handleVerifyReturnForRows(selectedVerifications);
+							}}
+						/>
 					</Flex>
 				</HStack>
 			</Slide>

@@ -37,7 +37,7 @@ export const ReturnVerificationFilters: React.FC = () => {
 	const [searchText] = searchTextState_returnTable;
 
 	const createdAtFilterValue = useMemo(
-		() => filters?.find((f) => f.id === 'expectedReturnAt')?.value as DateRange,
+		() => filters?.find((f) => f.id === 'createdAt')?.value as DateRange,
 		[filters]
 	);
 

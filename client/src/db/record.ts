@@ -4,10 +4,10 @@ import {getAllUsers} from '@/db/user';
 import {Item, RentalRecord, User} from '@/utils/data';
 import {addDoc, collection, deleteDoc, getDocs, updateDoc} from 'firebase/firestore';
 
-export const itemCollection = collection(db, 'items');
+export const recordCollection = collection(db, 'records');
 
 export const getAllRecords = async () => {
-	const querySnapshot = await getDocs(itemCollection);
+	const querySnapshot = await getDocs(recordCollection);
 	const users = await getAllUsers();
 	const items = await getAllBaseItems();
 
@@ -40,7 +40,7 @@ export const getRecord = async (recordId: string) => {
 	const users = await getAllUsers();
 	const items = await getAllBaseItems();
 
-	const queryResult = (await getDocs(itemCollection)).docs.filter((doc) => recordId == doc.id)[0];
+	const queryResult = (await getDocs(recordCollection)).docs.filter((doc) => recordId == doc.id)[0];
 	const record = queryResult.data() as RentalRecord;
 	const {rentedAt, expectedReturnAt, returnedAt} = record;
 
@@ -64,7 +64,7 @@ export const getRecord = async (recordId: string) => {
 };
 
 export const createRecord = async (data: AddRecordFormValues, renterId: string) => {
-	const doc = await addDoc(itemCollection, {
+	const doc = await addDoc(recordCollection, {
 		...data,
 		renter: renterId,
 		rentedAt: new Date().toISOString(),
@@ -74,14 +74,14 @@ export const createRecord = async (data: AddRecordFormValues, renterId: string) 
 };
 
 export const editRecord = async (recordId: string, updatedValues: RentalRecordEditableFields) => {
-	const queryResult = (await getDocs(itemCollection)).docs.filter((doc) => recordId == doc.id)[0];
+	const queryResult = (await getDocs(recordCollection)).docs.filter((doc) => recordId == doc.id)[0];
 	const docRef = queryResult.ref;
 	await updateDoc(docRef, updatedValues);
 	return true;
 };
 
 export const deleteRecord = async (recordId: string) => {
-	const queryResult = (await getDocs(itemCollection)).docs.filter((doc) => recordId == doc.id)[0];
+	const queryResult = (await getDocs(recordCollection)).docs.filter((doc) => recordId == doc.id)[0];
 	const docRef = queryResult.ref;
 	await deleteDoc(docRef);
 	return true;

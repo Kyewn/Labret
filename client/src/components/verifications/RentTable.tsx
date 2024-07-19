@@ -1,5 +1,5 @@
 import {DataTable} from '@/components/ui/DataTable/DataTable';
-import {UserHistoryActiveFilters} from '@/components/user_history/UserHistoryActiveFilters';
+import {RentVerificationFilters} from '@/components/verifications/RentVerificationsFilters';
 import {getRentVerificationColumns} from '@/utils/columns';
 import {
 	useInitialVerificationTableContext,
@@ -17,6 +17,7 @@ export const RentTable = () => {
 		tableData,
 		selectedDataState,
 		infoDisclosure,
+		selectionDisclosure,
 
 		handleInitTable,
 		rentTableState,
@@ -26,7 +27,9 @@ export const RentTable = () => {
 		tableFiltersState_rentTable,
 		tableSortingState_rentTable,
 
-		selectionDisclosure
+		handleVerifyRent,
+		handleVerifyRentForRows,
+		handleRejectRent
 	} = verificationTableContext as ReturnType<typeof useInitialVerificationTableContext>;
 	const [, setSelectedData] = selectedDataState;
 	const [table] = rentTableState;
@@ -58,9 +61,9 @@ export const RentTable = () => {
 
 	return (
 		<>
-			<UserHistoryActiveFilters />
+			<RentVerificationFilters />
 			<DataTable
-				columns={getRentVerificationColumns()}
+				columns={getRentVerificationColumns(onOpen, onClose, handleVerifyRent, handleRejectRent)}
 				data={tableData || []}
 				paginationState={paginationState_rentTable}
 				rowSelectionState={rowSelectionState_rentTable}
@@ -143,7 +146,17 @@ export const RentTable = () => {
 							{Object.entries(rowSelection || {}).length} of {tableData?.length} record(s) selected
 						</Text>
 						<Spacer />
-						<></>
+						<Button
+							onClick={() => {
+								const selectedVerifications = Object.keys(rowSelection).map((key) => {
+									const verification = table?.getRow(key).original;
+									return verification as Verification;
+								});
+								handleVerifyRentForRows(selectedVerifications);
+							}}
+						>
+							Verify
+						</Button>
 					</Flex>
 				</HStack>
 			</Slide>

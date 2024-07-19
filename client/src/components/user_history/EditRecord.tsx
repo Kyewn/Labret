@@ -107,7 +107,11 @@ export const EditRecord: React.FC = () => {
 		scanResult?.map((rentingItem) => {
 			return (
 				<ScannedItem
-					isEditing={selectedRecord.recordStatus != 'active'}
+					isEditing={
+						selectedRecord.recordStatus == 'pending' ||
+						selectedRecord.recordStatus == 'rent_reverifying' ||
+						selectedRecord.recordStatus == 'rent_rejected'
+					}
 					isEditingImageEnabled={false}
 					key={(rentingItem.item as Item).itemId}
 					itemInfo={rentingItem}
@@ -213,7 +217,9 @@ export const EditRecord: React.FC = () => {
 							<Flex w={'100%'} paddingY={5} alignItems={'center'}>
 								<Text fontWeight={700}>Rented item list</Text>
 								<Spacer />
-								{selectedRecord.recordStatus != 'active' && (
+								{(selectedRecord.recordStatus == 'pending' ||
+									selectedRecord.recordStatus == 'rent_reverifying' ||
+									selectedRecord.recordStatus == 'rent_rejected') && (
 									<Button onClick={onAddOpen}>Add Item</Button>
 								)}
 							</Flex>

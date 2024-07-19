@@ -71,13 +71,11 @@ export function ManageVerifications() {
 				>
 					<HStack spacing={10}>
 						<Flex marginY={3} alignItems={'center'}>
-							<Heading size={'md'}>User History</Heading>
+							<Heading size={'md'}>Verifications</Heading>
 						</Flex>
 						<TabList>
-							<Tab>Active</Tab>
-							<Tab>Completed</Tab>
-							<Tab>Rejected</Tab>
-							<Tab>All</Tab>
+							<Tab>Rents</Tab>
+							<Tab>Returns</Tab>
 						</TabList>
 					</HStack>
 					<Divider orientation='horizontal' />

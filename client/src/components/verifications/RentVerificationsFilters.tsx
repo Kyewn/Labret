@@ -1,8 +1,8 @@
 import {DatePickerWithRange} from '@/components/ui/dateRangePicker';
 import {
-	useInitialUserHistoryTableContext,
-	useUserHistoryTableContext
-} from '@/utils/context/UserHistoryTableContext';
+	useInitialVerificationTableContext,
+	useVerificationTableContext
+} from '@/utils/context/VerificationTableContext';
 import {
 	Button,
 	Flex,
@@ -20,27 +20,23 @@ import {ChevronDown, Search} from 'lucide-react';
 import {useMemo} from 'react';
 import {DateRange} from 'react-day-picker';
 
-export const UserHistoryActiveFilters: React.FC = () => {
+export const RentVerificationFilters: React.FC = () => {
 	const {
-		activeTableState,
-		tableFiltersState_activeTable,
-		searchTextState_activeTable,
-		initialFilterValueState_activeTable,
-		initialSortingState_activeTable,
-		paginationState_activeTable
-	} = useUserHistoryTableContext() as ReturnType<typeof useInitialUserHistoryTableContext>;
-	const [table] = activeTableState;
-	const [initialFilterValue] = initialFilterValueState_activeTable;
-	const initialSortingValue = initialSortingState_activeTable;
-	const [pagination] = paginationState_activeTable;
-	const [filters] = tableFiltersState_activeTable;
-	const [searchText] = searchTextState_activeTable;
-	const rentDateFilterValue = useMemo(
-		() => filters && (filters.find((f) => f.id === 'rentedAt')?.value as DateRange),
-		[filters]
-	);
-	const expectedReturnDateFilterValue = useMemo(
-		() => filters && (filters.find((f) => f.id === 'expectedReturnAt')?.value as DateRange),
+		rentTableState,
+		tableFiltersState_rentTable,
+		searchTextState_rentTable,
+		initialFilterValueState_rentTable,
+		initialSortingState_rentTable,
+		paginationState_rentTable
+	} = useVerificationTableContext() as ReturnType<typeof useInitialVerificationTableContext>;
+	const [table] = rentTableState;
+	const [initialFilterValue] = initialFilterValueState_rentTable;
+	const initialSortingValue = initialSortingState_rentTable;
+	const [pagination] = paginationState_rentTable;
+	const [filters] = tableFiltersState_rentTable;
+	const [searchText] = searchTextState_rentTable;
+	const createdAtFilterValue = useMemo(
+		() => filters && (filters.find((f) => f.id === 'createdAt')?.value as DateRange),
 		[filters]
 	);
 
@@ -68,17 +64,17 @@ export const UserHistoryActiveFilters: React.FC = () => {
 					/>
 				</InputGroup>
 				<DatePickerWithRange
-					placeholder='Rent date'
-					drValue={rentDateFilterValue}
+					placeholder='Creation date'
+					drValue={createdAtFilterValue}
 					onSelectRange={(dateRange: DateRange) => {
 						table?.setColumnFilters((prev) => {
 							const {from, to} = dateRange;
-							const otherFilters = prev.filter((f) => f.id !== 'rentedAt');
+							const otherFilters = prev.filter((f) => f.id !== 'createdAt');
 							return from || to
 								? [
 										...otherFilters,
 										{
-											id: 'rentedAt',
+											id: 'createdAt',
 											value: dateRange
 										}
 								  ]
@@ -86,26 +82,7 @@ export const UserHistoryActiveFilters: React.FC = () => {
 						});
 					}}
 				/>
-				<DatePickerWithRange
-					placeholder='Expected return'
-					drValue={expectedReturnDateFilterValue}
-					onSelectRange={(dateRange: DateRange) => {
-						table?.setColumnFilters((prev) => {
-							const {from, to} = dateRange;
-							const otherFilters = prev.filter((f) => f.id !== 'expectedReturnAt');
 
-							return from || to
-								? [
-										...otherFilters,
-										{
-											id: 'expectedReturnAt',
-											value: dateRange
-										}
-								  ]
-								: [...otherFilters];
-						});
-					}}
-				/>
 				<Button variant={'outline'} onClick={onClear}>
 					Clear
 				</Button>
