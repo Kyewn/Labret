@@ -35,13 +35,16 @@ export type EditRentalRecordFormValues = {
 	returnLocation?: string;
 	rentingItems?: RentingItem[];
 };
+export type EditVerificationFormValues = {
+	isRecordSerious?: boolean;
+	verificationComments?: string;
+};
 
+// Custom data type
 export type EditImageProofValues = {
 	itemId: string;
 	imageProof: string;
 };
-
-// Custom table data type
 export type ItemAvailabilityRecordValues = Item & {
 	earliestReturnBy?: Date;
 };
@@ -151,7 +154,8 @@ export type FormValues =
 	| NewRentingItemFormValues
 	| NewRentFormValues
 	| ReturnFormValues
-	| EditRentalRecordFormValues;
+	| EditRentalRecordFormValues
+	| EditVerificationFormValues;
 export type FormKeys =
 	| keyof AddUserFormValues
 	| keyof AddItemFormValues

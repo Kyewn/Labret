@@ -40,7 +40,7 @@ export function ViewAdmins() {
 		selectedDataState,
 		tableState,
 		selectionDisclosure,
-		initialFilterValueState,
+		// initialFilterValueState,
 		paginationState,
 		rowSelectionState,
 		searchTextState,
@@ -62,8 +62,8 @@ export function ViewAdmins() {
 	const [isAnnotationButtonClicked, setIsAnnotationButtonClicked] = useState(false);
 	const [table] = tableState;
 	const [rowSelection] = rowSelectionState;
-	const [, setInitialFilterValue] = initialFilterValueState;
-	const [, setFilters] = tableFiltersState;
+	// const [, setInitialFilterValue] = initialFilterValueState;
+	// const [, setFilters] = tableFiltersState;
 	const confirmDisclosure = confirmDialogDisclosure;
 	const [{title: confirmTitle, description: confirmDescription, onConfirm}] = confirmDialogState;
 
@@ -112,7 +112,7 @@ export function ViewAdmins() {
 	useEffect(() => {
 		if (!data) {
 			handleRefetch();
-		} else {
+		} /*  else {
 			const oldestDate = data.length
 				? new Date(
 						data.reduce((currOld, curr) => {
@@ -133,7 +133,7 @@ export function ViewAdmins() {
 				const otherFilters = prev.filter((f) => f.id !== 'createdAt');
 				return [...otherFilters, {id: 'createdAt', value: {from: oldestDate}}];
 			});
-		}
+		} */
 	}, [data]);
 
 	// Update pagination state as they change

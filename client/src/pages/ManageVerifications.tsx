@@ -1,4 +1,5 @@
 import {ConfirmDialog} from '@/components/ui/ConfirmDialog';
+import {RejectConfirmDialog} from '@/components/verifications/RejectConfirmDialog';
 import {RentTable} from '@/components/verifications/RentTable';
 import {ReturnTable} from '@/components/verifications/ReturnTable';
 import {VerificationItemModal} from '@/components/verifications/VerificationItemModal';
@@ -13,7 +14,7 @@ import {Helmet} from 'react-helmet-async';
 
 export function ManageVerifications() {
 	const {appDispatch} = useAppContext();
-	const verificatioNTableContext = useInitialVerificationTableContext();
+	const verificationTableContext = useInitialVerificationTableContext();
 
 	const {
 		initData,
@@ -21,9 +22,9 @@ export function ManageVerifications() {
 		confirmDialogState,
 		confirmDialogDisclosure,
 		infoDisclosure,
-
+		verificationRejectConfirmDialogDisclosure,
 		refetch
-	} = verificatioNTableContext;
+	} = verificationTableContext;
 	const [tab, setTab] = tabState;
 
 	const confirmDisclosure = confirmDialogDisclosure;
@@ -52,9 +53,15 @@ export function ManageVerifications() {
 				<title>Verifications</title>
 			</Helmet>
 
-			<VerificationTableContext.Provider value={verificatioNTableContext}>
+			<VerificationTableContext.Provider value={verificationTableContext}>
 				<ConfirmDialog
 					disclosure={confirmDisclosure}
+					title={confirmTitle}
+					description={confirmDescription}
+					onConfirm={onConfirm}
+				/>
+				<RejectConfirmDialog
+					disclosure={verificationRejectConfirmDialogDisclosure}
 					title={confirmTitle}
 					description={confirmDescription}
 					onConfirm={onConfirm}

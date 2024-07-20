@@ -1,6 +1,8 @@
 import {ConfirmDialogProps} from '@/components/ui/ConfirmDialog';
 import {editRecord} from '@/db/record';
-import {RentalRecord, User, Verification} from '@/utils/data';
+import {editVerification} from '@/db/verification';
+import {useAppContext} from '@/utils/context/AppContext';
+import {EditVerificationFormValues, RentalRecord, User, Verification} from '@/utils/data';
 import {useDisclosure, useToast} from '@chakra-ui/react';
 import {
 	ColumnFiltersState,
@@ -10,20 +12,26 @@ import {
 	Table
 } from '@tanstack/react-table';
 import {createContext, SyntheticEvent, useContext, useState} from 'react';
+import {useForm} from 'react-hook-form';
 
 // TABLE STRUCTURES
 export const useInitialVerificationTableContext = () => {
 	// Table data states
+	const {
+		appState: {user}
+	} = useAppContext();
 	const tabState = useState<number>(0);
 	const initDataState = useState<Verification[] | undefined>(undefined);
 	const tableDataState = useState<Verification[] | undefined>(undefined);
 	const selectedDataState = useState<Verification | undefined>(undefined);
+	const rejectFormState = useForm<EditVerificationFormValues>();
+	const {watch, reset} = rejectFormState;
 
 	const toast = useToast();
 	const infoDisclosure = useDisclosure(); // Item modal
 	const selectionDisclosure = useDisclosure(); // Selection actions modal
 	const confirmDialogDisclosure = useDisclosure();
-	const verificationRejectConfirmDialogDiscloure = useDisclosure();
+	const verificationRejectConfirmDialogDisclosure = useDisclosure();
 	const confirmDialogState = useState<Omit<ConfirmDialogProps, 'disclosure'>>({
 		title: 'Are you sure?',
 		description: '',
@@ -32,6 +40,7 @@ export const useInitialVerificationTableContext = () => {
 	const [initData, setInitData] = initDataState;
 	const [tableData, setTableData] = tableDataState;
 	const {onClose} = selectionDisclosure;
+	const {onClose: onInfoClose} = infoDisclosure;
 	const [, setConfirmDialog] = confirmDialogState;
 	const [tab] = tabState;
 
@@ -41,7 +50,7 @@ export const useInitialVerificationTableContext = () => {
 	const initialFilterValueState_rentTable = useState<ColumnFiltersState>([]);
 	const [initialFilterValue_rentTable] = initialFilterValueState_rentTable;
 	const tableFiltersState_rentTable = useState<ColumnFiltersState>(initialFilterValue_rentTable);
-	const initialSortingState_rentTable: SortingState = [{id: 'recordStatus', desc: true}];
+	const initialSortingState_rentTable: SortingState = [{id: 'createdAt', desc: true}];
 	const tableSortingState_rentTable = useState<SortingState>(initialSortingState_rentTable);
 	const paginationState_rentTable = useState<PaginationState>({
 		pageIndex: 0,
@@ -56,7 +65,7 @@ export const useInitialVerificationTableContext = () => {
 	const tableFiltersState_returnTable = useState<ColumnFiltersState>(
 		initialFilterValue_returnTable
 	);
-	const initialSortingState_returnTable = [{id: 'recordStatus', desc: false}];
+	const initialSortingState_returnTable = [{id: 'createdAt', desc: true}];
 	const tableSortingState_returnTable = useState<SortingState>(initialSortingState_returnTable);
 	const paginationState_returnTable = useState<PaginationState>({
 		pageIndex: 0,
@@ -117,9 +126,14 @@ export const useInitialVerificationTableContext = () => {
 			try {
 				// TODO: Send general (reject or delete) email to user notifying verify
 				await editRecord((record as RentalRecord).recordId, {recordStatus: 'active'});
+				await editVerification(verification.verificationId, {
+					verifiedBy: user as User,
+					verifiedAt: new Date()
+				});
 				// Clear row selections
 				rentTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
 				onClose();
+				onInfoClose();
 				// Update data
 				refetch();
 				toast({
@@ -145,21 +159,31 @@ export const useInitialVerificationTableContext = () => {
 			};
 		});
 	};
+
 	const handleRejectRent = async (e: SyntheticEvent, verification: Verification) => {
 		e.stopPropagation();
 		const {record} = verification;
 		const {renter} = record as RentalRecord;
 		const {name} = renter as User;
 
-		verificationRejectConfirmDialogDiscloure.onOpen();
+		verificationRejectConfirmDialogDisclosure.onOpen();
 
 		const handleReject = async () => {
+			const {verificationComments, isRecordSerious} = watch();
 			try {
 				// TODO: Send general (reject or delete) email to user notifying verify
 				await editRecord((record as RentalRecord).recordId, {recordStatus: 'rent_rejected'});
+				(verificationComments || isRecordSerious) &&
+					(await editVerification(verification.verificationId, {
+						...(verificationComments && {verificationComments}),
+						...(isRecordSerious && {isRecordSerious}),
+						verifiedBy: user as User,
+						verifiedAt: new Date()
+					}));
 				// Clear row selections
 				rentTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
 				onClose();
+				onInfoClose();
 				// Update data
 				refetch();
 				toast({
@@ -176,6 +200,8 @@ export const useInitialVerificationTableContext = () => {
 					duration: 3000
 				});
 			}
+			// reset reject form values after each reject
+			reset();
 		};
 		setConfirmDialog((prev) => {
 			return {
@@ -198,9 +224,14 @@ export const useInitialVerificationTableContext = () => {
 			try {
 				// TODO: Send general (reject or delete) email to user notifying verify
 				await editRecord((record as RentalRecord).recordId, {recordStatus: 'completed'});
+				await editVerification(verification.verificationId, {
+					verifiedBy: user as User,
+					verifiedAt: new Date()
+				});
 				// Clear row selections
 				returnTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
 				onClose();
+				onInfoClose();
 				// Update data
 				refetch();
 				toast({
@@ -233,15 +264,24 @@ export const useInitialVerificationTableContext = () => {
 		const {renter} = record as RentalRecord;
 		const {name} = renter as User;
 
-		verificationRejectConfirmDialogDiscloure.onOpen();
+		verificationRejectConfirmDialogDisclosure.onOpen();
 
 		const handleReject = async () => {
+			const {verificationComments, isRecordSerious} = watch();
 			try {
 				// TODO: Send general (reject or delete) email to user notifying verify
 				await editRecord((record as RentalRecord).recordId, {recordStatus: 'return_rejected'});
+				(verificationComments || isRecordSerious) &&
+					(await editVerification(verification.verificationId, {
+						...(verificationComments && {verificationComments}),
+						...(isRecordSerious && {isRecordSerious}),
+						verifiedBy: user as User,
+						verifiedAt: new Date()
+					}));
 				// Clear row selections
 				returnTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
 				onClose();
+				onInfoClose();
 				// Update data
 				refetch();
 				toast({
@@ -258,6 +298,8 @@ export const useInitialVerificationTableContext = () => {
 					duration: 3000
 				});
 			}
+			// reset reject form values after each reject
+			reset();
 		};
 		setConfirmDialog((prev) => {
 			return {
@@ -276,6 +318,10 @@ export const useInitialVerificationTableContext = () => {
 				for (const verification of verifications) {
 					const {record} = verification;
 					await editRecord((record as RentalRecord).recordId, {status: 'active'});
+					await editVerification(verification.verificationId, {
+						verifiedBy: user as User,
+						verifiedAt: new Date()
+					});
 				}
 
 				// Clear row selections
@@ -316,6 +362,10 @@ export const useInitialVerificationTableContext = () => {
 				for (const verification of verifications) {
 					const {record} = verification;
 					await editRecord((record as RentalRecord).recordId, {status: 'completed'});
+					await editVerification(verification.verificationId, {
+						verifiedBy: user as User,
+						verifiedAt: new Date()
+					});
 				}
 
 				// Clear row selections
@@ -359,6 +409,8 @@ export const useInitialVerificationTableContext = () => {
 		selectionDisclosure,
 		confirmDialogState,
 		confirmDialogDisclosure,
+		verificationRejectConfirmDialogDisclosure,
+		rejectFormState,
 
 		// FILTERS
 		rentTableState,
@@ -807,8 +859,8 @@ const dummyVerifications: Verification[] = [
 			returnImages: [],
 			returnLocation: ''
 		},
-		createdAt: new Date(),
-		verifiedAt: new Date('31-12-2024'),
+		createdAt: new Date('2024-7-21'),
+		verifiedAt: new Date('2024-12-31'),
 		verifiedBy: {
 			id: 'delpttcjBgZhHaPS5QuL',
 			name: 'delasd',

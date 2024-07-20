@@ -60,6 +60,7 @@ export const UserFilters: React.FC = () => {
 					/>
 				</InputGroup>
 				<DatePickerWithRange
+					placeholder='Creation date'
 					drValue={dateFilterValue}
 					onSelectRange={(dateRange: DateRange) => {
 						table?.setColumnFilters((prev) => {
