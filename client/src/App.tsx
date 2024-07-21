@@ -10,6 +10,7 @@ import {Rent} from '@/pages/Rent';
 import {RentScanResult} from '@/pages/RentScanResult';
 import {Return} from '@/pages/Return';
 import {ReturnScanResult} from '@/pages/ReturnScanResult';
+import {SettleDebts} from '@/pages/SettleDebts';
 import {UserHistory} from '@/pages/UserHistory';
 import {ViewAdmins} from '@/pages/ViewAdmins';
 import {ViewItems} from '@/pages/ViewItems';
@@ -78,7 +79,7 @@ const router = createBrowserRouter(
 					<Route path={paths.sub.items} element={<ViewItems />} />
 					<Route path={paths.sub.addItem} element={<AddItem />} />
 					<Route path={paths.sub.verifications} element={<ManageVerifications />} />
-					<Route path={paths.sub.debts} /*element={}*/ />
+					<Route path={paths.sub.debts} element={<SettleDebts />} />
 				</Route>
 			</Route>
 		</Route>

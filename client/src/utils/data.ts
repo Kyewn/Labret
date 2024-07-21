@@ -236,3 +236,28 @@ export const mapRecordStatus = (status: string) => {
 			return status;
 	}
 };
+
+export const mapRejectionType = (status: string) => {
+	switch (status) {
+		case 'rent_rejected':
+			return 'Rent';
+
+		case 'return_rejected':
+			return 'Return';
+
+		default:
+			return status;
+	}
+};
+export const mapPaymentAmount = (status: string) => {
+	switch (status) {
+		case 'rent_rejected':
+			return 5;
+
+		case 'return_rejected':
+			return 20;
+
+		default:
+			return 20;
+	}
+};

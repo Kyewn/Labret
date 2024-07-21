@@ -86,7 +86,7 @@ export function MainMenu() {
 				)}
 			</Box>
 			<Flex flexDirection={'column'} flex={0.4} p={6}>
-				{user ? <UserMenu /> : <FaceLogin />}
+				{!user ? <UserMenu /> : <FaceLogin />}
 				<PublicMenu />
 			</Flex>
 		</>

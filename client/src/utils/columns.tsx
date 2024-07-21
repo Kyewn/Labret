@@ -7,7 +7,9 @@ import {
 	User,
 	Verification,
 	mapItemStatus,
+	mapPaymentAmount,
 	mapRecordStatus,
+	mapRejectionType,
 	mapUserStatus
 } from '@/utils/data';
 import {formatDate} from '@/utils/utils';
@@ -1328,6 +1330,360 @@ export const getReturnVerificationColumns: (
 				</ButtonGroup>
 			);
 		}
+	}
+];
+
+export const getNormalDebtColumns: (
+	openSelectionModal: () => void,
+	closeSelectionModal: () => void,
+	handleSetAsPaid: (e: SyntheticEvent, verification: Verification) => void,
+	handleSetAsHeavy: (e: SyntheticEvent, verification: Verification) => void
+) => ColumnDef<Verification>[] = (
+	openSelectionModal,
+	closeSelectionModal,
+	handleSetAsPaid,
+	handleSetAsHeavy
+) => [
+	{
+		id: 'select',
+		header: ({table}) => (
+			<Flex>
+				<Checkbox
+					isChecked={table.getIsAllRowsSelected()}
+					onChange={(e) => {
+						// Only select pending rows
+						const rows = table.getCoreRowModel().rows;
+						const hasPendingRows = rows.length;
+						rows.forEach((row) => {
+							row.toggleSelected(!!e.target.checked);
+						});
+						if (e.target.checked && hasPendingRows) openSelectionModal();
+						else closeSelectionModal();
+					}}
+					aria-label='Select all'
+				/>
+			</Flex>
+		),
+		cell: ({row}) => (
+			<Flex>
+				<Checkbox
+					isChecked={row.getIsSelected()}
+					onChange={() => {
+						row.toggleSelected(!row.getIsSelected());
+					}}
+					aria-label='Select row'
+				/>
+			</Flex>
+		)
+	},
+	{
+		accessorKey: 'record.renter.name',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Renter
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'record.recordTitle',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Record Title
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'record.recordStatus',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Rejection type
+				</Button>
+			);
+		},
+		cell: ({row}) => mapRejectionType((row.original.record as RentalRecord).recordStatus),
+		enableGlobalFilter: true
+	},
+	{
+		id: 'payment',
+		header: () => 'Outstanding (RM)',
+		cell: ({row}) => mapPaymentAmount((row.original.record as RentalRecord).recordStatus),
+		enableGlobalFilter: true
+	},
+	// Actions
+	{
+		id: 'actions',
+		header: 'Actions',
+		cell: ({row}) => {
+			const verification = row.original;
+
+			return (
+				<ButtonGroup>
+					<Button fontSize={'sm'} onClick={(e) => handleSetAsPaid(e, verification)}>
+						Set As Paid
+					</Button>
+					<Button variant={'secondary'} onClick={(e) => handleSetAsHeavy(e, verification)}>
+						Change to Heavy
+					</Button>
+				</ButtonGroup>
+			);
+		}
+	}
+];
+
+export const getHeavyDebtColumns: (
+	openSelectionModal: () => void,
+	closeSelectionModal: () => void,
+	handleSetAsPaid: (e: SyntheticEvent, verification: Verification) => void,
+	handleSetAsNormal: (e: SyntheticEvent, verification: Verification) => void
+) => ColumnDef<Verification>[] = (
+	openSelectionModal,
+	closeSelectionModal,
+	handleSetAsPaid,
+	handleSetAsNormal
+) => [
+	{
+		id: 'select',
+		header: ({table}) => (
+			<Flex>
+				<Checkbox
+					isChecked={table.getIsAllRowsSelected()}
+					onChange={(e) => {
+						// Only select pending rows
+						const rows = table.getCoreRowModel().rows;
+						const hasPendingRows = rows.length;
+						rows.forEach((row) => {
+							row.toggleSelected(!!e.target.checked);
+						});
+						if (e.target.checked && hasPendingRows) openSelectionModal();
+						else closeSelectionModal();
+					}}
+					aria-label='Select all'
+				/>
+			</Flex>
+		),
+		cell: ({row}) => (
+			<Flex>
+				<Checkbox
+					isChecked={row.getIsSelected()}
+					onChange={() => {
+						row.toggleSelected(!row.getIsSelected());
+					}}
+					aria-label='Select row'
+				/>
+			</Flex>
+		)
+	},
+	{
+		accessorKey: 'record.renter.name',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Renter
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'record.recordTitle',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Record Title
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		id: 'payment',
+		header: () => 'Outstanding (RM)',
+		cell: ({row}) => mapPaymentAmount((row.original.record as RentalRecord).recordStatus),
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'record.recordStatus',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Rejection type
+				</Button>
+			);
+		},
+		cell: ({row}) => mapRejectionType((row.original.record as RentalRecord).recordStatus),
+		enableGlobalFilter: true
+	},
+	// Actions
+	{
+		id: 'actions',
+		header: 'Actions',
+		cell: ({row}) => {
+			const verification = row.original;
+
+			return (
+				<ButtonGroup>
+					<Button fontSize={'sm'} onClick={(e) => handleSetAsPaid(e, verification)}>
+						Set As Paid
+					</Button>
+					<Button variant={'secondary'} onClick={(e) => handleSetAsNormal(e, verification)}>
+						Change to Normal
+					</Button>
+				</ButtonGroup>
+			);
+		}
+	}
+];
+
+export const getNormalDebtSummaryColumns: () => ColumnDef<Verification>[] = () => [
+	{
+		accessorKey: 'record.recordTitle',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Record Title
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'record.recordStatus',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Rejection type
+				</Button>
+			);
+		},
+		cell: ({row}) => mapRejectionType((row.original.record as RentalRecord).recordStatus),
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'payment',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Outstanding
+				</Button>
+			);
+		},
+		cell: ({row}) => mapPaymentAmount((row.original.record as RentalRecord).recordStatus),
+		sortingFn: (rowA, rowB) => {
+			const numA = mapPaymentAmount((rowA.original.record as RentalRecord).recordStatus);
+			const numB = mapPaymentAmount((rowB.original.record as RentalRecord).recordStatus);
+
+			return numA < numB ? 1 : numA > numB ? -1 : 0;
+		},
+		enableGlobalFilter: true
+	}
+];
+export const getHeavyDebtSummaryColumns: () => ColumnDef<Verification>[] = () => [
+	{
+		accessorKey: 'record.recordTitle',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Record Title
+				</Button>
+			);
+		},
+		enableGlobalFilter: true
+	},
+	{
+		accessorKey: 'record.recordStatus',
+		header: ({column}) => {
+			return (
+				<Button
+					variant={'ghost'}
+					fontSize={'sm'}
+					onClick={() => {
+						column.toggleSorting(column.getIsSorted() == 'asc');
+					}}
+					rightIcon={column.getIsSorted() == 'asc' ? <ArrowBigUp /> : <ArrowBigDown />}
+				>
+					Rejection type
+				</Button>
+			);
+		},
+		cell: ({row}) => mapRejectionType((row.original.record as RentalRecord).recordStatus),
+		enableGlobalFilter: true
 	}
 ];
 

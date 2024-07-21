@@ -1,3 +1,4 @@
+import {UserDebtModal} from '@/components/main_menu/UserDebtModal';
 import {UserProfileModal} from '@/components/main_menu/UserProfileModal';
 import {LargeIconButton} from '@/components/ui/LargeIconButton';
 import {useAppContext} from '@/utils/context/AppContext';
@@ -29,7 +30,9 @@ export const UserMenu = () => {
 	const {user, handleCloseExistingPeerConnection} = appState;
 	const [hasUserRecords, setHasUserRecords] = useState<boolean>(false);
 	const profileDisclosure = useDisclosure();
+	const debtDisclosure = useDisclosure();
 	const {onOpen} = profileDisclosure;
+	const {onOpen: onDebtOpen} = debtDisclosure;
 
 	const getUserTypeColor = (type: string) => {
 		switch (type) {
@@ -102,6 +105,7 @@ export const UserMenu = () => {
 	return (
 		<>
 			<UserProfileModal disclosure={profileDisclosure} />
+			<UserDebtModal disclosure={debtDisclosure} />
 			<Flex flexDirection={'column'} flex={0.7} overflowX={'hidden'} overflowY={'auto'}>
 				<VStack alignItems={'flex-start'}>
 					<Button
@@ -189,7 +193,9 @@ export const UserMenu = () => {
 					</HStack>
 
 					<Box position={'relative'}>
-						<Button variant={'outline'}>Debts</Button>
+						<Button variant={'outline'} onClick={onDebtOpen}>
+							Debts
+						</Button>
 						<Tag
 							position={'absolute'}
 							size={'sm'}

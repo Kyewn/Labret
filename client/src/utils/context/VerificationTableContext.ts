@@ -223,7 +223,10 @@ export const useInitialVerificationTableContext = () => {
 		const handleVerify = async () => {
 			try {
 				// TODO: Send general (reject or delete) email to user notifying verify
-				await editRecord((record as RentalRecord).recordId, {recordStatus: 'completed'});
+				await editRecord((record as RentalRecord).recordId, {
+					recordStatus: 'completed',
+					returnedAt: new Date()
+				});
 				await editVerification(verification.verificationId, {
 					verifiedBy: user as User,
 					verifiedAt: new Date()
@@ -361,7 +364,10 @@ export const useInitialVerificationTableContext = () => {
 			try {
 				for (const verification of verifications) {
 					const {record} = verification;
-					await editRecord((record as RentalRecord).recordId, {status: 'completed'});
+					await editRecord((record as RentalRecord).recordId, {
+						status: 'completed',
+						returnedAt: new Date()
+					});
 					await editVerification(verification.verificationId, {
 						verifiedBy: user as User,
 						verifiedAt: new Date()

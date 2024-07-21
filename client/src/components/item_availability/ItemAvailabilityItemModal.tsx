@@ -13,7 +13,9 @@ import {
 	ModalBody,
 	ModalContent,
 	ModalOverlay,
-	useDisclosure
+	Text,
+	useDisclosure,
+	VStack
 } from '@chakra-ui/react';
 import {ColumnSort} from '@tanstack/react-table';
 import {useState} from 'react';
@@ -49,6 +51,8 @@ export const ItemAvailabilityItemModal: React.FC<{
 			};
 		}) || [];
 
+	const totalRentedQuantity = data.reduce((acc, curr) => acc + (curr.rentQuantity as number), 0);
+
 	return (
 		<>
 			<Modal
@@ -60,20 +64,23 @@ export const ItemAvailabilityItemModal: React.FC<{
 				}}
 			>
 				<ModalOverlay />
-				<ModalContent width={'unset'} minWidth={'75%'} maxWidth={'90%'} height={'90%'}>
-					<ModalBody h={'100%'} p={5} overflow={'hidden'}>
-						<Flex h={'100%'} flexDirection={'column'} flex={1}>
+				<ModalContent width={'70%'} minWidth={'75%'} maxWidth={'90%'} height={'90%'}>
+					<ModalBody flex={1} p={5}>
+						<VStack flex={1} w={'100%'} alignItems={'flex-start'} maxHeight={'100%'}>
 							<Flex>
 								<Heading fontSize={'lg'}>Related records</Heading>
 							</Flex>
-							<Flex height={'100%'} paddingY={5}>
+							<Flex flex={1} w={'100%'} overflowY={'auto'} paddingY={5}>
 								<DataTable
 									data={data}
 									columns={getItemAvailabilityRecordInfoColumns()}
 									sortingState={relatedRecordSortingState}
 								/>
 							</Flex>
-						</Flex>
+							<Flex w={'100%'} justifyContent={'flex-end'}>
+								<Text fontSize={'sm'}>Total rented quantity: {totalRentedQuantity}</Text>
+							</Flex>
+						</VStack>
 					</ModalBody>
 				</ModalContent>
 			</Modal>
