@@ -24,9 +24,9 @@ export const PublicMenu: React.FC = () => {
 						Public History
 					</Button>
 				</Link>
-				<Link to={paths.sub.equipmentAvailability} onClick={handleCloseMainMenuCamera}>
+				<Link to={paths.sub.itemAvailability} onClick={handleCloseMainMenuCamera}>
 					<Button variant={'outline'} leftIcon={<Microscope />}>
-						Equipment Availability
+						Item Availability
 					</Button>
 				</Link>
 			</VStack>

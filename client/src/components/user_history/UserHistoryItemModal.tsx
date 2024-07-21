@@ -34,7 +34,8 @@ export const UserHistoryItemModal: React.FC<{
 }> = ({disclosure}) => {
 	const navigate = useNavigate();
 	const {isOpen, onClose} = disclosure;
-	const itemImageDisclosure = useDisclosure();
+	const itemImageProofDisclosure = useDisclosure();
+	const {onOpen: onImageProofOpen} = itemImageProofDisclosure;
 	const {selectedDataState} = useUserHistoryTableContext() as ReturnType<
 		typeof useInitialUserHistoryTableContext
 	>;
@@ -79,20 +80,25 @@ export const UserHistoryItemModal: React.FC<{
 	};
 
 	const renderRentItems = () => {
-		const handleOpenImageBlob = (index: number) => {
+		const handleOpenImageBlob = (itemId: string) => {
 			if (!selectedRecord) return;
 			setSelectedItemImage(
-				(selectedRecord as RentalRecord | undefined)?.rentImages[index] as string
+				(selectedRecord as RentalRecord | undefined)?.rentingItems.find(
+					(rentingItem) => (rentingItem.item as Item).itemId == itemId
+				)?.proofOfReturn as string
 			);
+			onImageProofOpen();
 		};
 
-		return selectedRecord?.rentingItems?.map((rentingItem, i) => {
+		return selectedRecord?.rentingItems?.map((rentingItem) => {
 			return (
 				<ScannedItem
+					isEditing={false}
 					isEditingImageEnabled={false}
+					proofOfReturn={rentingItem.proofOfReturn}
 					key={(rentingItem.item as Item).itemId}
 					itemInfo={rentingItem}
-					onOpenImageBlob={() => handleOpenImageBlob(i)}
+					onOpenImageBlob={() => handleOpenImageBlob((rentingItem.item as Item).itemId)}
 				/>
 			);
 		});
@@ -100,7 +106,7 @@ export const UserHistoryItemModal: React.FC<{
 
 	return (
 		<>
-			<SingleImageViewerModal disclosure={itemImageDisclosure} imageUrl={selectedItemImage} />
+			<SingleImageViewerModal disclosure={itemImageProofDisclosure} imageUrl={selectedItemImage} />
 
 			<Modal scrollBehavior={'inside'} isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
@@ -140,7 +146,7 @@ export const UserHistoryItemModal: React.FC<{
 									)
 							}
 						</Flex>
-						<Flex flex={1} mt={5}>
+						<Flex mt={5}>
 							<VStack flex={1} alignItems={'flex-start'} spacing={5}>
 								<HStack width={'100%'} flex={1} spacing={5} alignItems={'flex-start'}>
 									<VStack spacing={5} flex={1} alignItems={'flex-start'}>
@@ -166,18 +172,24 @@ export const UserHistoryItemModal: React.FC<{
 										/>
 									</VStack>
 
-									<VStack spacing={5} flex={1} alignItems={'flex-start'}>
-										<EditableDate
-											name='returnedAt'
-											label={'Return Date'}
-											value={(selectedRecord as RentalRecord | undefined)?.returnedAt as Date}
-										/>
-										<EditableField
-											name='returnLocation'
-											label={'Return Location'}
-											value={(selectedRecord as RentalRecord | undefined)?.returnLocation}
-										/>
-									</VStack>
+									{(selectedRecord?.recordStatus === 'returning' ||
+										selectedRecord?.recordStatus === 'return_reverifying' ||
+										selectedRecord?.recordStatus === 'completed' ||
+										selectedRecord?.recordStatus === 'return_rejected' ||
+										selectedRecord?.recordStatus === 'paid') && (
+										<VStack spacing={5} flex={1} alignItems={'flex-start'}>
+											<EditableDate
+												name='returnedAt'
+												label={'Return Date'}
+												value={(selectedRecord as RentalRecord | undefined)?.returnedAt as Date}
+											/>
+											<EditableField
+												name='returnLocation'
+												label={'Return Location'}
+												value={(selectedRecord as RentalRecord | undefined)?.returnLocation}
+											/>
+										</VStack>
+									)}
 								</HStack>
 
 								<Box width={'100%'}>
@@ -187,12 +199,18 @@ export const UserHistoryItemModal: React.FC<{
 									/>
 								</Box>
 
-								<Box width={'100%'}>
-									<ImageManager
-										label='Return Images'
-										specifiedImages={(selectedRecord as RentalRecord | undefined)?.rentImages}
-									/>
-								</Box>
+								{(selectedRecord?.recordStatus === 'returning' ||
+									selectedRecord?.recordStatus === 'return_reverifying' ||
+									selectedRecord?.recordStatus === 'completed' ||
+									selectedRecord?.recordStatus === 'return_rejected' ||
+									selectedRecord?.recordStatus === 'paid') && (
+									<Box width={'100%'}>
+										<ImageManager
+											label='Return Images'
+											specifiedImages={(selectedRecord as RentalRecord | undefined)?.returnImages}
+										/>
+									</Box>
+								)}
 							</VStack>
 
 							<Divider orientation={'vertical'} marginX={5} />

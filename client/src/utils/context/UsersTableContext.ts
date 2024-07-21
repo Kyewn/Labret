@@ -1,8 +1,7 @@
-import { ConfirmDialogProps } from '@/components/ui/ConfirmDialog';
-import { deleteUser, editUser, getAllAdmins, getAllUsers } from '@/db/user';
-import { User } from '@/utils/data';
-import { createNewDate } from '@/utils/utils';
-import { useDisclosure, useToast } from '@chakra-ui/react';
+import {ConfirmDialogProps} from '@/components/ui/ConfirmDialog';
+import {deleteUser, editUser, getAllAdmins, getAllUsers} from '@/db/user';
+import {User} from '@/utils/data';
+import {useDisclosure, useToast} from '@chakra-ui/react';
 import {
 	ColumnFiltersState,
 	PaginationState,
@@ -10,7 +9,7 @@ import {
 	SortingState,
 	Table
 } from '@tanstack/react-table';
-import { SyntheticEvent, createContext, useContext, useState } from 'react';
+import {SyntheticEvent, createContext, useContext, useState} from 'react';
 
 // TABLE STRUCTURES
 export const useInitialUserTableContext = (page: string = 'users') => {
@@ -39,10 +38,10 @@ export const useInitialUserTableContext = (page: string = 'users') => {
 
 	// Filters
 	const initialFilterValueState = useState<ColumnFiltersState>([
-		{
-			id: 'createdAt',
-			value: createNewDate(true)
-		}
+		// {
+		// 	id: 'createdAt',
+		// 	value: createNewDate(true)
+		// }
 	]);
 	const [initialFilterValue] = initialFilterValueState;
 	const initialSortingState = [{id: 'status', desc: true}];

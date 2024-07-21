@@ -1,5 +1,8 @@
 import {EditRecord} from '@/components/user_history/EditRecord';
+import {AddItem} from '@/pages/AddItem';
 import {Error404} from '@/pages/Error404';
+import {ItemAvailability} from '@/pages/ItemAvailability';
+import {ManageVerifications} from '@/pages/ManageVerifications';
 import {PublicHistory} from '@/pages/PublicHistory';
 import {Register} from '@/pages/Register';
 import {RegisterAdmin} from '@/pages/RegisterAdmin';
@@ -7,8 +10,10 @@ import {Rent} from '@/pages/Rent';
 import {RentScanResult} from '@/pages/RentScanResult';
 import {Return} from '@/pages/Return';
 import {ReturnScanResult} from '@/pages/ReturnScanResult';
+import {SettleDebts} from '@/pages/SettleDebts';
 import {UserHistory} from '@/pages/UserHistory';
 import {ViewAdmins} from '@/pages/ViewAdmins';
+import {ViewItems} from '@/pages/ViewItems';
 import {ViewUsers} from '@/pages/ViewUsers';
 import MainPageLayout from '@/pages/layout/MainPageLayout';
 import SubPageLayout from '@/pages/layout/SubPageLayout';
@@ -61,7 +66,7 @@ const router = createBrowserRouter(
 
 			<Route element={<SubPageLayout />}>
 				<Route path={paths.sub.publicHistory} element={<PublicHistory />} />
-				<Route path={paths.sub.equipmentAvailability} /*element={}*/ />
+				<Route path={paths.sub.itemAvailability} element={<ItemAvailability />} />
 				<Route path={paths.sub.register} element={<Register />} />
 				<Route element={<AuthCheck />}>
 					<Route path={paths.sub.rentResult} element={<RentScanResult />} />
@@ -71,10 +76,10 @@ const router = createBrowserRouter(
 					<Route path={paths.sub.registerAdmin} element={<RegisterAdmin />} />
 					<Route path={paths.sub.userHistory} element={<UserHistory />} />
 					<Route path={paths.sub.editRecord} element={<EditRecord />} />
-					<Route path={paths.sub.equipment} /*element={}*/ />
-					<Route path={paths.sub.addItem} /* element={} */ />
-					<Route path={paths.sub.verifications} /*element={}*/ />
-					<Route path={paths.sub.criticalRecords} /*element={}*/ />
+					<Route path={paths.sub.items} element={<ViewItems />} />
+					<Route path={paths.sub.addItem} element={<AddItem />} />
+					<Route path={paths.sub.verifications} element={<ManageVerifications />} />
+					<Route path={paths.sub.debts} element={<SettleDebts />} />
 				</Route>
 			</Route>
 		</Route>

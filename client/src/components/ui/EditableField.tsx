@@ -31,7 +31,7 @@ export const EditableField: React.FC<Props> = ({
 	const onChange = registerProps?.onChange;
 
 	return (
-		<VStack spacing={1} alignItems={'flex-start'}>
+		<VStack w={'100%'} spacing={1} alignItems={'flex-start'}>
 			<Text fontWeight={700} fontSize={'sm'}>
 				{rules?.required && isEditing ? label + ' *' : label}
 			</Text>
@@ -39,6 +39,7 @@ export const EditableField: React.FC<Props> = ({
 				useTextArea || (value && value.length > 50) ? (
 					<Textarea
 						minWidth={'250px'}
+						maxW={'100%'}
 						value={value || ''}
 						resize={'both'}
 						{...(register && registerProps)}

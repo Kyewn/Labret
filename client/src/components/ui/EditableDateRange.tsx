@@ -15,7 +15,7 @@ type Props = Partial<Pick<UseFormReturn<FormValues>, 'setValue'>> & {
 	handleChange?: (newData: TableData) => void;
 };
 
-export const EditableDate: React.FC<Props> = ({
+export const EditableDateRange: React.FC<Props> = ({
 	label,
 	name,
 	value,

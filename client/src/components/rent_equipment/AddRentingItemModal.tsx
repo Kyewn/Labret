@@ -33,9 +33,20 @@ export const AddRentingItemModal: React.FC<{
 			itemQuantity: 50,
 			itemCategory: undefined,
 			itemDescription: undefined,
-			createdAt: undefined,
-			createdBy: undefined,
-			remainingQuantity: 50
+			createdAt: new Date(),
+			createdBy: {
+				id: 'delpttcjBgZhHaPS5QuL',
+				name: 'delasd',
+				email: 'delEmail',
+				status: 'pending',
+				type: 'admin',
+				createdAt: new Date('2023-2-1'),
+				imageUrls: [
+					'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+				]
+			},
+			remainingQuantity: 50,
+			itemStatus: 'pending'
 		},
 		{
 			itemId: '2',
@@ -44,9 +55,20 @@ export const AddRentingItemModal: React.FC<{
 			itemQuantity: 40,
 			itemCategory: undefined,
 			itemDescription: undefined,
-			createdAt: undefined,
-			createdBy: undefined,
-			remainingQuantity: 50
+			createdAt: new Date(),
+			createdBy: {
+				id: 'delpttcjBgZhHaPS5QuL',
+				name: 'delasd',
+				email: 'delEmail',
+				status: 'pending',
+				type: 'admin',
+				createdAt: new Date('2023-2-1'),
+				imageUrls: [
+					'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+				]
+			},
+			remainingQuantity: 50,
+			itemStatus: 'pending'
 		},
 		{
 			itemId: '3',
@@ -55,9 +77,20 @@ export const AddRentingItemModal: React.FC<{
 			itemQuantity: 30,
 			itemCategory: undefined,
 			itemDescription: undefined,
-			createdAt: undefined,
-			createdBy: undefined,
-			remainingQuantity: 50
+			createdAt: new Date(),
+			createdBy: {
+				id: 'delpttcjBgZhHaPS5QuL',
+				name: 'delasd',
+				email: 'delEmail',
+				status: 'pending',
+				type: 'admin',
+				createdAt: new Date('2023-2-1'),
+				imageUrls: [
+					'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+				]
+			},
+			remainingQuantity: 50,
+			itemStatus: 'pending'
 		}
 	];
 	const cbItems: Item[] = items.map((item) => {
@@ -67,6 +100,9 @@ export const AddRentingItemModal: React.FC<{
 			itemName: currItem.itemName,
 			itemImages: currItem.itemImages,
 			itemQuantity: currItem.itemQuantity,
+			createdAt: currItem.createdAt,
+			createdBy: currItem.createdBy,
+			itemStatus: currItem.itemStatus,
 			remainingQuantity: currItem.remainingQuantity
 		};
 	});

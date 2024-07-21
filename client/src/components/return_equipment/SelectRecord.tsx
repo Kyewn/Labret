@@ -14,7 +14,17 @@ const dummyRecords: RentalRecord[] = [
 	{
 		recordTitle: 'Record 1',
 		rentedAt: new Date(),
-		renterId: '',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentImages: [],
 		notes: '',
 		recordStatus: '',
@@ -25,7 +35,17 @@ const dummyRecords: RentalRecord[] = [
 	{
 		recordTitle: 'Record 2',
 		rentedAt: new Date(),
-		renterId: '',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentImages: [],
 		notes: '',
 		recordStatus: '',
@@ -36,7 +56,17 @@ const dummyRecords: RentalRecord[] = [
 	{
 		recordTitle: 'Record 3',
 		rentedAt: new Date(),
-		renterId: '',
+		renter: {
+			id: 'PJtSBgLgeBtbgg5NES2Z',
+			name: 'pjt',
+			email: 'pjtEmail',
+			status: 'pending',
+			type: 'user',
+			createdAt: new Date('2023-2-1'),
+			imageUrls: [
+				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
+			]
+		},
 		rentImages: [],
 		notes: '',
 		recordStatus: '',

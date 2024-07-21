@@ -9,15 +9,15 @@ export const paths = {
 		returnResult: '/return-result',
 		userHistory: '/user-history',
 		publicHistory: '/public-history',
-		equipmentAvailability: '/equipment-availability',
+		itemAvailability: '/item-availability',
 		register: '/register',
 		registerAdmin: '/register-admin',
 		addItem: '/add-item',
 		users: '/users',
 		admins: '/admins',
-		equipment: '/equipment',
+		items: '/items',
 		verifications: '/verifications',
-		criticalRecords: '/critical-records',
+		debts: '/debts',
 
 		editRecord: '/edit-record'
 	}

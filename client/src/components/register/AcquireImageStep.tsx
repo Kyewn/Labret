@@ -86,9 +86,9 @@ const AcquireImageStep: React.FC = () => {
 							</Tooltip>
 						</HStack>
 						<Text>
-							Act natural as you would when using the system and take facial images using the
-							buttons. Take as many additional images as you can to include different perspectives
-							and angles.
+							Take pictures of yourself naturally as you would when using the system using the
+							buttons. Take as many additional images and you can allow the model to learn better by
+							including different perspectives and view angles.
 						</Text>
 						<ButtonGroup marginY={5}>
 							<Button onClick={handleImageCapture}>Capture image</Button>
@@ -110,9 +110,8 @@ const AcquireImageStep: React.FC = () => {
 							/>
 						</ButtonGroup>
 					</Box>
-					<VStack flex={1} width={'100%'} alignItems={'stretch'}>
-						<Heading size={'md'}>Images taken</Heading>
-						<ImageManager isRemovable />
+					<VStack flex={1} width={'100%'}>
+						<ImageManager isRemovable label='Images taken' />
 					</VStack>
 					<Flex w={'100%'} justifyContent={'flex-end'}>
 						<Button
