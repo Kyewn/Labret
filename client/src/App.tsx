@@ -17,6 +17,7 @@ import {ViewItems} from '@/pages/ViewItems';
 import {ViewUsers} from '@/pages/ViewUsers';
 import MainPageLayout from '@/pages/layout/MainPageLayout';
 import SubPageLayout from '@/pages/layout/SubPageLayout';
+import {getLoadingLabelComponent} from '@/utils/component_functions';
 import {
 	AppContext,
 	appContextInitialState,
@@ -25,7 +26,7 @@ import {
 } from '@/utils/context/AppContext';
 import {paths} from '@/utils/paths';
 import {themes} from '@/utils/themes';
-import {Box, ChakraProvider, Heading, Spinner, VStack} from '@chakra-ui/react';
+import {Box, ChakraProvider, Spinner, VStack} from '@chakra-ui/react';
 import {useReducer} from 'react';
 import {Helmet, HelmetProvider} from 'react-helmet-async';
 import {
@@ -43,8 +44,8 @@ import {MainMenu} from './pages/MainMenu';
 function AuthCheck() {
 	const {appState} = useAppContext();
 	const {user} = appState;
-	// const hasUser = !!Object.entries(user || {}).length; //FIXME: Correct format, change to this after development
-	const hasUser = !Object.entries(user || {}).length;
+	const hasUser = !!Object.entries(user || {}).length; //TODO: Correct format, change to this after development
+	// const hasUser = !Object.entries(user || {}).length;
 
 	if (!hasUser) {
 		return <Navigate to={paths.main.root} />;
@@ -88,7 +89,7 @@ const router = createBrowserRouter(
 
 function App() {
 	const [appState, appDispatch] = useReducer(appContextReducer, appContextInitialState);
-	const {pageLoading, loadingLabel} = appState;
+	const {pageLoading, loadingLabelType} = appState;
 
 	return (
 		<>
@@ -117,9 +118,7 @@ function App() {
 									/>
 									<VStack position={'absolute'} justifyContent={'center'} h={'100%'} w={'100%'}>
 										<Spinner size='xl' thickness='3px' color='white' zIndex={100} />
-										<Heading fontSize={'sm'} color={'white'} zIndex={100}>
-											{loadingLabel}
-										</Heading>
+										{getLoadingLabelComponent(loadingLabelType)}
 									</VStack>
 								</Box>
 							)}

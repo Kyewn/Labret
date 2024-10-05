@@ -11,15 +11,37 @@ import {Helmet} from 'react-helmet-async';
 import {useNavigate} from 'react-router-dom';
 
 export function Return() {
-	const {appState, appDispatch} = useAppContext();
-	const {handleCloseExistingPeerConnection} = appState;
+	const {
+		appState: {handleCloseExistingPeerConnection}
+	} = useAppContext();
 	const scanContext = useInitialScanContext();
-	const {specificRecordState, activeStep, imagesState} = scanContext;
+	const {
+		readyToRedirectState,
+		imagesState,
+		scanResultState,
+		targetRecordState,
+		activeStep,
+		handleScan
+	} = scanContext;
 	const [records, setRecords] = useState<RentalRecord[]>([]);
-	const navigate = useNavigate();
-	const [specificRecord, setSpecificRecord] = specificRecordState || [];
-
+	const [targetRecord] = targetRecordState || [];
+	const [readyToRedirect] = readyToRedirectState;
 	const [images] = imagesState;
+	const [scanResult] = scanResultState;
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (readyToRedirect) {
+			handleCloseExistingPeerConnection();
+			navigate(paths.sub.returnResult, {
+				state: {
+					images,
+					targetRecord,
+					scanResult
+				}
+			});
+		}
+	}, [readyToRedirect]);
 
 	const getUserRecords = () => {
 		// TODO get user records
@@ -34,22 +56,6 @@ export function Return() {
 	useEffect(() => {
 		getUserRecords();
 	}, []);
-
-	const handleScan = () => {
-		appDispatch({type: 'SET_PAGE_LOADING', payload: true});
-		setTimeout(() => {
-			handleCloseExistingPeerConnection();
-			navigate(paths.sub.returnResult, {
-				state: {
-					images,
-					// TODO
-					// scanResult: ,
-					targetRecord: specificRecord
-				}
-			});
-			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
-		}, 5000);
-	};
 
 	return (
 		<>
@@ -68,8 +74,8 @@ export function Return() {
 							{activeStep == 1 && (
 								<VisionScanner
 									backLabel='Return Equipment'
-									title={`Returning record titled: ${specificRecord?.recordTitle || 'Unknown'}`}
-									handleScan={handleScan}
+									title={`Returning record titled: ${targetRecord?.recordTitle || 'Unknown'}`}
+									handleScan={() => handleScan('return')}
 								/>
 							)}
 						</>
@@ -77,8 +83,8 @@ export function Return() {
 						<>
 							<VisionScanner
 								backLabel='Return Equipment'
-								title={`Returning record titled: ${specificRecord?.recordTitle || 'Unknown'}`}
-								handleScan={handleScan}
+								title={`Returning record titled: ${targetRecord?.recordTitle || 'Unknown'}`}
+								handleScan={() => handleScan('return')}
 							/>
 						</>
 					)}

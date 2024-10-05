@@ -31,7 +31,7 @@ export const EditRentScanResult: React.FC = () => {
 	const [newScanResult] = scanResultState;
 
 	const renderItemResult = () =>
-		newScanResult?.map((rentingItem) => {
+		newScanResult.map((rentingItem) => {
 			return (
 				<ScannedItem
 					isEditingImageEnabled={false}
@@ -65,7 +65,7 @@ export const EditRentScanResult: React.FC = () => {
 			{/* Add */}
 			<AddRentingItemModal title={'Add New Item'} handleConfirm={handleAddConfirm} />
 			{/* Edit */}
-			<EditRentingItemModal title={''} handleConfirm={handleEditConfirm} />
+			<EditRentingItemModal title={'Edit Item'} handleConfirm={handleEditConfirm} />
 			{/* Delete */}
 			<ConfirmDialog
 				disclosure={deleteDisclosure}
@@ -81,7 +81,7 @@ export const EditRentScanResult: React.FC = () => {
 			</Flex>
 
 			<VStack overflowY={'auto'} flex={1} w={'100%'}>
-				{newScanResult?.length ? (
+				{newScanResult.length ? (
 					renderItemResult()
 				) : (
 					<Center>

@@ -1,4 +1,5 @@
 import {EditableNumberInput} from '@/components/ui/EditableNumberInput';
+import {getItem} from '@/db/item';
 import {useInitialScanContext, useScanContext} from '@/utils/context/ScanContext';
 import {FormValues, Item, NewRentingItemFormValues, RentingItem} from '@/utils/data';
 
@@ -37,10 +38,10 @@ export const EditRentingItemModal: React.FC<{
 		onClose();
 	};
 
-	useEffect(() => {
-		// TODO: Refetch updated remaining quantity derived from records in db
-		// setUpdatedItemInfo()
-	}, [selectedItem]);
+	const handleSetUpdatedItemInfo = async () => {
+		const itemInfo = await getItem(((selectedItem as RentingItem).item as Item).itemId);
+		setUpdatedItemInfo(itemInfo);
+	};
 
 	useEffect(() => {
 		if (isOpen && selectedItem) {
@@ -48,6 +49,12 @@ export const EditRentingItemModal: React.FC<{
 			setValue('rentQuantity', selectedItem.rentQuantity as number);
 		}
 	}, [isOpen, selectedItem]);
+
+	useEffect(() => {
+		if (selectedItem) {
+			handleSetUpdatedItemInfo();
+		}
+	}, [selectedItem]);
 
 	useEffect(() => {
 		if (updatedItemInfo) {

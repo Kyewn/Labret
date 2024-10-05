@@ -1,5 +1,5 @@
 import {ConfirmDialogProps} from '@/components/ui/ConfirmDialog';
-import {deleteItem, editItem} from '@/db/item';
+import {deleteItem, editItem, getAllBaseItems} from '@/db/item';
 import {Item} from '@/utils/data';
 import {useDisclosure, useToast} from '@chakra-ui/react';
 import {
@@ -53,7 +53,7 @@ export const useInitialItemTableContext = () => {
 
 	const refetch = async () => {
 		// TODO get db
-		const items = dummyItems;
+		const items = await getAllBaseItems();
 		setData(items);
 	};
 
@@ -240,50 +240,6 @@ export const useInitialItemTableContext = () => {
 		handleSetActiveForRows
 	};
 };
-
-const dummyItems: Item[] = [
-	{
-		itemId: 'ABC123',
-		itemName: 'Beaker',
-		itemImages: [],
-		itemQuantity: 123,
-		remainingQuantity: 12,
-		itemStatus: 'pending',
-		// itemCategory: 'Small',
-		createdAt: new Date('2023-2-1'),
-		createdBy: {
-			id: 'delpttcjBgZhHaPS5QuL',
-			name: 'del',
-			email: 'delEmail',
-			status: 'pending',
-			type: 'admin',
-			createdAt: new Date('2023-2-1'),
-			imageUrls: [
-				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-			]
-		}
-	},
-	{
-		itemId: 'ABC1234',
-		itemName: 'Airhorn',
-		itemImages: [],
-		itemQuantity: 123,
-		remainingQuantity: 100,
-		itemStatus: 'pending',
-		createdAt: new Date('2023-2-1'),
-		createdBy: {
-			id: 'delpttcjBgZhHaPS5QuL',
-			name: 'delasd',
-			email: 'delEmail',
-			status: 'pending',
-			type: 'admin',
-			createdAt: new Date('2023-2-1'),
-			imageUrls: [
-				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-			]
-		}
-	}
-];
 
 export const ItemTableContext = createContext<
 	ReturnType<typeof useInitialItemTableContext> | undefined

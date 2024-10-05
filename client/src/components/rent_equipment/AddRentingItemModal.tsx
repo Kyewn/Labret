@@ -1,5 +1,6 @@
-import {ComboBox} from '@/components/ui/ComboBox';
+import {EditableComboBox} from '@/components/ui/EditableComboBox';
 import {EditableNumberInput} from '@/components/ui/EditableNumberInput';
+import {getAllItems} from '@/db/item';
 import {useInitialScanContext, useScanContext} from '@/utils/context/ScanContext';
 import {FormValues, Item, NewRentingItemFormValues, RentingItem} from '@/utils/data';
 
@@ -13,108 +14,68 @@ import {
 	ModalContent,
 	ModalOverlay,
 	Spacer,
-	Text,
 	VStack
 } from '@chakra-ui/react';
 import {Check, X} from 'lucide-react';
 import {useEffect, useState} from 'react';
-import {UseFormRegister, useForm} from 'react-hook-form';
+import {UseFormRegister, UseFormSetValue, useForm} from 'react-hook-form';
 
 export const AddRentingItemModal: React.FC<{
 	title: string;
 	handleConfirm?: (item: RentingItem) => void;
 }> = ({title, handleConfirm}) => {
-	// FIXME: Fetch from db
-	const items: Item[] = [
-		{
-			itemId: '1',
-			itemName: 'item1',
-			itemImages: [],
-			itemQuantity: 50,
-			itemCategory: undefined,
-			itemDescription: undefined,
-			createdAt: new Date(),
-			createdBy: {
-				id: 'delpttcjBgZhHaPS5QuL',
-				name: 'delasd',
-				email: 'delEmail',
-				status: 'pending',
-				type: 'admin',
-				createdAt: new Date('2023-2-1'),
-				imageUrls: [
-					'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-				]
-			},
-			remainingQuantity: 50,
-			itemStatus: 'pending'
-		},
-		{
-			itemId: '2',
-			itemName: 'item2',
-			itemImages: [],
-			itemQuantity: 40,
-			itemCategory: undefined,
-			itemDescription: undefined,
-			createdAt: new Date(),
-			createdBy: {
-				id: 'delpttcjBgZhHaPS5QuL',
-				name: 'delasd',
-				email: 'delEmail',
-				status: 'pending',
-				type: 'admin',
-				createdAt: new Date('2023-2-1'),
-				imageUrls: [
-					'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-				]
-			},
-			remainingQuantity: 50,
-			itemStatus: 'pending'
-		},
-		{
-			itemId: '3',
-			itemName: 'item3',
-			itemImages: [],
-			itemQuantity: 30,
-			itemCategory: undefined,
-			itemDescription: undefined,
-			createdAt: new Date(),
-			createdBy: {
-				id: 'delpttcjBgZhHaPS5QuL',
-				name: 'delasd',
-				email: 'delEmail',
-				status: 'pending',
-				type: 'admin',
-				createdAt: new Date('2023-2-1'),
-				imageUrls: [
-					'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-				]
-			},
-			remainingQuantity: 50,
-			itemStatus: 'pending'
-		}
-	];
-	const cbItems: Item[] = items.map((item) => {
-		const currItem = item as Item;
-		return {
-			itemId: currItem.itemId,
-			itemName: currItem.itemName,
-			itemImages: currItem.itemImages,
-			itemQuantity: currItem.itemQuantity,
-			createdAt: currItem.createdAt,
-			createdBy: currItem.createdBy,
-			itemStatus: currItem.itemStatus,
-			remainingQuantity: currItem.remainingQuantity
-		};
-	});
-	const {addDisclosure} = useScanContext() as ReturnType<typeof useInitialScanContext>;
+	const [items, setItems] = useState<Item[]>([]);
+	const {addDisclosure, scanResultState} = useScanContext() as ReturnType<
+		typeof useInitialScanContext
+	>;
 	const {isOpen, onClose} = addDisclosure;
-	const [maxQuantity, setMaxQuantity] = useState<number>(100);
+	const [scanResult] = scanResultState;
+	const cbItems: Item[] = items
+		.filter((item) => {
+			const currItem = item as Item;
+			// Find item remaining quantity in db
+			const dbRemainingQuantity = currItem.remainingQuantity as number;
+			// Find scan result quantity, set 0 if not found in scan result
+			const rentingItemQuantity =
+				(scanResult?.find((scannedItem) => (scannedItem.item as Item).itemId === currItem.itemId)
+					?.rentQuantity as number) || 0;
+
+			// Check if item has reached max
+			const hasItemReachedMaxQuantity = dbRemainingQuantity - rentingItemQuantity == 0;
+			return !hasItemReachedMaxQuantity;
+		})
+		.map((item) => {
+			const currItem = item as Item;
+
+			return {
+				itemId: currItem.itemId,
+				itemName: currItem.itemName,
+				itemImages: currItem.itemImages,
+				itemQuantity: currItem.itemQuantity,
+				createdAt: currItem.createdAt,
+				createdBy: currItem.createdBy,
+				itemStatus: currItem.itemStatus,
+				remainingQuantity: currItem.remainingQuantity
+			};
+		});
+	console.log(cbItems);
+	const [maxQuantity, setMaxQuantity] = useState<number>();
 	const {watch, register, setValue} = useForm<NewRentingItemFormValues>();
 	const {item, rentQuantity} = watch();
 
 	const handleClose = () => {
 		onClose();
 	};
+
+	const handleInitItems = async () => {
+		const data = await getAllItems();
+		setItems(data);
+	};
+
+	// Get all items from db on init
+	useEffect(() => {
+		handleInitItems();
+	}, []);
 
 	useEffect(() => {
 		if (isOpen) {
@@ -129,7 +90,13 @@ export const AddRentingItemModal: React.FC<{
 				if (rentQuantity && item.remainingQuantity && rentQuantity > item.remainingQuantity) {
 					setValue('rentQuantity', item.remainingQuantity);
 				}
-				return item.remainingQuantity as number;
+				const scannedQuantity = scanResult?.find(
+					(scannedItem) => (scannedItem.item as Item).itemId === item.itemId
+				)?.rentQuantity;
+
+				return scannedQuantity
+					? (((item.remainingQuantity as number) - (scannedQuantity as number)) as number)
+					: (item.remainingQuantity as number);
 			});
 		}
 	}, [item]);
@@ -165,16 +132,16 @@ export const AddRentingItemModal: React.FC<{
 					<Flex flex={1} mt={5}>
 						<VStack spacing={5} width={'100%'} alignItems={'flex-start'}>
 							<VStack alignItems={'flex-start'}>
-								<Text fontWeight={700} fontSize={'sm'}>
-									Item
-								</Text>
-								<ComboBox
+								<EditableComboBox
+									isEditing
+									label='Item'
 									items={cbItems}
+									placeholder='Search...'
 									searchKey={'itemName'}
 									itemIdKey={'itemId'}
 									name={'item'}
 									value={item?.itemName as string}
-									setValue={setValue}
+									setValue={setValue as UseFormSetValue<FormValues>}
 								/>
 							</VStack>
 							<EditableNumberInput

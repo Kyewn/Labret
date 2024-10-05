@@ -24,27 +24,41 @@ export function ViewItems() {
 	const handleTrainModel = async () => {
 		try {
 			appDispatch({
-				type: 'SET_PAGE_LOADING_LABEL',
-				payload: 'Downloading and training new images. This could take awhile.'
+				type: 'SET_PAGE_LOADING_LABEL_TYPE',
+				payload: 'training'
 			});
 			appDispatch({type: 'SET_PAGE_LOADING', payload: true});
-			await fetch('http://localhost:8000/train-face-lts-model');
+			const result = await fetch('http://localhost:8000/train-item-lts-model');
+
+			// if (result > 0.7) {
+			// 	toast({
+			// 		title: 'Model training successful',
+			// 		description: 'Model mAP:',
+			// 		status: 'success'
+			// 	});
+			// } else {
+			// 	toast({
+			// 		title: 'Model training insufficient',
+			// 		description: 'Model mAP:',
+			// 		status: 'info'
+			// 	});
+			// }
+
 			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 			appDispatch({
-				type: 'SET_PAGE_LOADING_LABEL',
-				payload: 'Loading'
+				type: 'SET_PAGE_LOADING_LABEL_TYPE',
+				payload: 'default'
 			});
 		} catch {
 			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 			appDispatch({
-				type: 'SET_PAGE_LOADING_LABEL',
-				payload: 'Loading'
+				type: 'SET_PAGE_LOADING_LABEL_TYPE',
+				payload: 'default'
 			});
 			toast({
 				title: 'Training interrupted',
 				description: 'Something went wrong during face training, please try again.',
-				status: 'error',
-				duration: 3000
+				status: 'error'
 			});
 		}
 	};
@@ -96,7 +110,7 @@ export function ViewItems() {
 								borderRadius={5}
 							>
 								<Button isDisabled={!isAnnotationButtonClicked} onClick={handleTrainModel}>
-									Retrain user model
+									Retrain item model
 								</Button>
 							</Tooltip>
 						</HStack>

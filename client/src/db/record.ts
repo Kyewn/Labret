@@ -1,7 +1,7 @@
 import {db} from '@/db/firebase-init';
 import {getAllBaseItems} from '@/db/item';
 import {getAllUsers} from '@/db/user';
-import {Item, RentalRecord, User} from '@/utils/data';
+import {AddRecordFormValues, Item, RentalRecord, User} from '@/utils/data';
 import {addDoc, collection, deleteDoc, getDocs, updateDoc} from 'firebase/firestore';
 
 export const recordCollection = collection(db, 'records');
@@ -19,7 +19,7 @@ export const getAllRecords = async () => {
 		const parsedRentingItems = record.rentingItems.map((rentingItem) => {
 			return {
 				...rentingItem,
-				item: items.find((item) => item.itemId == (rentingItem.item as Item).itemId) as Item
+				item: items.find((item) => item.itemId == (rentingItem.item as string)) as Item
 			};
 		});
 
@@ -49,7 +49,7 @@ export const getRecord = async (recordId: string) => {
 	const parsedRentingItems = record.rentingItems.map((rentingItem) => {
 		return {
 			...rentingItem,
-			item: items.find((item) => item.itemId == (rentingItem.item as Item).itemId) as Item
+			item: items.find((item) => item.itemId == (rentingItem.item as string)) as Item
 		};
 	});
 	return {
@@ -69,7 +69,7 @@ export const createRecord = async (data: AddRecordFormValues, renterId: string) 
 		renter: renterId,
 		rentedAt: new Date().toISOString(),
 		recordStatus: 'pending'
-	} as RentalRecord);
+	});
 	return doc;
 };
 

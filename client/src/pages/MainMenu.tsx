@@ -6,7 +6,7 @@ import {getUser} from '@/db/user';
 import {useAppContext} from '@/utils/context/AppContext';
 import {User} from '@/utils/data';
 import {predictFaces} from '@/utils/utils';
-import {Box, Center, Flex, Image} from '@chakra-ui/react';
+import {Box, Center, CircularProgress, Flex, Image, Text, VStack} from '@chakra-ui/react';
 import {useEffect, useState} from 'react';
 import {Helmet} from 'react-helmet-async';
 
@@ -15,6 +15,7 @@ const face_conf_threshold = 0.7;
 export function MainMenu() {
 	const {appState, appDispatch} = useAppContext();
 	const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+	const [isReadingFace, setIsReadingFace] = useState(false);
 	const {user, detectedUser, detectedUserImageURL, mediaStreams} = appState;
 
 	useEffect(() => {
@@ -33,6 +34,7 @@ export function MainMenu() {
 							return blob;
 						});
 
+						setIsReadingFace(true);
 						const parsedResult = await predictFaces([photoBlob]);
 
 						const {labels, scores} = parsedResult;
@@ -49,7 +51,7 @@ export function MainMenu() {
 					} catch {
 						console.log('Error in face prediction');
 					}
-				}, 2000);
+				}, 3000);
 				setIntervalId(id);
 
 				// Set clear face predict interval for cleanup on navigation
@@ -69,6 +71,10 @@ export function MainMenu() {
 		if (!mediaStreams?.length) return;
 
 		handlePredictFace(mediaStreams, detectedUser, detectedUserImageURL);
+
+		return () => {
+			setIsReadingFace(false);
+		};
 	}, [mediaStreams, detectedUser, detectedUserImageURL, intervalId, user]);
 
 	return (
@@ -86,7 +92,20 @@ export function MainMenu() {
 				)}
 			</Box>
 			<Flex flexDirection={'column'} flex={0.4} p={6}>
-				{user ? <UserMenu /> : <FaceLogin />}
+				{user ? (
+					<UserMenu />
+				) : isReadingFace ? (
+					<Flex justifyContent={'center'} flexDirection={'column'} flex={0.7}>
+						<VStack>
+							<CircularProgress isIndeterminate color='lrBrown.700' trackColor='lrBrown.400' />
+							<Text fontWeight={'700'} color={'lrBrown.700'}>
+								Reading face...
+							</Text>
+						</VStack>
+					</Flex>
+				) : (
+					<FaceLogin />
+				)}
 				<PublicMenu />
 			</Flex>
 		</>

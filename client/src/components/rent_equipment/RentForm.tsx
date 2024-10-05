@@ -21,7 +21,11 @@ export const RentForm: React.FC = () => {
 		setValue,
 		handleSubmit,
 		formState: {errors}
-	} = useForm<NewRentFormValues>();
+	} = useForm<NewRentFormValues>({
+		defaultValues: {
+			expectedReturnAt: createNewDate() as Date
+		}
+	});
 	const {recordTitle, recordNotes, expectedReturnAt, isReadTnC} = watch();
 	const tcDisclosure = useDisclosure();
 	const {onOpen} = tcDisclosure;
@@ -41,8 +45,8 @@ export const RentForm: React.FC = () => {
 			<form
 				id='form'
 				style={{flex: 1}}
-				onSubmit={handleSubmit(() =>
-					handleAddRent({recordTitle, recordNotes, expectedReturnAt, isReadTnC})
+				onSubmit={handleSubmit(
+					async () => await handleAddRent({recordTitle, recordNotes, expectedReturnAt, isReadTnC})
 				)}
 			>
 				<VStack height={'100%'} flex={1} paddingY={5} spacing={3} alignItems={'flex-start'}>

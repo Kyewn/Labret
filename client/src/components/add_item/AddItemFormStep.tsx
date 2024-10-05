@@ -2,11 +2,10 @@ import {EditableComboBox} from '@/components/ui/EditableComboBox';
 import {EditableField} from '@/components/ui/EditableField';
 import {EditableNumberInput} from '@/components/ui/EditableNumberInput';
 import ImageManager from '@/components/ui/ImageManager';
-import {createItem} from '@/db/item';
-import {editUser} from '@/db/user';
+import {createItem, editItem} from '@/db/item';
 import {useAddItemContext, useInitialAddItemContext} from '@/utils/context/AddItemContext';
 import {useAppContext} from '@/utils/context/AppContext';
-import {AddItemFormValues, AddUserFormValues, FormValues} from '@/utils/data';
+import {AddItemFormValues, FormValues} from '@/utils/data';
 import {paths} from '@/utils/paths';
 import {convertBlobToBase64} from '@/utils/utils';
 import {Button, ButtonGroup, Flex, HStack, Spacer, VStack, useToast} from '@chakra-ui/react';
@@ -45,8 +44,6 @@ const AddItemFormStep: React.FC = () => {
 	const navigate = useNavigate();
 	const {itemName, itemQuantity, itemCategory, itemDescription} = watch();
 
-	console.log(itemName, itemQuantity, itemCategory, itemDescription);
-
 	useEffect(() => {
 		appDispatch({
 			type: 'SET_HANDLE_SUBHEADER_BACK',
@@ -65,8 +62,8 @@ const AddItemFormStep: React.FC = () => {
 			throw ItemAlreadyExistsError;
 		}
 
-		const user = await createItem(data, appUser?.id as string);
-		const userData = (await getDoc(user)).data() as AddUserFormValues;
+		const item = await createItem(data, appUser?.id as string);
+		const itemData = (await getDoc(item)).data() as AddItemFormValues;
 		// Convert images to base64 strings
 		const imageStrings = await Promise.all(
 			images.map(async (img) => {
@@ -75,16 +72,16 @@ const AddItemFormStep: React.FC = () => {
 			})
 		);
 		// Send user data to backend for ultralytics pipeline
-		const uploadRes = await fetch('http://localhost:8000/register', {
+		const uploadRes = await fetch('http://localhost:8000/add-item', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 				'Access-Control-Allow-Origin': '*'
 			},
 			body: JSON.stringify({
-				id: user.id,
+				id: item.id,
 				images: imageStrings,
-				...userData
+				...itemData
 			})
 		});
 
@@ -93,7 +90,7 @@ const AddItemFormStep: React.FC = () => {
 			const originalUrl = info.image.urls.original;
 			return originalUrl.replace('undefined', info.image.id);
 		});
-		await editUser(user.id, {imageUrls});
+		await editItem(item.id, {itemImages: imageUrls});
 	};
 
 	const onSubmit = async (data: AddItemFormValues) => {
@@ -103,11 +100,22 @@ const AddItemFormStep: React.FC = () => {
 				payload: true
 			});
 			await handleCreateItem(data);
+
+			// TODODEV: Remove when backend is ready
+			// const a = document.createElement('a');
+			// for (const img of images) {
+			// 	const imgURL = URL.createObjectURL(img);
+			// 	a.href = imgURL;
+			// 	a.download = 'image';
+			// 	a.click();
+			// 	URL.revokeObjectURL(imgURL);
+			// }
+
 			appDispatch({
 				type: 'SET_PAGE_LOADING',
 				payload: false
 			});
-			navigate(paths.main.root);
+			navigate(paths.sub.items);
 			toast({
 				title: 'Success',
 				description: 'Item creation request has been sent for review.',
@@ -117,6 +125,7 @@ const AddItemFormStep: React.FC = () => {
 			});
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
+			console.log(err);
 			appDispatch({
 				type: 'SET_PAGE_LOADING',
 				payload: false
@@ -200,10 +209,11 @@ const AddItemFormStep: React.FC = () => {
 											/>
 
 											<EditableComboBox
+												isClearEnabled
 												isCreateNewOnNoneEnabled
 												name='itemCategory'
 												label={'Category'}
-												placeholder='Choose category'
+												placeholder='Choose or add category'
 												items={itemCategories}
 												value={itemCategory}
 												isEditing

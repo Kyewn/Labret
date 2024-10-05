@@ -1,5 +1,6 @@
 import {db} from '@/db/firebase-init';
-import {getAllUsers} from '@/db/user';
+import {getAllRecords} from '@/db/record';
+import {getAllAdmins} from '@/db/user';
 import {
 	AddItemFormValues,
 	Item,
@@ -14,11 +15,18 @@ export const itemCollection = collection(db, 'items');
 
 export const getAllBaseItems = async () => {
 	const querySnapshot = await getDocs(itemCollection);
-	const users = await getAllUsers();
+	const admins = await getAllAdmins();
 	const items = querySnapshot.docs.map((doc) => {
 		const item = doc.data() as Item;
-		const createdBy = users.find((user) => user.id === item.createdBy) as User;
-
+		const createdBy = (admins.find((admin) => admin.id === item.createdBy) as User) || {
+			id: 'Unknown',
+			name: 'Unknown',
+			email: '',
+			status: '',
+			type: '',
+			createdAt: new Date(),
+			imageUrls: []
+		};
 		return {
 			...item,
 			itemId: doc.id,
@@ -31,33 +39,47 @@ export const getAllBaseItems = async () => {
 
 export const getAllItems = async () => {
 	const querySnapshot = await getDocs(itemCollection);
-	const users = await getAllUsers();
-	const records = (await getAllRecords()) as RentalRecord[];
+	const admins = await getAllAdmins();
+	const records = await getAllRecords();
 	const items = querySnapshot.docs.map((doc) => {
 		const item = doc.data() as Item;
-		const {createdAt} = item;
+		const itemId = doc.id as string;
+		const {createdAt, itemQuantity} = item;
 
 		// Get createdBy user
-		const createdBy = users.find((user) => user.id === item.createdBy) as User;
+		const createdBy = (admins.find((admin) => admin.id === item.createdBy) as User) || {
+			id: 'Unknown',
+			name: 'Unknown',
+			email: '',
+			status: '',
+			type: '',
+			createdAt: new Date(),
+			imageUrls: []
+		};
 		// Calculate remaining quantity
 		const targetItemInRelatedRecords = records
-			.filter((record) =>
-				record.rentingItems.some((rentingItem) => (rentingItem.item as Item).itemId === item.itemId)
-			) // relatedRecords
+			.filter((record) => {
+				return record.rentingItems.some(
+					(rentingItem) => (rentingItem.item as Item).itemId === itemId
+				);
+			}) // relatedRecords
 			.map(
 				(record) =>
 					record.rentingItems.find(
-						(rentingItem) => (rentingItem.item as Item).itemId === item.itemId
+						(rentingItem) => (rentingItem.item as Item).itemId === itemId
 					) as RentingItem
 			); // getting target item from record
-		const remainingQuantity = targetItemInRelatedRecords.reduce(
-			(acc, record) => acc + (record.rentQuantity as number),
-			0
+		const remainingQuantity = records.length
+			? (itemQuantity as number) -
+			  targetItemInRelatedRecords.reduce((acc, record) => acc + (record.rentQuantity as number), 0)
+			: (itemQuantity as number);
+		console.log(
+			itemQuantity,
+			targetItemInRelatedRecords.reduce((acc, record) => acc + (record.rentQuantity as number), 0)
 		);
-
 		return {
 			...item,
-			itemId: doc.id,
+			itemId,
 			remainingQuantity,
 			createdBy,
 			createdAt: new Date(createdAt)
@@ -67,30 +89,40 @@ export const getAllItems = async () => {
 };
 
 export const getItem = async (itemId: string) => {
-	const users = await getAllUsers();
+	const admins = await getAllAdmins();
 	const records = (await getAllRecords()) as RentalRecord[];
 
 	const queryResult = (await getDocs(itemCollection)).docs.filter((doc) => itemId == doc.id)[0];
 	const item = queryResult.data() as Item;
-	const {createdAt} = item;
+	const {createdAt, itemQuantity} = item;
 
 	// Get createdBy user
-	const createdBy = users.find((user) => user.id === item.createdBy) as User;
+	const createdBy = (admins.find((admin) => admin.id === item.createdBy) as User) || {
+		id: 'Unknown',
+		name: 'Unknown',
+		email: '',
+		status: '',
+		type: '',
+		createdAt: new Date(),
+		imageUrls: []
+	};
 	// Calculate remaining quantity
 	const targetItemInRelatedRecords = records
-		.filter((record) =>
-			record.rentingItems.some((rentingItem) => (rentingItem.item as Item).itemId === item.itemId)
-		) // relatedRecords
+		.filter((record) => {
+			return record.rentingItems.some(
+				(rentingItem) => (rentingItem.item as Item).itemId === itemId
+			);
+		}) // relatedRecords
 		.map(
 			(record) =>
 				record.rentingItems.find(
-					(rentingItem) => (rentingItem.item as Item).itemId === item.itemId
+					(rentingItem) => (rentingItem.item as Item).itemId === itemId
 				) as RentingItem
 		); // getting target item from record
-	const remainingQuantity = targetItemInRelatedRecords.reduce(
-		(acc, record) => acc + (record.rentQuantity as number),
-		0
-	);
+	const remainingQuantity = records.length
+		? (itemQuantity as number) -
+		  targetItemInRelatedRecords.reduce((acc, record) => acc + (record.rentQuantity as number), 0)
+		: (itemQuantity as number);
 	return {
 		...item,
 		itemId,
@@ -103,6 +135,7 @@ export const getItem = async (itemId: string) => {
 export const createItem = async (data: AddItemFormValues, adminId: string) => {
 	const doc = await addDoc(itemCollection, {
 		...data,
+		itemQuantity: Number.parseInt(data.itemQuantity as string),
 		itemStatus: 'pending',
 		createdAt: new Date().toISOString(),
 		createdBy: adminId

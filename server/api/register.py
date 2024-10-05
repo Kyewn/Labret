@@ -25,7 +25,6 @@ def register_user():
     # TODO Relocate dir create commands to respective functions
     pathlib.Path('./images').mkdir(parents=True, exist_ok=True)
     pathlib.Path('./images/new_faces').mkdir(parents=True, exist_ok=True)
-    pathlib.Path('./images/new_items').mkdir(parents=True, exist_ok=True)
 
     uploadedImgInfos = []
     
@@ -35,8 +34,8 @@ def register_user():
         cvImage = convertBase64ToCvImage(image)
     
         # Crop image ROI
-        image_crop = cvImage[90:390, 165:475]
-        cv.imwrite(filePath, image_crop)
+        # image_crop = cvImage[90:390, 165:475]
+        cv.imwrite(filePath, cvImage)
 
         # Send image to roboflow        
         # Get uploaded image id
@@ -44,16 +43,15 @@ def register_user():
         
         # Get image info overview using id
         imageInfoURL = f"https://api.roboflow.com/"\
-        f"{os.getenv("ROBOFLOW_WORKSPACE_ID")}/"\
-        f"{os.getenv("ROBOFLOW_FACE_PROJECT_ID")}/"\
-        f"images/{uploadedImg.get("image").get("id")}?api_key={os.getenv("ROBOFLOW_API_KEY")}"
+        f"{os.getenv('ROBOFLOW_WORKSPACE_ID')}/"\
+        f"{os.getenv('ROBOFLOW_FACE_PROJECT_ID')}/"\
+        f"images/{uploadedImg.get('image').get('id')}?api_key={os.getenv('ROBOFLOW_API_KEY')}"
         res = requests.get(imageInfoURL)
         imageInfo = res.json()
         uploadedImgInfos.append(imageInfo)
 
     # Remove temp image files
     shutil.rmtree(pathlib.Path('./images/new_faces'))
-    shutil.rmtree(pathlib.Path('./images/new_items'))
 
     return jsonify({
         'message': 'User registered successfully',

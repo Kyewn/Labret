@@ -3,10 +3,18 @@ import {EditableDate} from '@/components/ui/EditableDate';
 import {EditableField} from '@/components/ui/EditableField';
 import {EditableNumberInput} from '@/components/ui/EditableNumberInput';
 import ImageManager from '@/components/ui/ImageManager';
+import {editItem} from '@/db/item';
 import {useAppContext} from '@/utils/context/AppContext';
 import {useInitialItemTableContext, useItemTableContext} from '@/utils/context/ItemTableContext';
 import {useMultiEditableContext} from '@/utils/context/MultiEditableContext';
-import {FormValues, Item, ItemInfoValues, User, mapUserStatus} from '@/utils/data';
+import {
+	FormValues,
+	Item,
+	ItemEditableFields,
+	ItemInfoValues,
+	User,
+	mapUserStatus
+} from '@/utils/data';
 
 import {
 	Button,
@@ -42,7 +50,6 @@ export const ItemTableItemModal: React.FC<{
 	const [items] = dataState;
 	const formContext = useForm<ItemInfoValues>();
 	const {
-		control,
 		watch,
 		setValue,
 		register,
@@ -53,47 +60,45 @@ export const ItemTableItemModal: React.FC<{
 	} = formContext;
 	const {itemName, itemQuantity, itemCategory, itemDescription} = watch();
 
-	console.log(itemName, itemQuantity, itemCategory, itemDescription);
-
 	const itemCategories =
 		(items
 			?.map((item) => item.itemCategory)
 			.filter((category, i, arr) => category && arr.indexOf(category) === i) as string[]) || [];
 
 	const handleEdit = async () => {
-		const mHandleEdit = async (newData: Item) => {
-			// const editRecord = async () => {
-			// 	await editItem((selectedItem as Item | undefined)?.itemId as string, {
-			// 		...newData,
-			// 		createdAt: (newData.createdAt as Date).toISOString(),
-			// 		...(newData.createdBy && {createdBy: (newData.createdBy as User).id})
-			// 	});
-			// 	refetch();
-			// 	return true;
-			// };
-			// appDispatch({type: 'SET_PAGE_LOADING', payload: true});
-			// // Duplicated created due to execution in .promise behavior + multiEditableContext.onSubmit
-			// // Require id for toast checking
-			// const toastId = 'confirmEditItem';
-			// if (!toast.isActive(toastId)) {
-			// 	toast.promise(editRecord(), {
-			// 		loading: {
-			// 			id: toastId,
-			// 			description: 'Saving...'
-			// 		},
-			// 		success: {
-			// 			id: toastId,
-			// 			description: 'Record has been updated!',
-			// 			duration: 3000
-			// 		},
-			// 		error: {
-			// 			id: toastId,
-			// 			description: 'Failed to save changes, please try again.',
-			// 			duration: 3000
-			// 		}
-			// 	});
-			// }
-			// appDispatch({type: 'SET_PAGE_LOADING', payload: false});
+		const mHandleEdit = async (newData: ItemEditableFields) => {
+			const editRecord = async () => {
+				await editItem((selectedItem as Item | undefined)?.itemId as string, {
+					...newData,
+					createdAt: (newData.createdAt as Date).toISOString(),
+					...(newData.createdBy && {createdBy: (newData.createdBy as User).id})
+				});
+				refetch();
+				return true;
+			};
+			appDispatch({type: 'SET_PAGE_LOADING', payload: true});
+			// Duplicated created due to execution in .promise behavior + multiEditableContext.onSubmit
+			// Require id for toast checking
+			const toastId = 'confirmEditItem';
+			if (!toast.isActive(toastId)) {
+				toast.promise(editRecord(), {
+					loading: {
+						id: toastId,
+						description: 'Saving...'
+					},
+					success: {
+						id: toastId,
+						description: 'Record has been updated!',
+						duration: 3000
+					},
+					error: {
+						id: toastId,
+						description: 'Failed to save changes, please try again.',
+						duration: 3000
+					}
+				});
+			}
+			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 		};
 		multiEditableContext.onSubmit(async (nNewData) => await mHandleEdit(nNewData as Item));
 	};
@@ -167,7 +172,7 @@ export const ItemTableItemModal: React.FC<{
 									alignItems={'flex-start'}
 								>
 									<Flex width={'100%'}>
-										<HStack flex={1}>
+										<HStack flex={1} spacing={5}>
 											<VStack
 												spacing={5}
 												height={'100%'}
@@ -229,8 +234,6 @@ export const ItemTableItemModal: React.FC<{
 													handleChange={(item) =>
 														multiEditableContext.onChange({itemCategory: item as string})
 													}
-													// register={register as UseFormRegister<FormValues>}
-													// control={control as Control<FormValues>}
 													setValue={setValue as UseFormSetValue<FormValues>}
 												/>
 												<EditableDate
@@ -249,10 +252,12 @@ export const ItemTableItemModal: React.FC<{
 											</VStack>
 										</HStack>
 									</Flex>
-									<ImageManager
-										label='Item images'
-										specifiedImages={(selectedItem as Item | undefined)?.itemImages}
-									/>
+									<Flex w={'50%'}>
+										<ImageManager
+											label='Item images'
+											specifiedImages={(selectedItem as Item | undefined)?.itemImages}
+										/>
+									</Flex>
 								</VStack>
 							</form>
 						</FormProvider>

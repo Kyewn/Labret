@@ -24,9 +24,18 @@ export const getAllAdmins = async () => {
 	const users = querySnapshot.docs
 		.map((doc) => {
 			const user = doc.data() as User;
-			const authorAdmin = querySnapshot.docs
-				.find((doc) => doc.id === user.createdBy)
-				?.data() as User;
+			const authorAdmin =
+				user.createdBy == 'system'
+					? {
+							id: 'system',
+							name: 'system',
+							email: '',
+							status: '',
+							type: '',
+							createdAt: new Date(),
+							imageUrls: []
+					  }
+					: (querySnapshot.docs.find((doc) => doc.id === user.createdBy)?.data() as User);
 			return {
 				...(doc.data() as Omit<User, 'id' | 'createdAt'>),
 				id: doc.id,

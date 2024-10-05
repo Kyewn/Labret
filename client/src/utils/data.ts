@@ -13,17 +13,24 @@ export type AddItemFormValues = {
 	itemDescription?: string;
 	itemCategory?: string;
 };
-
+export type AddRecordFormValues = {
+	expectedReturnAt: string;
+	recordTitle: string;
+	recordNotes?: string;
+	rentingItems: RentingItem[];
+	rentImages: string[];
+};
 export type NewRentingItemFormValues = {
 	item?: Item;
 	rentQuantity?: string | number;
 };
 export type NewRentFormValues = {
-	recordTitle?: string;
+	recordTitle: string;
 	recordNotes?: string;
-	expectedReturnAt?: Date;
+	expectedReturnAt: Date;
 	isReadTnC?: boolean;
 };
+
 export type ReturnFormValues = {
 	returnLocation?: string;
 	returnNotes?: string;

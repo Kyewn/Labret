@@ -79,10 +79,10 @@ const dummyRecords: RentalRecord[] = [
 export const SelectRecord: React.FC<Props> = ({records}) => {
 	const {appState} = useAppContext();
 	const {handleCloseExistingPeerConnection} = appState;
-	const {goToNext, specificRecordState} = useScanContext() as ReturnType<
+	const {goToNext, targetRecordState} = useScanContext() as ReturnType<
 		typeof useInitialScanContext
 	>;
-	const [, setSpecificRecord] = specificRecordState;
+	const [, setTargetRecord] = targetRecordState;
 	const navigate = useNavigate();
 
 	const handleSubHeaderBack = () => {
@@ -91,7 +91,7 @@ export const SelectRecord: React.FC<Props> = ({records}) => {
 	};
 
 	const handleRecordClick = (selectedRecord: RentalRecord) => {
-		setSpecificRecord(selectedRecord);
+		setTargetRecord(selectedRecord);
 		goToNext?.();
 	};
 
