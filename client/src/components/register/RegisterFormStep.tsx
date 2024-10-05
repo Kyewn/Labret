@@ -1,16 +1,26 @@
-import {EditableField} from '@/components/ui/EditableField';
+import { EditableField } from '@/components/ui/EditableField';
 import ImageManager from '@/components/ui/ImageManager';
-import {createAdmin, createUser, editUser, userCollection} from '@/db/user';
-import {useAppContext} from '@/utils/context/AppContext';
-import {useInitialRegisterContext, useRegisterContext} from '@/utils/context/RegisterContext';
-import {AddUserFormValues, FormValues} from '@/utils/data';
-import {paths} from '@/utils/paths';
-import {convertBlobToBase64} from '@/utils/utils';
-import {Button, ButtonGroup, Flex, HStack, Spacer, Text, VStack, useToast} from '@chakra-ui/react';
-import {getDoc, getDocs} from 'firebase/firestore';
-import {useEffect} from 'react';
-import {UseFormRegister} from 'react-hook-form';
-import {useNavigate} from 'react-router-dom';
+import { createAdmin, createUser, editUser, userCollection } from '@/db/user';
+import { useAppContext } from '@/utils/context/AppContext';
+import { useInitialRegisterContext, useRegisterContext } from '@/utils/context/RegisterContext';
+import { AddUserFormValues, FormValues } from '@/utils/data';
+import { paths } from '@/utils/paths';
+import { convertBlobToBase64 } from '@/utils/utils';
+import {
+	Button,
+	ButtonGroup,
+	Center,
+	Flex,
+	HStack,
+	Spacer,
+	Text,
+	VStack,
+	useToast
+} from '@chakra-ui/react';
+import { getDoc, getDocs } from 'firebase/firestore';
+import { useEffect } from 'react';
+import { UseFormRegister } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
 type ImageInfo = {
 	image: {
@@ -56,8 +66,9 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 			throw UserAlreadyExistsError;
 		}
 
+		const currentAdmin = (appUser?.id as string) || 'system'; // "system" only used when creating system admin without any other admins
 		const user =
-			page == 'register' ? await createUser(data) : await createAdmin(data, appUser?.id as string);
+			page == 'register' ? await createUser(data) : await createAdmin(data, currentAdmin);
 		const userData = (await getDoc(user)).data() as AddUserFormValues;
 		// Convert images to base64 strings
 		const imageStrings = await Promise.all(
@@ -118,7 +129,7 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 				case 'UserAlreadyExists':
 					toast({
 						title: 'Error',
-						description: 'User already exists. Please try again.',
+						description: 'Admin already exists. Please try again.',
 						status: 'error',
 						duration: 5000,
 						isClosable: true
@@ -127,7 +138,7 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 				default:
 					toast({
 						title: 'Error',
-						description: 'Failed to create user. Please try again.',
+						description: 'Failed to create admin. Please try again.',
 						status: 'error',
 						duration: 5000,
 						isClosable: true
@@ -142,36 +153,41 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 				<VStack flex={1} w={'100%'}>
 					<form id='form' onSubmit={handleSubmit(onSubmit)} style={{flex: 1}}>
 						<VStack>
-							<EditableField
-								name={'name'}
-								label='Name'
-								value={name}
-								isEditing={true}
-								register={register as UseFormRegister<FormValues>}
-								errorMessage={errors.name?.message}
-								rules={{
-									required: 'Name is required',
-									pattern: {
-										value: /^[a-zA-Z\s]*$/,
-										message: 'Invalid name'
-									}
-								}}
-							/>
-							<EditableField
-								name={'email'}
-								label='Email'
-								value={email}
-								isEditing={true}
-								register={register as UseFormRegister<FormValues>}
-								errorMessage={errors.email?.message}
-								rules={{
-									required: 'Email is required',
-									pattern: {
-										value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-										message: 'Invalid email'
-									}
-								}}
-							/>
+							<Center>
+								<VStack>
+									<EditableField
+										name={'name'}
+										label='Name'
+										value={name}
+										isEditing={true}
+										register={register as UseFormRegister<FormValues>}
+										errorMessage={errors.name?.message}
+										rules={{
+											required: 'Name is required',
+											pattern: {
+												value: /^[a-zA-Z\s]*$/,
+												message: 'Invalid name'
+											}
+										}}
+									/>
+									<EditableField
+										name={'email'}
+										label='Email'
+										value={email}
+										isEditing={true}
+										register={register as UseFormRegister<FormValues>}
+										errorMessage={errors.email?.message}
+										rules={{
+											required: 'Email is required',
+											pattern: {
+												value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+												message: 'Invalid email'
+											}
+										}}
+									/>
+								</VStack>
+							</Center>
+
 							<VStack alignItems={'flex-start'} spacing={0}>
 								<Text fontWeight={700} fontSize={'sm'}>
 									Face images

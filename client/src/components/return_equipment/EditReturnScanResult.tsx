@@ -26,13 +26,13 @@ export const EditReturnScanResult: React.FC = () => {
 	const [newScanResult] = scanResultState;
 	const [imageProofs] = imageProofsState;
 	const oldImageProofs: EditImageProofValues[] =
-		newScanResult?.map((item) => ({
+		newScanResult.map((item) => ({
 			itemId: (item.item as Item).itemId,
 			imageProof: item.proofOfReturn as string
 		})) || [];
 
 	const renderItemResult = () =>
-		newScanResult?.map((rentingItem) => {
+		newScanResult.map((rentingItem) => {
 			const oldImageProofObj = oldImageProofs.find(
 				(proof) => proof.itemId === (rentingItem.item as Item).itemId
 			);
@@ -80,7 +80,7 @@ export const EditReturnScanResult: React.FC = () => {
 			</Flex>
 
 			<VStack overflowY={'auto'} flex={1} w={'100%'}>
-				{newScanResult?.length ? (
+				{newScanResult.length ? (
 					renderItemResult()
 				) : (
 					<Center>

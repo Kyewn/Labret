@@ -26,6 +26,7 @@
     "firebase": "^10.10.0",
     "flowbite-react": "^0.9.0",
     "framer-motion": "^11.1.7",
+    "imagekitio-react": "^4.2.0",
     "lucide-react": "^0.378.0",
     "react": "^18.2.0",
     "react-day-picker": "^8.10.1",
@@ -36,13 +37,15 @@
     "swr": "^2.2.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "tw-merge": "^0.0.1-alpha.3"
+    "tw-merge": "^0.0.1-alpha.3",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.8",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@types/react-helmet": "^6.1.11",
+    "@types/uuid": "^10.0.0",
     "@types/w3c-image-capture": "^1.0.10",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",

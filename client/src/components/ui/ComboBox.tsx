@@ -17,13 +17,14 @@ export type ComboBoxItemType = Record<string, unknown> | (string | undefined);
 
 type Props = Partial<Pick<UseFormReturn, 'setValue'>> & {
 	name: string;
-	initValue?: string;
-	value: string;
+	value: ComboBoxItemType;
+	initValue?: ComboBoxItemType;
 	placeholder?: string;
 	items?: ComboBoxItemType[];
 	itemIdKey?: string;
 	searchKey?: string;
 	handleChange?: (item: ComboBoxItemType) => void;
+	isClearEnabled?: boolean;
 	isCreateNewOnNoneEnabled?: boolean;
 };
 
@@ -36,6 +37,7 @@ export const ComboBox: React.FC<Props> = ({
 	searchKey,
 	itemIdKey,
 	isCreateNewOnNoneEnabled,
+	isClearEnabled,
 	handleChange,
 	setValue
 }) => {
@@ -43,19 +45,32 @@ export const ComboBox: React.FC<Props> = ({
 	const [visibleItems, setVisibleItems] = useState(items);
 
 	const handleReset = () => {
-		setSearchText('');
-		setValue?.(name, initValue as string);
-		handleChange?.(initValue as string);
+		if (initValue?.substring) {
+			// String type items
+			setSearchText('');
+			setValue?.(name, initValue as string);
+			handleChange?.(initValue as string);
+		} else {
+			// Record<string, unknown> type items
+			setSearchText('');
+			setValue?.(name, initValue);
+			handleChange?.(initValue);
+		}
 	};
 	const handleClear = () => {
-		setSearchText('');
-		setValue?.(name, undefined);
-		handleChange?.(undefined);
+		if (value?.substring) {
+			// String type items
+			setSearchText('');
+			setValue?.(name, undefined);
+			handleChange?.(undefined);
+		}
 	};
 
+	// Handle search bar
 	useEffect(() => {
 		if (searchText) {
-			if (items as string[]) {
+			if (items?.[0]?.substring) {
+				// string type items
 				setVisibleItems(
 					items?.filter((item) =>
 						(item as string).trim().toLowerCase().includes(searchText.trim().toLowerCase())
@@ -64,7 +79,7 @@ export const ComboBox: React.FC<Props> = ({
 				return;
 			}
 
-			// Record<string, unknown>[]
+			// Record<string, unknown> type items
 			searchKey &&
 				setVisibleItems(
 					items?.filter((item) =>
@@ -74,6 +89,8 @@ export const ComboBox: React.FC<Props> = ({
 							.includes(searchText.trim().toLowerCase())
 					)
 				);
+		} else {
+			setVisibleItems(items);
 		}
 	}, [searchText]);
 
@@ -85,14 +102,14 @@ export const ComboBox: React.FC<Props> = ({
 		return visibleItems?.map((item, i) => {
 			return (
 				<MenuItem
-					// key={(itemIdKey && ((item as Record<string, unknown>)?.[itemIdKey] as string)) || i}
-					key={i}
+					// key={i}
+					key={(itemIdKey && ((item as Record<string, unknown>)?.[itemIdKey] as string)) || i}
 					onClick={() => {
 						setValue?.(name, visibleItems[i]);
 						handleChange?.(visibleItems[i]);
 					}}
 				>
-					{(itemIdKey && ((item as Record<string, unknown>)?.[itemIdKey] as string)) ||
+					{(searchKey && ((item as Record<string, unknown>)?.[searchKey] as string)) ||
 						(item as string)}
 				</MenuItem>
 			);
@@ -104,24 +121,34 @@ export const ComboBox: React.FC<Props> = ({
 			{({isOpen}) => {
 				if (!isOpen && searchText) {
 					// Handle selection on popper close
-					const existingItemLabel = items?.find(
-						(item) =>
-							(searchKey &&
+					const existingItemLabel = items?.find((item) => {
+						if (item?.substring) {
+							// string type items
+							return (item as string).trim().toLowerCase() === searchText.trim().toLowerCase();
+						} else {
+							// Record<string, unknown> type
+							return (
+								searchKey &&
 								((item as Record<string, unknown>)?.[searchKey] as string).trim().toLowerCase() ===
-									searchText.trim().toLowerCase()) ||
-							(item as string).trim().toLowerCase() === searchText.trim().toLowerCase()
-					);
+									searchText.trim().toLowerCase()
+							);
+						}
+					});
 					if (existingItemLabel) {
 						setValue?.(name, existingItemLabel);
-						// handleChange?.(existingItemLabel);
+						handleChange?.(existingItemLabel);
 					}
 					setSearchText('');
 				}
 
+				const parsedValue = value?.substring
+					? (value as string | undefined)
+					: ((value as Record<string, unknown>)?.[searchKey as string] as string);
+
 				return (
 					<>
 						<MenuButton as={Button} rightIcon={<ChevronDown />}>
-							{value}
+							{parsedValue?.length ? parsedValue : placeholder}
 						</MenuButton>
 						<MenuList p={2}>
 							<HStack mb={2}>
@@ -136,9 +163,11 @@ export const ComboBox: React.FC<Props> = ({
 									}}
 									placeholder={placeholder || 'Search...'}
 								/>
-								<Button variant={'outline'} onClick={handleClear}>
-									Clear
-								</Button>
+								{isClearEnabled && (
+									<Button variant={'outline'} onClick={handleClear}>
+										Clear
+									</Button>
+								)}
 								{initValue && (
 									<Button variant={'outline'} onClick={handleReset}>
 										Reset

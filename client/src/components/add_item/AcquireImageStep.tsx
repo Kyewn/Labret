@@ -33,7 +33,6 @@ const AcquireImageStep: React.FC = () => {
 	const fileButtonRef = useRef() as React.MutableRefObject<HTMLInputElement>;
 
 	const handleImageCapture = () => {
-		console.log('ads');
 		const imageCapture = new ImageCapture(mediaStreams![0].getVideoTracks()[0]);
 		imageCapture.takePhoto().then((blob) => {
 			setImages([...images, blob]);
@@ -47,6 +46,16 @@ const AcquireImageStep: React.FC = () => {
 		// FIXME: Remove duplicates that are already in the images array (currently cant find any way)
 		setImages((prev) => [...prev, ...blobs]);
 		appDispatch({type: 'SET_PAGE_LOADING', payload: false});
+		// download images
+		// const a = document.createElement('a');
+		// for (const img of images) {
+		// 	const imgURL = URL.createObjectURL(img);
+		// 	a.href = imgURL;
+		// 	a.download = 'image';
+		// 	a.click();
+		// 	URL.revokeObjectURL(imgURL);
+		// }
+		// document.removeChild(a);
 	};
 
 	useEffect(() => {
@@ -116,7 +125,7 @@ const AcquireImageStep: React.FC = () => {
 					</VStack>
 					<Flex w={'100%'} justifyContent={'flex-end'}>
 						<Button
-							isDisabled={images.length < 5}
+							isDisabled={images.length < 10}
 							onClick={() => {
 								handleCloseNormalCamera();
 								goToNext();

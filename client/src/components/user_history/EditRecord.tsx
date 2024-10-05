@@ -34,7 +34,7 @@ export const EditRecord: React.FC = () => {
 	const scanContext = useInitialScanContext() as ReturnType<typeof useInitialScanContext>;
 	const {
 		selectedItemState,
-		specificRecordState,
+		targetRecordState,
 		scanResultState,
 		handleAddConfirm,
 		handleEditConfirm,
@@ -51,7 +51,7 @@ export const EditRecord: React.FC = () => {
 	const {onOpen: onConfirmBackOpen} = confirmDialog;
 	const [selectedItem, setSelectedItem] = selectedItemState;
 	const [scanResult, setScanResult] = scanResultState;
-	const [specificRecord, setSpecificRecord] = specificRecordState;
+	const [targetRecord, setTargetRecord] = targetRecordState;
 	const {
 		recordTitle: oldRecordTitle,
 		notes: oldNotes,
@@ -59,7 +59,7 @@ export const EditRecord: React.FC = () => {
 		expectedReturnAt: oldExpectedReturnAt,
 		returnLocation: oldReturnLocation,
 		rentingItems: oldRentingItems
-	} = specificRecord || {};
+	} = targetRecord || {};
 	const [isDirtyForm, setIsDirtyForm] = dirtyFormState;
 
 	const {
@@ -130,7 +130,7 @@ export const EditRecord: React.FC = () => {
 	useEffect(() => {
 		// Set selected record in scan context on init
 		setScanResult(selectedRecord.rentingItems);
-		setSpecificRecord(selectedRecord);
+		setTargetRecord(selectedRecord);
 	}, []);
 
 	useEffect(() => {
@@ -139,7 +139,7 @@ export const EditRecord: React.FC = () => {
 		setValue('recordNotes', oldNotes);
 		setValue('expectedReturnAt', oldExpectedReturnAt as Date);
 		setValue('returnLocation', oldReturnLocation);
-	}, [specificRecord]);
+	}, [targetRecord]);
 
 	// Set dirty form on form change
 	useEffect(() => {
@@ -263,8 +263,8 @@ export const EditRecord: React.FC = () => {
 										isEditing
 									/>
 
-									{(specificRecord?.recordStatus == 'returning' ||
-										specificRecord?.recordStatus == 'return_reverifying') && (
+									{(targetRecord?.recordStatus == 'returning' ||
+										targetRecord?.recordStatus == 'return_reverifying') && (
 										<EditableField
 											register={register as UseFormRegister<FormValues>}
 											label={'Return location'}

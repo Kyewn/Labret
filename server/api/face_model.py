@@ -25,12 +25,7 @@ testPath = pathlib.Path(os.path.join(downloadPath, "test"))
 @face_model.route('/train-face-lts-model')
 def train_face_lts_model():
     # Download face training dataset
-    try:
-        download_face_model_dataset_from_roboflow() 
-    except ValueError:
-        return jsonify({
-            'message': 'TrainTestSplitError',
-        })
+    download_face_model_dataset_from_roboflow() 
 
     # Train model   
     pathlib.Path(f"{serverPath}/train/").mkdir(parents=True, exist_ok=True)
@@ -45,6 +40,9 @@ def train_face_lts_model():
                 hsv_h=0.5,
                 seed=42
                 )
+    
+    # Save best model
+    shutil.copy2(f"{serverPath.as_posix()}/train/face/weights/best.pt", f"{serverPath.as_posix()}/train/bestFace.pt")
 
     return jsonify({
         'message': 'Training successful',
@@ -53,11 +51,15 @@ def train_face_lts_model():
 # Download face training dataset
 def download_face_model_dataset_from_roboflow():
     # Init local folders
-    pathlib.Path('./images').mkdir(parents=True, exist_ok=True)
-    pathlib.Path('./images/faces').mkdir(parents=True, exist_ok=True)
+    downloadPath.mkdir(parents=True, exist_ok=True)
    
     # Get dataset from roboflow with lts version no.
-    ltsVersion = rfLabretFaceProject.get_version_information()[0].get("id")[-1]
+    try:
+        ltsVersion = rfLabretFaceProject.get_version_information()[0].get("id")[-1]
+    except IndexError:
+         return jsonify({
+            'message': 'VersionNotFoundError',
+        })
     rfLTSVersionDataset = rfLabretFaceProject.version(ltsVersion)
 
     # Remove prev versions from set path
@@ -67,7 +69,9 @@ def download_face_model_dataset_from_roboflow():
     try:
         splitDataset()
     except ValueError:
-        return
+        return jsonify({
+            'message': 'SplitDatasetError',
+        })
 
 
 # Split dataset into train and test
@@ -95,10 +99,7 @@ def splitDataset():
             ppedImage = imageppFace(cvImage)
             cv.imwrite(filePath, ppedImage)
 
-    try:
-        _, testX, _, testY = train_test_split(images, labels, test_size=0.2, random_state=42, stratify=labels)
-    except ValueError:
-        return
+    _, testX, _, testY = train_test_split(images, labels, test_size=0.2, random_state=42, stratify=labels)
 
     for image, label in zip(testX, testY):
         shutil.move(trainPath / label / image, testPath / label / image)

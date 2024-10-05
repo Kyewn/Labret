@@ -19,7 +19,18 @@ import {
 	useDisclosure,
 	useToast
 } from '@chakra-ui/react';
-import {Combine, Moon, PackageCheck, PackagePlus, ScanFace, Sun, User2} from 'lucide-react';
+import {
+	BadgeCheck,
+	Combine,
+	FlaskConical,
+	Moon,
+	PackageCheck,
+	PackagePlus,
+	ScanFace,
+	Skull,
+	Sun,
+	User2
+} from 'lucide-react';
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 
@@ -37,16 +48,19 @@ export const UserMenu = () => {
 
 	const [noOfUnpaidDebts, setNoOfUnpaidDebts] = useState<number>(0);
 
-	const getNoOfUnpaidDebts = async () => {
-		// FIXME: enable
-		// const records = await getAllRecords();
-		const records = dummyRecords;
+	const getNoOfUnpaidDebts = (records: RentalRecord[]) => {
 		const unpaidRecordsLength = records.filter(
 			(record) =>
 				(record.renter as User).id == user?.id &&
 				(record.recordStatus === 'rent_rejected' || record.recordStatus === 'return_rejected')
 		).length;
 		setNoOfUnpaidDebts(unpaidRecordsLength);
+	};
+
+	const checkIfHasReturnableRecords = (records: RentalRecord[]) => {
+		// TODO get user records
+		// TODO return false if no records to return
+		setHasUserRecords(true);
 	};
 
 	const getUserTypeColor = (type: string) => {
@@ -66,19 +80,16 @@ export const UserMenu = () => {
 		}
 	};
 
-	const checkIfHasUserRecords: () => boolean = () => {
-		// TODO get user records
-		// TODO return false if no records to return
-		return true;
-	};
-
 	useEffect(() => {
-		const checkUserRecords = async () => {
-			const mHasUserRecords = await checkIfHasUserRecords();
-			setHasUserRecords(mHasUserRecords);
+		const handleInit = async () => {
+			// FIXME: enable
+			// const records = await getAllRecords();
+			const records = dummyRecords;
+
+			checkIfHasReturnableRecords(records);
+			getNoOfUnpaidDebts(records);
 		};
-		checkUserRecords();
-		getNoOfUnpaidDebts();
+		handleInit();
 	}, []);
 
 	const handleRentClick = () => {
@@ -112,6 +123,19 @@ export const UserMenu = () => {
 		// - Check user not having 3 debt records
 
 		handleRentClick();
+	};
+
+	const handleVerificationClick = () => {
+		handleCloseExistingPeerConnection();
+		navigate(paths.sub.verifications);
+	};
+	const handleManageItemsClick = () => {
+		handleCloseExistingPeerConnection();
+		navigate(paths.sub.items);
+	};
+	const handleSettleDebtsClick = () => {
+		handleCloseExistingPeerConnection();
+		navigate(paths.sub.debts);
 	};
 
 	const handleLogout = () => {
@@ -156,81 +180,93 @@ export const UserMenu = () => {
 					</Flex>
 
 					<HStack justifyContent={'flex-start'} paddingY={5} width={'100%'}>
-						{/* TODO If user type */}
-						<LargeIconButton
-							icon={PackagePlus}
-							iconW={10}
-							iconH={10}
-							onClick={handleVerifyAddRental}
-							label='Add Rental'
-							variant='solid'
-						/>
-						<LargeIconButton
-							icon={PackageCheck}
-							iconW={10}
-							iconH={10}
-							onClick={handleReturnClick}
-							label='Return Equipment'
-							variant='outline'
-						/>
-						<LargeIconButton
-							icon={Combine}
-							iconW={10}
-							iconH={10}
-							onClick={handleRentalHistoryClick}
-							label='User History'
-							variant='outline'
-						/>
-						{/* TODO If admin type  */}
-						{/* <LargeIconButton
-						icon={BadgeCheck}
-						iconW={10}
-						iconH={10}
-						onClick={() => {}}
-						label='Manage Verifications'
-						variant='solid'
-					/>
-					<LargeIconButton
-						icon={FlaskConical}
-						iconW={10}
-						iconH={10}
-						onClick={() => {}}
-						label='Manage Items'
-						variant='outline'
-					/>
-					<LargeIconButton
-						icon={Skull}
-						iconW={10}
-						iconH={10}
-						onClick={() => {}}
-						label='Clear Debts'
-						variant='outline'
-					/> */}
+						{
+							/* TODO If user type */
+							user?.type === 'user' && (
+								<>
+									<LargeIconButton
+										icon={PackagePlus}
+										iconW={10}
+										iconH={10}
+										onClick={handleVerifyAddRental}
+										label='Add Rental'
+										variant='solid'
+									/>
+									<LargeIconButton
+										icon={PackageCheck}
+										iconW={10}
+										iconH={10}
+										onClick={handleReturnClick}
+										label='Return Equipment'
+										variant='outline'
+									/>
+									<LargeIconButton
+										icon={Combine}
+										iconW={10}
+										iconH={10}
+										onClick={handleRentalHistoryClick}
+										label='User History'
+										variant='outline'
+									/>
+								</>
+							)
+						}
+						{
+							/* admin type  */
+							user?.type === 'admin' && (
+								<>
+									<LargeIconButton
+										icon={BadgeCheck}
+										iconW={10}
+										iconH={10}
+										onClick={handleVerificationClick}
+										label='Verifications'
+										variant='solid'
+									/>
+									<LargeIconButton
+										icon={FlaskConical}
+										iconW={10}
+										iconH={10}
+										onClick={handleManageItemsClick}
+										label='Manage Items'
+										variant='outline'
+									/>
+									<LargeIconButton
+										icon={Skull}
+										iconW={10}
+										iconH={10}
+										onClick={handleSettleDebtsClick}
+										label='Settle Debts'
+										variant='outline'
+									/>
+								</>
+							)
+						}
 					</HStack>
-
-					{/* TODO If user type */}
-					<Box position={'relative'}>
-						<Button variant={'outline'} onClick={onDebtOpen}>
-							Debts
-						</Button>
-						{!!noOfUnpaidDebts && (
-							<Tag
-								position={'absolute'}
-								size={'sm'}
-								outline={'none'}
-								border={'none'}
-								backgroundColor='lrRed.200'
-								paddingY={1}
-								borderRadius={'50%'}
-								right={'-0.5rem'}
-								top={'-0.5rem'}
-							>
-								<TagLabel color='whiteDarkMode' fontWeight={700}>
-									{noOfUnpaidDebts}
-								</TagLabel>
-							</Tag>
-						)}
-					</Box>
+					{user?.type === 'user' && (
+						<Box position={'relative'}>
+							<Button variant={'outline'} onClick={onDebtOpen}>
+								Debts
+							</Button>
+							{!!noOfUnpaidDebts && (
+								<Tag
+									position={'absolute'}
+									size={'sm'}
+									outline={'none'}
+									border={'none'}
+									backgroundColor='lrRed.200'
+									paddingY={1}
+									borderRadius={'50%'}
+									right={'-0.5rem'}
+									top={'-0.5rem'}
+								>
+									<TagLabel color='whiteDarkMode' fontWeight={700}>
+										{noOfUnpaidDebts}
+									</TagLabel>
+								</Tag>
+							)}
+						</Box>
+					)}
 				</VStack>
 			</Flex>
 		</>

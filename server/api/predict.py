@@ -53,14 +53,13 @@ def predict_face_api():
         'message': 'Prediction failed, did not give any results',
     })
 
-@predict.route('/get-predicted-face')
-def get_predicted_face():
-    filename = predictDirPath / "detectedFace.png"
-    return send_file(filename, mimetype='image/png')
+# @predict.route('/get-predicted-face')
+# def get_predicted_face_image():
+#     filename = predictDirPath / "detectedFace.png"
+#     return send_file(filename, mimetype='image/png')
 
 def predict_faces(cvImages):
-    # modelPath = f"{serverPath}/train/face/weights/best.pt"
-    modelPath = serverPath / "train" / "face" / "weights" / "best.pt"
+    modelPath = serverPath / "train" / "bestFace.pt"
     # Return null if no model
     if (not modelPath.exists()):
         return None
@@ -77,10 +76,11 @@ def predict_faces(cvImages):
 
     # Predict
     for ppImage in ppImages:
-        ppImageCompat = cv.cvtColor(ppImage, cv.COLOR_GRAY2BGR)
+        # ppImageCompat = cv.cvtColor(ppImage, cv.COLOR_GRAY2BGR)
 
         parsedResults = []
-        results = model.predict(ppImageCompat, imgsz=640, device=0)
+        # results = model.predict(ppImageCompat, imgsz=640, device=0)
+        results = model.predict(ppImage, imgsz=640, device=0)
         for result in results:
             # Filter out low confidence predictions
             if (result.probs.top1conf >= face_conf_threshold):
@@ -109,9 +109,84 @@ def imageppFace(cvImage):
     # cv.imshow("image_edge", image_edge)
     # Get strong edges
     _, image_thresh = cv.threshold(image_edge, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-    
 
-    return image_thresh
+    image_final = cv.cvtColor(image_thresh, cv.COLOR_GRAY2BGR)
+    return image_final
+
+@predict.route('/predict-item', methods=['POST'])
+def predict_item_api():
+    data = request.get_json()
+
+    # Supply list in request for future multi image prediction
+    images = list(data["images"])
+    cvImages = [convertBase64ToCvImage(image) for image in images]
+    
+    # Predict
+     # Structure: {
+    #     "label": count,
+    # }
+    item_list = predict_items(cvImages)
+
+    # If any results
+    if (len(item_list.keys()) > 0):
+        return jsonify({
+            'data': item_list,
+            'message': 'Prediction successful',
+        })
+        
+    # no results - Failed
+    return jsonify({
+        'message': 'Prediction failed, did not give any results',
+    })
+
+def predict_items(cvImages):
+    modelPath = serverPath / "train" / "bestItem.pt"
+    # Return null if no model
+    if (not modelPath.exists()):
+        return None
+
+    ppImages = []
+
+    # Load model
+    model = YOLO(modelPath)
+    for cvImage in cvImages:
+        cvImage = cv.resize(cvImage, (640, 640))
+        cvImage = imageppItem(cvImage)
+        ppImages.append(cvImage)    
+    
+    # Predict
+    parsed_item_list = {}
+    results = model.predict(ppImages, imgsz=640, device=0, conf=0.3)
+    for (i, result) in enumerate(results):
+        names = result.names
+        raw_item_list = result.boxes.cpu().data.numpy()
+        plotted_img = result.plot(line_width=1, font_size=1)
+        cv.imwrite("C:/Users/brian/Desktop/plot.png", plotted_img)
+
+        for item in raw_item_list:
+            detectedItemId = names[item[-1]]
+            # if item initially detected
+            if detectedItemId not in parsed_item_list.keys():
+                parsed_item_list[detectedItemId] = {
+                    "count": 1,
+                    "proof": i
+                }
+            else:
+            # if item already detected
+                parsed_item_list[detectedItemId].update({"count": parsed_item_list[detectedItemId]["count"] + 1})
+
+    
+    return parsed_item_list
+
+def imageppItem(cvImage):
+    # Item preprocessing
+    # image_gray = cv.cvtColor(cvImage, cv.COLOR_BGR2GRAY)
+    # image_norm = cv.normalize(image_gray, None, 0, 255, cv.NORM_MINMAX)
+    # image_bilateral = cv.bilateralFilter(cvImage, 15, 10, 50)
+    # image_final = cv.cvtColor(image_bilateral, cv.COLOR_GRAY2BGR)
+    image_bilateral = cv.bilateralFilter(cvImage, 15, 10, 50)
+    image_final = image_bilateral
+    return image_final
 
 def convertBase64ToCvImage(base64Image):
     bImage = base64.b64decode(base64Image)

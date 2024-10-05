@@ -33,82 +33,15 @@ export function RentScanResult() {
 	const location = useLocation();
 	const scanContext = useInitialScanContext() as ReturnType<typeof useInitialScanContext>;
 	const {user} = appState;
-	const {images, scanResult} = location.state as LocationState;
-	const {rentSteps, activeStep, scanResultState} = scanContext;
+	const {scanResultState, imagesState, rentSteps, activeStep} = scanContext;
+	const {images: images_temp, scanResult} = location.state as LocationState;
+
+	const [images, setImages] = imagesState;
 	const [, setNewScanResult] = scanResultState;
-	const dummyItems: RentingItem[] = [
-		{
-			item: {
-				itemId: 'ABC123',
-				itemName: 'Beaker',
-				itemImages: [],
-				itemQuantity: 123,
-				createdAt: new Date(),
-				createdBy: {
-					id: 'delpttcjBgZhHaPS5QuL',
-					name: 'delasd',
-					email: 'delEmail',
-					status: 'pending',
-					type: 'admin',
-					createdAt: new Date('2023-2-1'),
-					imageUrls: [
-						'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-					]
-				},
-				itemStatus: 'pending'
-			},
-			rentQuantity: 2
-		},
-		{
-			item: {
-				itemId: 'AC123',
-				itemName: 'Balls',
-				itemImages: [],
-				itemQuantity: 1223,
-				createdAt: new Date(),
-				createdBy: {
-					id: 'delpttcjBgZhHaPS5QuL',
-					name: 'delasd',
-					email: 'delEmail',
-					status: 'pending',
-					type: 'admin',
-					createdAt: new Date('2023-2-1'),
-					imageUrls: [
-						'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-					]
-				},
-				itemStatus: 'pending'
-			},
-			rentQuantity: 5
-		},
-		{
-			item: {
-				itemId: 'A1333',
-				itemName: 'Cups',
-				itemImages: [],
-				itemQuantity: 12,
-				createdAt: new Date(),
-				createdBy: {
-					id: 'delpttcjBgZhHaPS5QuL',
-					name: 'delasd',
-					email: 'delEmail',
-					status: 'pending',
-					type: 'admin',
-					createdAt: new Date('2023-2-1'),
-					imageUrls: [
-						'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-					]
-				},
-				itemStatus: 'pending'
-			},
-			rentQuantity: 3
-		}
-	];
 
 	useEffect(() => {
-		// FIXME:
-		// setNewScanResult(scanResult);
-		setNewScanResult(dummyItems);
+		setImages(images_temp);
+		setNewScanResult(scanResult);
 	}, []);
 
 	return (

@@ -6,11 +6,13 @@ import {RegisterOptions, UseFormReturn} from 'react-hook-form';
 type Props = Partial<Pick<UseFormReturn<FormValues>, 'setValue'>> & {
 	name: FormKeys;
 	label: string;
-	initValue?: string;
-	value?: string;
-	placeholder: string;
 	items?: ComboBoxItemType[];
-	objItems?: Record<string, unknown>[];
+	initValue?: ComboBoxItemType;
+	value?: ComboBoxItemType;
+	placeholder?: string;
+	searchKey?: string;
+	itemIdKey?: string;
+	isClearEnabled?: boolean;
 	isCreateNewOnNoneEnabled?: boolean;
 	isEditing?: boolean;
 	errorMessage?: string;
@@ -25,8 +27,11 @@ export const EditableComboBox: React.FC<Props> = ({
 	value,
 	placeholder,
 	items,
+	searchKey,
+	itemIdKey,
 	isEditing,
 	isCreateNewOnNoneEnabled,
+	isClearEnabled,
 	rules,
 	errorMessage,
 	handleChange,
@@ -40,16 +45,24 @@ export const EditableComboBox: React.FC<Props> = ({
 			{isEditing ? (
 				<ComboBox
 					name={name}
-					isCreateNewOnNoneEnabled={isCreateNewOnNoneEnabled}
 					items={items}
+					value={value}
 					initValue={initValue}
-					value={value || placeholder}
-					placeholder='Search or add new...'
+					searchKey={searchKey}
+					itemIdKey={itemIdKey}
+					placeholder={placeholder || 'Search or add new...'}
+					isCreateNewOnNoneEnabled={isCreateNewOnNoneEnabled}
+					isClearEnabled={isClearEnabled}
 					handleChange={handleChange}
 					setValue={setValue}
 				/>
 			) : (
-				<Text>{value || '--'}</Text>
+				<Text>
+					{((value?.substring
+						? value // String type value
+						: (value as Record<string, unknown>)?.[searchKey as string]) as string) || // Object type value
+						'--'}
+				</Text>
 			)}
 			{errorMessage && (
 				<Text fontSize={'xs'} mt={1} color={'lrRed.300'}>

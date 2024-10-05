@@ -115,7 +115,7 @@ const AcquireImageStep: React.FC = () => {
 					</VStack>
 					<Flex w={'100%'} justifyContent={'flex-end'}>
 						<Button
-							isDisabled={images.length < 5}
+							isDisabled={images.length < 10}
 							onClick={() => {
 								handleCloseNormalCamera();
 								goToNext();

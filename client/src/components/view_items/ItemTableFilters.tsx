@@ -37,8 +37,6 @@ export const ItemTableFilters: React.FC = () => {
 		[filters]
 	);
 
-	console.log(filters);
-
 	const onClear = () => {
 		table?.resetGlobalFilter();
 		table?.setColumnFilters(initialFilterValue);

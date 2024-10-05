@@ -35,9 +35,9 @@ export function ReturnScanResult() {
 	const scanContext = useInitialScanContext() as ReturnType<typeof useInitialScanContext>;
 	const {user} = appState;
 	const {images, scanResult, targetRecord} = location.state as LocationState;
-	const {returnSteps, activeStep, scanResultState, specificRecordState} = scanContext;
+	const {returnSteps, activeStep, scanResultState, targetRecordState} = scanContext;
 	const [, setNewScanResult] = scanResultState;
-	const [, setSpecificRecord] = specificRecordState;
+	const [, setTargetRecord] = targetRecordState;
 	const dummyItems: RentingItem[] = [
 		{
 			item: {
@@ -111,7 +111,7 @@ export function ReturnScanResult() {
 		// FIXME:
 		// setNewScanResult(scanResult);
 		setNewScanResult(dummyItems);
-		setSpecificRecord(targetRecord);
+		setTargetRecord(targetRecord);
 		// TODO
 		// setImageProofs(imageUrls from scanResult)
 	}, []);

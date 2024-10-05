@@ -1,3 +1,4 @@
+import {getAllItems} from '@/db/item';
 import {AddItemFormValues, Item} from '@/utils/data';
 import {useSteps} from '@chakra-ui/react';
 import {createContext, useContext, useEffect, useState} from 'react';
@@ -29,8 +30,7 @@ export const useInitialAddItemContext = () => {
 	};
 
 	const getInitData = async () => {
-		// const items = await getAllItems();
-		const items = dummyItems;
+		const items = await getAllItems();
 		const categories = items
 			.map((item) => item.itemCategory)
 			.filter((item, i, arr) => item && arr.indexOf(item) === i) as string[];
@@ -59,50 +59,6 @@ export const useInitialAddItemContext = () => {
 		handleSubmit
 	};
 };
-
-const dummyItems: Item[] = [
-	{
-		itemId: 'ABC123',
-		itemName: 'Beaker',
-		itemImages: [],
-		itemQuantity: 123,
-		remainingQuantity: 12,
-		itemStatus: 'pending',
-		// itemCategory: 'Small',
-		createdAt: new Date('2023-2-1'),
-		createdBy: {
-			id: 'delpttcjBgZhHaPS5QuL',
-			name: 'del',
-			email: 'delEmail',
-			status: 'pending',
-			type: 'admin',
-			createdAt: new Date('2023-2-1'),
-			imageUrls: [
-				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-			]
-		}
-	},
-	{
-		itemId: 'ABC1234',
-		itemName: 'Airhorn',
-		itemImages: [],
-		itemQuantity: 123,
-		remainingQuantity: 100,
-		itemStatus: 'pending',
-		createdAt: new Date('2023-2-1'),
-		createdBy: {
-			id: 'delpttcjBgZhHaPS5QuL',
-			name: 'delasd',
-			email: 'delEmail',
-			status: 'pending',
-			type: 'admin',
-			createdAt: new Date('2023-2-1'),
-			imageUrls: [
-				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-			]
-		}
-	}
-];
 
 export const AddItemContext = createContext<
 	ReturnType<typeof useInitialAddItemContext> | undefined

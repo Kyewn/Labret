@@ -1,31 +1,30 @@
 import {VisionScanner} from '@/components/rent_equipment/VisionScanner';
 import {Camera} from '@/components/ui/Camera/Camera';
-import {useAppContext} from '@/utils/context/AppContext';
 import {ScanContext, useInitialScanContext} from '@/utils/context/ScanContext';
 import {paths} from '@/utils/paths';
 import {Box, Flex} from '@chakra-ui/react';
+import {useEffect} from 'react';
 import {Helmet} from 'react-helmet-async';
 import {useNavigate} from 'react-router-dom';
 
 export function Rent() {
-	const {appDispatch} = useAppContext();
 	const initialScanContext = useInitialScanContext();
-	const {imagesState} = initialScanContext;
+	const {readyToRedirectState, imagesState, scanResultState, handleScan} = initialScanContext;
+	const [readyToRedirect] = readyToRedirectState;
+	const [images] = imagesState;
+	const [scanResult] = scanResultState;
 	const navigate = useNavigate();
 
-	const [images] = imagesState;
-
-	const handleScan = () => {
-		appDispatch({type: 'SET_PAGE_LOADING', payload: true});
-		setTimeout(() => {
+	useEffect(() => {
+		if (readyToRedirect) {
 			navigate(paths.sub.rentResult, {
 				state: {
-					images
+					images,
+					scanResult
 				}
 			});
-			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
-		}, 5000);
-	};
+		}
+	}, [readyToRedirect]);
 
 	return (
 		<>
@@ -37,7 +36,7 @@ export function Rent() {
 			</Box>
 			<ScanContext.Provider value={initialScanContext}>
 				<Flex flexDirection={'column'} flex={0.4} p={6}>
-					<VisionScanner backLabel='Add Rent' handleScan={handleScan} />
+					<VisionScanner backLabel='Add Rent' handleScan={() => handleScan('rent')} />
 				</Flex>
 			</ScanContext.Provider>
 		</>

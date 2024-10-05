@@ -73,3 +73,28 @@ export const predictFaces = async (faceBlob: Blob[]) => {
 
 	return parsedData;
 };
+
+export const predictItems = async (itemBlobs: Blob[]) => {
+	const itemBase64s = await Promise.all(
+		itemBlobs.map(async (blob) => await convertBlobToBase64(blob))
+	);
+	const predictItemApiUrl = 'http://localhost:8000/predict-item';
+
+	const res = await fetch(predictItemApiUrl, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Access-Control-Allow-Origin': '*'
+		},
+		body: JSON.stringify({
+			images: itemBase64s
+		})
+	});
+	const resJson = await res.json();
+	const parsedJson = JSON.parse(
+		JSON.stringify(resJson).replace(/nan/gi, 'null').replace(/None/g, 'null')
+	);
+	const parsedData = parsedJson.data;
+
+	return parsedData;
+};

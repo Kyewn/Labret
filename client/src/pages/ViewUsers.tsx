@@ -73,21 +73,21 @@ export function ViewUsers() {
 	const handleTrainModel = async () => {
 		try {
 			appDispatch({
-				type: 'SET_PAGE_LOADING_LABEL',
-				payload: 'Downloading and training new images. This could take awhile.'
+				type: 'SET_PAGE_LOADING_LABEL_TYPE',
+				payload: 'training'
 			});
 			appDispatch({type: 'SET_PAGE_LOADING', payload: true});
 			await fetch('http://localhost:8000/train-face-lts-model');
 			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 			appDispatch({
-				type: 'SET_PAGE_LOADING_LABEL',
-				payload: 'Loading'
+				type: 'SET_PAGE_LOADING_LABEL_TYPE',
+				payload: 'default'
 			});
 		} catch {
 			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 			appDispatch({
-				type: 'SET_PAGE_LOADING_LABEL',
-				payload: 'Loading'
+				type: 'SET_PAGE_LOADING_LABEL_TYPE',
+				payload: 'default'
 			});
 			toast({
 				title: 'Training interrupted',

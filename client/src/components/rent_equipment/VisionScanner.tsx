@@ -3,6 +3,7 @@ import {useAppContext} from '@/utils/context/AppContext';
 import {useInitialScanContext, useScanContext} from '@/utils/context/ScanContext';
 import {
 	Button,
+	ButtonGroup,
 	Center,
 	CircularProgress,
 	Flex,
@@ -14,6 +15,7 @@ import {
 	VStack
 } from '@chakra-ui/react';
 import {ArrowLeft} from 'lucide-react';
+import {useRef} from 'react';
 import {useNavigate} from 'react-router-dom';
 
 type Props = {
@@ -23,11 +25,14 @@ type Props = {
 };
 
 export const VisionScanner: React.FC<Props> = ({backLabel, title, handleScan}) => {
-	const {appState} = useAppContext();
+	const {appState, appDispatch} = useAppContext();
 	const {pageLoading, mediaStreams, handleCloseExistingPeerConnection} = appState;
 	const navigate = useNavigate();
 	const scanContext = useScanContext() as ReturnType<typeof useInitialScanContext>;
 	const {imagesState, activeStep, goToPrevious} = scanContext;
+	const [images, setImages] = imagesState;
+	const hasImages = !!images.length;
+	const fileButtonRef = useRef() as React.MutableRefObject<HTMLInputElement>;
 
 	const handleSubHeaderBack = () => {
 		if (activeStep == 1) {
@@ -38,8 +43,14 @@ export const VisionScanner: React.FC<Props> = ({backLabel, title, handleScan}) =
 		navigate(-1);
 	};
 
-	const [images, setImages] = imagesState;
-	const hasImages = !!images.length;
+	const handleUploadImages = async (files: File[]) => {
+		appDispatch({type: 'SET_PAGE_LOADING', payload: true});
+		const blobs = files.map((file) => new Blob([file], {type: file.type}));
+
+		// FIXME: Remove duplicates that are already in the images array (currently cant find any way)
+		setImages((prev) => [...prev, ...blobs]);
+		appDispatch({type: 'SET_PAGE_LOADING', payload: false});
+	};
 
 	const handleImageCapture = () => {
 		const imageCapture = new ImageCapture(mediaStreams![0].getVideoTracks()[0]);
@@ -72,6 +83,7 @@ export const VisionScanner: React.FC<Props> = ({backLabel, title, handleScan}) =
 				spacing={5}
 			>
 				<CircularProgress
+					paddingY={5}
 					display={'flex'}
 					justifyContent={'center'}
 					isIndeterminate
@@ -79,15 +91,30 @@ export const VisionScanner: React.FC<Props> = ({backLabel, title, handleScan}) =
 					trackColor='lrBrown.400'
 				/>
 				<Text fontWeight={'700'} color={'lrBrown.700'} textAlign={'center'}>
-					Place your equipment in front of the camera and press the button to start scanning.
+					Place your equipment in front of the camera and make sure they are visible. Press the
+					button to start scanning.
 				</Text>
 				<Text fontWeight={'700'} color={'lrBrown.700'} textAlign={'center'}>
 					Take multiple photos if there are too many equipment to fit into the screen.
 				</Text>
 				<Center>
-					<Button variant={'outline'} onClick={handleImageCapture}>
-						Take photo
-					</Button>
+					<ButtonGroup>
+						<Button onClick={handleImageCapture}>Take photo</Button>
+						<Button variant={'outline'} onClick={() => fileButtonRef.current.click()}>
+							Upload photos
+						</Button>
+						<input
+							style={{display: 'none'}}
+							ref={fileButtonRef}
+							type={'file'}
+							multiple
+							accept={'image/*'}
+							onChange={(e) => {
+								const files = e.target.files && Array.from(e.target.files);
+								files && handleUploadImages(files);
+							}}
+						/>
+					</ButtonGroup>
 				</Center>
 
 				<ImageManager isRemovable />
