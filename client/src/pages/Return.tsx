@@ -1,9 +1,10 @@
 import {VisionScanner} from '@/components/rent_equipment/VisionScanner';
 import {SelectRecord} from '@/components/return_equipment/SelectRecord';
 import {Camera} from '@/components/ui/Camera/Camera';
+import {getAllRecords} from '@/db/record';
 import {useAppContext} from '@/utils/context/AppContext';
 import {ScanContext, useInitialScanContext} from '@/utils/context/ScanContext';
-import {RentalRecord} from '@/utils/data';
+import {RentalRecord, User} from '@/utils/data';
 import {paths} from '@/utils/paths';
 import {Box, Flex} from '@chakra-ui/react';
 import {useEffect, useState} from 'react';
@@ -12,7 +13,7 @@ import {useNavigate} from 'react-router-dom';
 
 export function Return() {
 	const {
-		appState: {handleCloseExistingPeerConnection}
+		appState: {user, handleCloseExistingPeerConnection}
 	} = useAppContext();
 	const scanContext = useInitialScanContext();
 	const {
@@ -24,7 +25,7 @@ export function Return() {
 		handleScan
 	} = scanContext;
 	const [records, setRecords] = useState<RentalRecord[]>([]);
-	const [targetRecord] = targetRecordState || [];
+	const [targetRecord, setTargetRecord] = targetRecordState || [];
 	const [readyToRedirect] = readyToRedirectState;
 	const [images] = imagesState;
 	const [scanResult] = scanResultState;
@@ -43,14 +44,19 @@ export function Return() {
 		}
 	}, [readyToRedirect]);
 
-	const getUserRecords = () => {
-		// TODO get user records
-		setRecords([]);
+	const getUserRecords = async () => {
+		// get user records
+		const allRecords = await getAllRecords();
+		const activeUserRecords = allRecords.filter(
+			(record) => (record.renter as User).id == user?.id && record.recordStatus === 'active'
+		);
 
-		// TODO set returning record target if only 1 record
-		// if (recordsResult.length > 1) {
-		// 	setReturningRecord(recordsResult[0]);
-		// }
+		setRecords(activeUserRecords);
+
+		// set returning record target if only 1 record
+		if (activeUserRecords.length == 1) {
+			setTargetRecord(activeUserRecords[0]);
+		}
 	};
 
 	useEffect(() => {
@@ -67,8 +73,7 @@ export function Return() {
 			</Box>
 			<ScanContext.Provider value={scanContext}>
 				<Flex flexDirection={'column'} flex={0.4} p={6}>
-					{/* {records.length > 1 ? ( */}
-					{records.length > -1 ? (
+					{records.length > 1 ? (
 						<>
 							{activeStep == 0 && <SelectRecord records={records} />}
 							{activeStep == 1 && (

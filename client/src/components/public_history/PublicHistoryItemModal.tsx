@@ -123,7 +123,7 @@ export const PublicHistoryItemModal: React.FC<{
 										<EditableField
 											name='notes'
 											label={'Notes'}
-											value={(selectedRecord as RentalRecord | undefined)?.notes}
+											value={(selectedRecord as RentalRecord | undefined)?.recordNotes}
 										/>
 										<EditableDate
 											name='rentedAt'

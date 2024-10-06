@@ -73,10 +73,6 @@ export const getAllItems = async () => {
 			? (itemQuantity as number) -
 			  targetItemInRelatedRecords.reduce((acc, record) => acc + (record.rentQuantity as number), 0)
 			: (itemQuantity as number);
-		console.log(
-			itemQuantity,
-			targetItemInRelatedRecords.reduce((acc, record) => acc + (record.rentQuantity as number), 0)
-		);
 		return {
 			...item,
 			itemId,

@@ -95,7 +95,7 @@ export const UserHistoryItemModal: React.FC<{
 				<ScannedItem
 					isEditing={false}
 					isEditingImageEnabled={false}
-					proofOfReturn={rentingItem.proofOfReturn}
+					proofOfReturn={rentingItem.proofOfReturn as string}
 					key={(rentingItem.item as Item).itemId}
 					itemInfo={rentingItem}
 					onOpenImageBlob={() => handleOpenImageBlob((rentingItem.item as Item).itemId)}
@@ -158,7 +158,7 @@ export const UserHistoryItemModal: React.FC<{
 										<EditableField
 											name='notes'
 											label={'Notes'}
-											value={(selectedRecord as RentalRecord | undefined)?.notes}
+											value={(selectedRecord as RentalRecord | undefined)?.recordNotes}
 										/>
 										<EditableDate
 											name='rentedAt'

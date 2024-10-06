@@ -1,26 +1,17 @@
-import { EditableField } from '@/components/ui/EditableField';
+import {EditableField} from '@/components/ui/EditableField';
 import ImageManager from '@/components/ui/ImageManager';
-import { createAdmin, createUser, editUser, userCollection } from '@/db/user';
-import { useAppContext } from '@/utils/context/AppContext';
-import { useInitialRegisterContext, useRegisterContext } from '@/utils/context/RegisterContext';
-import { AddUserFormValues, FormValues } from '@/utils/data';
-import { paths } from '@/utils/paths';
-import { convertBlobToBase64 } from '@/utils/utils';
-import {
-	Button,
-	ButtonGroup,
-	Center,
-	Flex,
-	HStack,
-	Spacer,
-	Text,
-	VStack,
-	useToast
-} from '@chakra-ui/react';
-import { getDoc, getDocs } from 'firebase/firestore';
-import { useEffect } from 'react';
-import { UseFormRegister } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import {config} from '@/config';
+import {createAdmin, createUser, editUser, userCollection} from '@/db/user';
+import {useAppContext} from '@/utils/context/AppContext';
+import {useInitialRegisterContext, useRegisterContext} from '@/utils/context/RegisterContext';
+import {AddUserFormValues, FormValues} from '@/utils/data';
+import {paths} from '@/utils/paths';
+import {convertBlobToBase64, ToastType} from '@/utils/utils';
+import {Button, ButtonGroup, Center, Flex, HStack, Spacer, Text, VStack} from '@chakra-ui/react';
+import {getDoc, getDocs} from 'firebase/firestore';
+import {useEffect} from 'react';
+import {UseFormRegister} from 'react-hook-form';
+import {useNavigate} from 'react-router-dom';
 
 type ImageInfo = {
 	image: {
@@ -32,7 +23,7 @@ type ImageInfo = {
 };
 
 const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}) => {
-	const {appState, appDispatch} = useAppContext();
+	const {appState, appDispatch, appUtils} = useAppContext();
 	const {user: appUser} = appState;
 	const {
 		imagesState,
@@ -43,9 +34,9 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 		goToPrevious
 	} = useRegisterContext() as ReturnType<typeof useInitialRegisterContext>;
 	const [images] = imagesState;
-	const toast = useToast();
 	const navigate = useNavigate();
 	const {name, email} = watch();
+	const {toast} = appUtils;
 
 	useEffect(() => {
 		appDispatch({
@@ -66,7 +57,9 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 			throw UserAlreadyExistsError;
 		}
 
-		const currentAdmin = (appUser?.id as string) || 'system'; // "system" only used when creating system admin without any other admins
+		const currentAdmin = config.isCreateAdminBySystemEnabled
+			? (appUser?.id as string) || 'system' // "system" only used when creating system admin without any other admins
+			: (appUser?.id as string);
 		const user =
 			page == 'register' ? await createUser(data) : await createAdmin(data, currentAdmin);
 		const userData = (await getDoc(user)).data() as AddUserFormValues;
@@ -97,6 +90,11 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 			return originalUrl.replace('undefined', info.image.id);
 		});
 		await editUser(user.id, {imageUrls});
+		navigate(paths.main.root, {
+			state: {
+				toastType: ToastType.userCreationSuccess
+			}
+		});
 	};
 
 	const onSubmit = async (data: AddUserFormValues) => {
@@ -110,14 +108,7 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 				type: 'SET_PAGE_LOADING',
 				payload: false
 			});
-			navigate(paths.main.root);
-			toast({
-				title: 'Success',
-				description: 'User creation request has been sent for review.',
-				status: 'success',
-				duration: 5000,
-				isClosable: true
-			});
+
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
 			appDispatch({
@@ -129,7 +120,7 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 				case 'UserAlreadyExists':
 					toast({
 						title: 'Error',
-						description: 'Admin already exists. Please try again.',
+						description: 'User already exists. Please try again.',
 						status: 'error',
 						duration: 5000,
 						isClosable: true
@@ -138,7 +129,7 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 				default:
 					toast({
 						title: 'Error',
-						description: 'Failed to create admin. Please try again.',
+						description: 'Failed to create user. Please try again.',
 						status: 'error',
 						duration: 5000,
 						isClosable: true

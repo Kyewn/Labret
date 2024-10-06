@@ -9,9 +9,11 @@ import {
 	useInitialUserHistoryTableContext,
 	UserHistoryTableContext
 } from '@/utils/context/UserHistoryTableContext';
+import {paths} from '@/utils/paths';
 import {Divider, Flex, Heading, HStack, Tab, TabList, Tabs} from '@chakra-ui/react';
 import {useEffect} from 'react';
 import {Helmet} from 'react-helmet-async';
+import {useNavigate} from 'react-router-dom';
 
 export function UserHistory() {
 	const {appDispatch} = useAppContext();
@@ -27,6 +29,7 @@ export function UserHistory() {
 		refetch
 	} = userHistoryTableContext;
 	const [tab, setTab] = tabState;
+	const navigate = useNavigate();
 
 	const confirmDisclosure = confirmDialogDisclosure;
 	const [{title: confirmTitle, description: confirmDescription, onConfirm}] = confirmDialogState;
@@ -47,6 +50,15 @@ export function UserHistory() {
 		// Set filtered data on tab change
 		refetch();
 	}, [tab]);
+
+	useEffect(() => {
+		appDispatch({
+			type: 'SET_HANDLE_SUBHEADER_BACK',
+			payload: () => {
+				navigate(paths.main.root);
+			}
+		});
+	}, []);
 
 	return (
 		<>

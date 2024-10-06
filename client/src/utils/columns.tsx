@@ -1434,7 +1434,7 @@ export const getNormalDebtColumns: (
 	{
 		id: 'payment',
 		header: () => 'Outstanding (RM)',
-		cell: ({row}) => mapPaymentAmount((row.original.record as RentalRecord).recordStatus),
+		cell: ({row}) => mapPaymentAmount(row.original.record as RentalRecord),
 		enableGlobalFilter: true
 	},
 	// Actions
@@ -1538,12 +1538,6 @@ export const getHeavyDebtColumns: (
 		enableGlobalFilter: true
 	},
 	{
-		id: 'payment',
-		header: () => 'Outstanding (RM)',
-		cell: ({row}) => mapPaymentAmount((row.original.record as RentalRecord).recordStatus),
-		enableGlobalFilter: true
-	},
-	{
 		accessorKey: 'record.recordStatus',
 		header: ({column}) => {
 			return (
@@ -1637,10 +1631,10 @@ export const getNormalDebtSummaryColumns: () => ColumnDef<Verification>[] = () =
 				</Button>
 			);
 		},
-		cell: ({row}) => mapPaymentAmount((row.original.record as RentalRecord).recordStatus),
+		cell: ({row}) => mapPaymentAmount(row.original.record as RentalRecord),
 		sortingFn: (rowA, rowB) => {
-			const numA = mapPaymentAmount((rowA.original.record as RentalRecord).recordStatus);
-			const numB = mapPaymentAmount((rowB.original.record as RentalRecord).recordStatus);
+			const numA = mapPaymentAmount(rowA.original.record as RentalRecord);
+			const numB = mapPaymentAmount(rowB.original.record as RentalRecord);
 
 			return numA < numB ? 1 : numA > numB ? -1 : 0;
 		},

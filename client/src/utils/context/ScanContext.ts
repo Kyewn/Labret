@@ -1,5 +1,6 @@
 import {getItem} from '@/db/item';
-import {createRecord} from '@/db/record';
+import {createRecord, editRecord} from '@/db/record';
+import {createVerification} from '@/db/verification';
 import {useAppContext} from '@/utils/context/AppContext';
 import {
 	EditImageProofValues,
@@ -10,7 +11,7 @@ import {
 	ReturnFormValues
 } from '@/utils/data';
 import {paths} from '@/utils/paths';
-import {predictItems} from '@/utils/utils';
+import {predictItems, ToastType} from '@/utils/utils';
 import {useDisclosure, useSteps, useToast} from '@chakra-ui/react';
 import {IKCore} from 'imagekitio-react';
 import {createContext, useContext, useState} from 'react';
@@ -55,6 +56,7 @@ export const useInitialScanContext = (type: string = 'rent') => {
 	const targetRecordState = useState<RentalRecord | undefined>(undefined);
 	const [, setReadyToRedirect] = readyToRedirectState;
 	const [scanResult, setScanResult] = scanResultState;
+	const [targetRecord] = targetRecordState;
 
 	const addDisclosure = useDisclosure();
 	const editDisclosure = useDisclosure();
@@ -66,34 +68,51 @@ export const useInitialScanContext = (type: string = 'rent') => {
 	const [images, setImages] = imagesState;
 	const [, setIsDirtyForm] = dirtyFormState;
 
-	const handleScan = async (scanType: string) => {
-		appDispatch({type: 'SET_PAGE_LOADING', payload: true});
-		const itemList = Object.entries((await predictItems(images)) || {});
-		// Structure: {
-		// 		itemId: value;
-		// }
-		for (const [itemId, info] of itemList) {
-			const {count, proof} = info as {count: number; proof: number};
-			const item = await getItem(itemId);
-			const rentingItem = {
-				item,
-				rentQuantity: count,
-				...(scanType === 'return' ? {proofOfReturn: proof} : undefined)
-			} as RentingItem;
-			handleAddConfirm(rentingItem);
-		}
-		setReadyToRedirect(true);
-		appDispatch({type: 'SET_PAGE_LOADING', payload: false});
-	};
-
-	const handleRemoveImage = (index: number) => {
-		const newImages = images.filter((_, i) => i !== index);
-		setImages(newImages);
-	};
-
 	const handleAddConfirm = (item: RentingItem) => {
 		const newItemQuantity = Number.parseInt(item.rentQuantity as string);
 		const remainingQuantity = (item.item as Item).remainingQuantity as number;
+
+		setScanResult((prev) => {
+			const existingItem = prev.find(
+				(sr) => (sr.item as Item).itemId === (item.item as Item).itemId
+			);
+			if (existingItem) {
+				return (
+					prev?.map((sr) => {
+						const currQuantity = Number.parseInt(sr.rentQuantity as string);
+						const isInvalidQuantity = currQuantity + newItemQuantity > remainingQuantity;
+
+						if ((sr.item as Item).itemId === (item.item as Item).itemId) {
+							return {
+								...sr,
+								// Cap rent quantity at remaining quantity if adding more quantities exceed remaining quantity
+								rentQuantity: isInvalidQuantity ? remainingQuantity : currQuantity + newItemQuantity
+							};
+						}
+						return sr;
+					}) || []
+				);
+			}
+
+			const isInvalidQuantity = newItemQuantity > remainingQuantity;
+			const adjustedQuantity = isInvalidQuantity ? remainingQuantity : newItemQuantity;
+			if (adjustedQuantity === 0) {
+				return prev;
+			}
+			return [...(prev as RentingItem[]), {...item, rentQuantity: adjustedQuantity}];
+		});
+		setIsDirtyForm(true);
+	};
+
+	const handleAddScannedReturningItems = async (item: RentingItem) => {
+		const rentedItems = targetRecord?.rentingItems.map((item) => (item.item as Item).itemId) || [];
+		const newItemQuantity = Number.parseInt(item.rentQuantity as string);
+		const remainingQuantity = (item.item as Item).remainingQuantity as number;
+
+		const isScannedIteminRentItemList = rentedItems.includes((item.item as Item).itemId);
+		if (!isScannedIteminRentItemList) {
+			return;
+		}
 
 		setScanResult((prev) => {
 			const existingItem = prev.find(
@@ -152,6 +171,34 @@ export const useInitialScanContext = (type: string = 'rent') => {
 		setIsDirtyForm(true);
 	};
 
+	const handleScan = async (scanType: string) => {
+		appDispatch({type: 'SET_PAGE_LOADING', payload: true});
+		const itemList = Object.entries((await predictItems(images)) || {});
+		// Structure: {
+		// 		itemId: value;
+		// }
+		for (const [itemId, info] of itemList) {
+			const {count, proof} = info as {count: number; proof: number};
+			const item = await getItem(itemId);
+			const proofBlob = images[proof];
+			const rentingItem = {
+				item,
+				rentQuantity: count,
+				...(scanType === 'return' ? {proofOfReturn: proofBlob} : undefined)
+			} as RentingItem;
+			scanType === 'rent'
+				? handleAddConfirm(rentingItem)
+				: handleAddScannedReturningItems(rentingItem);
+		}
+		setReadyToRedirect(true);
+		appDispatch({type: 'SET_PAGE_LOADING', payload: false});
+	};
+
+	const handleRemoveImage = (index: number) => {
+		const newImages = images.filter((_, i) => i !== index);
+		setImages(newImages);
+	};
+
 	const handleAddRent = async ({
 		recordTitle,
 		recordNotes,
@@ -182,6 +229,7 @@ export const useInitialScanContext = (type: string = 'rent') => {
 			});
 
 			const imageUrls: string[] = [];
+
 			await Promise.all(
 				images.map(async (image) => {
 					const imagekitAuthParams = await fetch('http://localhost:8000/imagekit-auth', {
@@ -197,7 +245,6 @@ export const useInitialScanContext = (type: string = 'rent') => {
 					}
 
 					const auth_params = (await imagekitAuthParams.json()).auth_params;
-					console.log(auth_params);
 
 					const uploadResult = await imagekit.upload({
 						file: image,
@@ -206,12 +253,11 @@ export const useInitialScanContext = (type: string = 'rent') => {
 						signature: auth_params.signature,
 						expire: auth_params.expire
 					});
-					console.log(uploadResult);
 					imageUrls.push(uploadResult.url);
 				})
 			);
 
-			await createRecord(
+			const record = await createRecord(
 				{
 					recordTitle,
 					expectedReturnAt: (expectedReturnAt as Date).toISOString(),
@@ -225,37 +271,135 @@ export const useInitialScanContext = (type: string = 'rent') => {
 				user?.id as string
 			);
 
+			await createVerification(record.id);
+
 			// Redirect to main page
-			navigate(paths.main.root);
-			toast({
-				title: 'Record created successfully',
-				status: 'success',
-				duration: 3000,
-				isClosable: true
+			navigate(paths.main.root, {
+				state: {
+					toastType: ToastType.recordCreationSuccess
+				}
 			});
 		} catch (error) {
 			toast({
 				title: 'Record could not be created',
 				description: 'Please try again.',
-				status: 'success',
+				status: 'error',
 				duration: 3000,
 				isClosable: true
 			});
 		}
-
 		appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 	};
 
-	const handleReturnRecord = (
+	const handleReturnRecord = async (
 		recordId: string,
-		{returnLocation, returnNotes}: ReturnFormValues
+		{returnLocation, returnNotes, rentingItemsWithImageProof}: ReturnFormValues
 	) => {
-		// Only after isReadTnC is true
+		appDispatch({type: 'SET_PAGE_LOADING', payload: true});
+		try {
+			const imagekit = new IKCore({
+				publicKey: import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY,
+				urlEndpoint: 'https://ik.imagekit.io/oowu/'
+			});
 
-		// Validate inputs
-		// Check item count does not subtract beyond 0
+			const imageUrls: string[] = [];
 
-		console.log(returnLocation, returnNotes);
+			// Upload return images
+			await Promise.all(
+				images.map(async (image) => {
+					const imagekitAuthParams = await fetch('http://localhost:8000/imagekit-auth', {
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json',
+							'Access-Control-Allow-Origin': '*'
+						}
+					});
+
+					if (!imagekitAuthParams.ok) {
+						throw new Error('Could not authenticate with ImageKit');
+					}
+
+					const auth_params = (await imagekitAuthParams.json()).auth_params;
+
+					const uploadResult = await imagekit.upload({
+						file: image,
+						fileName: uuidv4(),
+						token: auth_params.token,
+						signature: auth_params.signature,
+						expire: auth_params.expire
+					});
+					imageUrls.push(uploadResult.url);
+				})
+			);
+
+			// Upload proofs and update rentingItems
+			const parsedRentingItems = await Promise.all(
+				rentingItemsWithImageProof.map(async (rentingItem) => {
+					const imageProof = rentingItem.proofOfReturn as Blob;
+					if (!imageProof) {
+						return {
+							...rentingItem
+						};
+					}
+
+					const imagekitAuthParams = await fetch('http://localhost:8000/imagekit-auth', {
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json',
+							'Access-Control-Allow-Origin': '*'
+						}
+					});
+
+					if (!imagekitAuthParams.ok) {
+						throw new Error('Could not authenticate with ImageKit');
+					}
+
+					const auth_params = (await imagekitAuthParams.json()).auth_params;
+
+					const uploadResult = await imagekit.upload({
+						file: imageProof,
+						fileName: uuidv4(),
+						token: auth_params.token,
+						signature: auth_params.signature,
+						expire: auth_params.expire
+					});
+					return {
+						...rentingItem,
+						proofOfReturn: uploadResult.url
+					};
+				})
+			);
+
+			await editRecord(recordId, {
+				returnLocation,
+				rentingItems: parsedRentingItems.map((sr) => ({
+					item: (sr.item as Item).itemId,
+					rentQuantity: sr.rentQuantity,
+					...(sr.proofOfReturn ? {proofOfReturn: sr.proofOfReturn} : undefined)
+				})),
+				returnImages: imageUrls,
+				recordStatus: 'returning',
+				returnedAt: new Date().toISOString(),
+				...(returnNotes ? {recordNotes: returnNotes} : undefined)
+			});
+
+			// Redirect to main page
+			navigate(paths.main.root, {
+				state: {
+					toastType: ToastType.returnRecordSuccess
+				}
+			});
+		} catch (error) {
+			console.log(error);
+			toast({
+				title: 'Record could not be returned',
+				description: 'Please try again.',
+				status: 'error',
+				duration: 3000,
+				isClosable: true
+			});
+		}
+		appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 	};
 
 	return {

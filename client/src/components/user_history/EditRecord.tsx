@@ -54,7 +54,7 @@ export const EditRecord: React.FC = () => {
 	const [targetRecord, setTargetRecord] = targetRecordState;
 	const {
 		recordTitle: oldRecordTitle,
-		notes: oldNotes,
+		recordNotes: oldNotes,
 		rentedAt,
 		expectedReturnAt: oldExpectedReturnAt,
 		returnLocation: oldReturnLocation,

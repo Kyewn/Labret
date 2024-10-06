@@ -74,7 +74,7 @@ export const DebtItemModal: React.FC<{
 					<ScannedItem
 						isEditing={false}
 						isEditingImageEnabled={false}
-						proofOfReturn={rentingItem.proofOfReturn}
+						proofOfReturn={rentingItem.proofOfReturn as string}
 						key={(rentingItem.item as Item).itemId}
 						itemInfo={rentingItem}
 						onOpenImageBlob={() => handleOpenImageBlob((rentingItem.item as Item).itemId)}
@@ -149,7 +149,7 @@ export const DebtItemModal: React.FC<{
 										<EditableField
 											name='notes'
 											label={'Notes'}
-											value={(selectedRecord?.record as RentalRecord | undefined)?.notes}
+											value={(selectedRecord?.record as RentalRecord | undefined)?.recordNotes}
 										/>
 										<EditableDate
 											name='rentedAt'

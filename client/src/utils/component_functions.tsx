@@ -16,8 +16,10 @@ export const getLoadingLabelComponent = (labelType: string) => {
 			</>
 		);
 	} else {
-		<Heading fontSize={'sm'} color={'white'} zIndex={100}>
-			Loading...
-		</Heading>;
+		return (
+			<Heading fontSize={'sm'} color={'white'} zIndex={100}>
+				Loading...
+			</Heading>
+		);
 	}
 };

@@ -10,72 +10,6 @@ type Props = {
 	records: RentalRecord[];
 };
 
-const dummyRecords: RentalRecord[] = [
-	{
-		recordTitle: 'Record 1',
-		rentedAt: new Date(),
-		renter: {
-			id: 'PJtSBgLgeBtbgg5NES2Z',
-			name: 'pjt',
-			email: 'pjtEmail',
-			status: 'pending',
-			type: 'user',
-			createdAt: new Date('2023-2-1'),
-			imageUrls: [
-				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-			]
-		},
-		rentImages: [],
-		notes: '',
-		recordStatus: '',
-		recordId: '1',
-		rentingItems: [],
-		expectedReturnAt: new Date()
-	},
-	{
-		recordTitle: 'Record 2',
-		rentedAt: new Date(),
-		renter: {
-			id: 'PJtSBgLgeBtbgg5NES2Z',
-			name: 'pjt',
-			email: 'pjtEmail',
-			status: 'pending',
-			type: 'user',
-			createdAt: new Date('2023-2-1'),
-			imageUrls: [
-				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-			]
-		},
-		rentImages: [],
-		notes: '',
-		recordStatus: '',
-		recordId: '2',
-		rentingItems: [],
-		expectedReturnAt: new Date()
-	},
-	{
-		recordTitle: 'Record 3',
-		rentedAt: new Date(),
-		renter: {
-			id: 'PJtSBgLgeBtbgg5NES2Z',
-			name: 'pjt',
-			email: 'pjtEmail',
-			status: 'pending',
-			type: 'user',
-			createdAt: new Date('2023-2-1'),
-			imageUrls: [
-				'https://source.roboflow.com/rOZ0kQlARISe8gIXR91IT3Nva4J2/2XBcQNLJ8ApqvsAhiiuZ/original.jpg'
-			]
-		},
-		rentImages: [],
-		notes: '',
-		recordStatus: '',
-		recordId: '3',
-		rentingItems: [],
-		expectedReturnAt: new Date()
-	}
-];
-
 export const SelectRecord: React.FC<Props> = ({records}) => {
 	const {appState} = useAppContext();
 	const {handleCloseExistingPeerConnection} = appState;
@@ -96,8 +30,7 @@ export const SelectRecord: React.FC<Props> = ({records}) => {
 	};
 
 	const renderRecords = () => {
-		// records.map(record => {
-		return dummyRecords.map((record, i) => (
+		return records.map((record, i) => (
 			<VStack
 				key={record.recordId}
 				cursor={'pointer'}
@@ -107,7 +40,7 @@ export const SelectRecord: React.FC<Props> = ({records}) => {
 				backgroundColor={'lrBrown.400'}
 				_hover={{backgroundColor: 'lrBrown.700', color: 'whiteDarkMode'}}
 				_active={{backgroundColor: 'lrBrown.500', color: 'whiteDarkMode'}}
-				onClick={() => handleRecordClick(dummyRecords[i])}
+				onClick={() => handleRecordClick(records[i])}
 			>
 				<Text fontWeight={700}>{record.recordTitle}</Text>
 				<Text>{formatDateAndTime(record.rentedAt as Date)}</Text>

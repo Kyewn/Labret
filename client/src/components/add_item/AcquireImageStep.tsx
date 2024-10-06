@@ -1,5 +1,6 @@
 import {Camera} from '@/components/ui/Camera/Camera';
 import ImageManager from '@/components/ui/ImageManager';
+import {config} from '@/config';
 import {useAddItemContext, useInitialAddItemContext} from '@/utils/context/AddItemContext';
 import {useAppContext} from '@/utils/context/AppContext';
 import {
@@ -125,7 +126,7 @@ const AcquireImageStep: React.FC = () => {
 					</VStack>
 					<Flex w={'100%'} justifyContent={'flex-end'}>
 						<Button
-							isDisabled={images.length < 10}
+							isDisabled={images.length < config.minScanImages}
 							onClick={() => {
 								handleCloseNormalCamera();
 								goToNext();

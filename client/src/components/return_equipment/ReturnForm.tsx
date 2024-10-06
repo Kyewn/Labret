@@ -8,9 +8,9 @@ import {UseFormRegister, useForm} from 'react-hook-form';
 
 export const ReturnForm: React.FC = () => {
 	const {appDispatch} = useAppContext();
-	const {goToPrevious, targetRecordState, handleReturnRecord} = useScanContext() as ReturnType<
-		typeof useInitialScanContext
-	>;
+	const {goToPrevious, targetRecordState, scanResultState, handleReturnRecord} =
+		useScanContext() as ReturnType<typeof useInitialScanContext>;
+	const [scanResult] = scanResultState;
 	const [targetRecord] = targetRecordState;
 	const {
 		register,
@@ -35,7 +35,11 @@ export const ReturnForm: React.FC = () => {
 				id='form'
 				style={{flex: 1}}
 				onSubmit={handleSubmit(() =>
-					handleReturnRecord(targetRecord?.recordId as string, {returnLocation, returnNotes})
+					handleReturnRecord(targetRecord?.recordId as string, {
+						returnLocation,
+						returnNotes,
+						rentingItemsWithImageProof: scanResult
+					})
 				)}
 			>
 				<VStack height={'100%'} flex={1} paddingY={5} spacing={3} alignItems={'flex-start'}>

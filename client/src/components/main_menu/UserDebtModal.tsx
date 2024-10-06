@@ -4,7 +4,7 @@ import {DataTable} from '@/components/ui/DataTable/DataTable';
 import {getHeavyDebtSummaryColumns, getNormalDebtSummaryColumns} from '@/utils/columns';
 import {useAppContext} from '@/utils/context/AppContext';
 import {DebtTableContext, useInitialDebtTableContext} from '@/utils/context/DebtTableContext';
-import {mapPaymentAmount, RentalRecord} from '@/utils/data';
+import {mapPaymentAmount, RentalRecord, User} from '@/utils/data';
 
 import {
 	Divider,
@@ -26,7 +26,10 @@ import {useEffect} from 'react';
 export const UserDebtModal: React.FC<{
 	disclosure: ReturnType<typeof useDisclosure>;
 }> = ({disclosure}) => {
-	const {appDispatch} = useAppContext();
+	const {
+		appState: {user},
+		appDispatch
+	} = useAppContext();
 	const {isOpen, onClose} = disclosure;
 	const debtTableContext = useInitialDebtTableContext();
 	const {
@@ -44,8 +47,11 @@ export const UserDebtModal: React.FC<{
 	} = debtTableContext;
 	const [tab, setTab] = tabState;
 
+	const userData = tableData?.filter(
+		(data) => ((data.record as RentalRecord).renter as User).id == user?.id
+	);
 	const totalOutstanding = tableData?.reduce(
-		(acc, curr) => acc + mapPaymentAmount((curr.record as RentalRecord).recordStatus),
+		(acc, curr) => acc + mapPaymentAmount(curr.record as RentalRecord),
 		0
 	);
 
@@ -95,7 +101,7 @@ export const UserDebtModal: React.FC<{
 									<NormalDebtSummaryTableFilters />
 									<Flex flex={1} w={'100%'} overflow={'auto'}>
 										<DataTable
-											data={tableData || []}
+											data={userData || []}
 											columns={getNormalDebtSummaryColumns()}
 											sortingState={tableSortingState_normalDebtSummaryTable}
 											globalFilterState={searchTextState_normalDebtTable}
@@ -114,7 +120,7 @@ export const UserDebtModal: React.FC<{
 									<HeavyDebtSummaryTableFilters />
 									<Flex flex={1} w={'100%'} overflow={'auto'}>
 										<DataTable
-											data={tableData || []}
+											data={userData || []}
 											columns={getHeavyDebtSummaryColumns()}
 											sortingState={tableSortingState_heavyDebtSummaryTable}
 											globalFilterState={searchTextState_heavyDebtTable}
