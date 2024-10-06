@@ -22,7 +22,8 @@ import {
 	AppContext,
 	appContextInitialState,
 	appContextReducer,
-	useAppContext
+	useAppContext,
+	useInitialAppUtils
 } from '@/utils/context/AppContext';
 import {paths} from '@/utils/paths';
 import {themes} from '@/utils/themes';
@@ -30,12 +31,12 @@ import {Box, ChakraProvider, Spinner, VStack} from '@chakra-ui/react';
 import {useReducer} from 'react';
 import {Helmet, HelmetProvider} from 'react-helmet-async';
 import {
+	createBrowserRouter,
+	createRoutesFromElements,
 	Navigate,
 	Outlet,
 	Route,
-	RouterProvider,
-	createBrowserRouter,
-	createRoutesFromElements
+	RouterProvider
 } from 'react-router-dom';
 import './App.css';
 import favicon from './assets/favicon.ico';
@@ -89,6 +90,7 @@ const router = createBrowserRouter(
 
 function App() {
 	const [appState, appDispatch] = useReducer(appContextReducer, appContextInitialState);
+	const appUtils = useInitialAppUtils();
 	const {pageLoading, loadingLabelType} = appState;
 
 	return (
@@ -97,7 +99,7 @@ function App() {
 				<Helmet>
 					<link rel='icon' href={favicon} />
 				</Helmet>
-				<AppContext.Provider value={{appState, appDispatch}}>
+				<AppContext.Provider value={{appState, appDispatch, appUtils}}>
 					<ChakraProvider theme={themes}>
 						<Box
 							position={'relative'}

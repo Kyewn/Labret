@@ -1,19 +1,26 @@
 import {useInitialScanContext, useScanContext} from '@/utils/context/ScanContext';
-import {Item, RentingItem} from '@/utils/data';
+import {Item} from '@/utils/data';
 
 import {Heading, Modal, ModalBody, ModalContent, ModalOverlay, VStack} from '@chakra-ui/react';
 
 export const ImageProofViewerModal = () => {
-	const {imageProofDisclosure, selectedItemState, imageProofsState} =
+	const {imageProofDisclosure, selectedItemState, scanResultState, imageProofsState} =
 		useScanContext() as ReturnType<typeof useInitialScanContext>;
 	const [imageProofs] = imageProofsState;
 	const {isOpen, onClose} = imageProofDisclosure;
+	const [scanResult] = scanResultState;
 	const [selectedItem] = selectedItemState;
-	const oldImageProofUrl = (selectedItem as RentingItem | undefined)?.proofOfReturn;
+	const oldImageProofBlob = scanResult.find(
+		(rentingItem) =>
+			(rentingItem.item as Item).itemId == (selectedItem?.item as Item | undefined)?.itemId
+	)?.proofOfReturn as Blob;
+	const oldImageProofUrl = oldImageProofBlob ? URL.createObjectURL(oldImageProofBlob) : undefined;
+
 	const newImageProofObj = imageProofs.find(
 		(proof) => proof.itemId === (selectedItem?.item as Item | undefined)?.itemId
 	);
-	const newImageProofUrl = newImageProofObj?.imageProof;
+	const newImageProofBlob = newImageProofObj?.imageProof;
+	const newImageProofUrl = newImageProofBlob ? URL.createObjectURL(newImageProofBlob) : undefined;
 
 	return (
 		<Modal scrollBehavior={'inside'} isOpen={isOpen} onClose={onClose}>

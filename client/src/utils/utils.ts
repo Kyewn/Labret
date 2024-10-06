@@ -3,6 +3,12 @@ import {clsx, type ClassValue} from 'clsx';
 import {addDays} from 'date-fns';
 import {twMerge} from 'tailwind-merge';
 
+export enum ToastType {
+	userCreationSuccess = 'userCreationSuccess',
+	recordCreationSuccess = 'recordCreationSuccess',
+	returnRecordSuccess = 'returnRecordSuccess'
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const swrFetcher = async (url: string): Promise<any> => fetch(url).then((res) => res.json());
 

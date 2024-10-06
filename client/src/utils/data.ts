@@ -32,9 +32,11 @@ export type NewRentFormValues = {
 };
 
 export type ReturnFormValues = {
-	returnLocation?: string;
+	rentingItemsWithImageProof: RentingItem[];
+	returnLocation: string;
 	returnNotes?: string;
 };
+
 export type EditRentalRecordFormValues = {
 	recordTitle?: string;
 	recordNotes?: string;
@@ -50,7 +52,7 @@ export type EditVerificationFormValues = {
 // Custom data type
 export type EditImageProofValues = {
 	itemId: string;
-	imageProof: string;
+	imageProof: Blob;
 };
 export type ItemAvailabilityRecordValues = Item & {
 	earliestReturnBy?: Date;
@@ -125,14 +127,14 @@ export type ItemEditableFields = {
 export type RentingItem = {
 	item: string | Item;
 	rentQuantity: string | number;
-	proofOfReturn?: string;
+	proofOfReturn?: string | Blob;
 };
 
 export type RentalRecord = {
 	recordId: string;
 	renter: string | User;
 	recordTitle: string;
-	notes?: string;
+	recordNotes?: string;
 	recordStatus: string;
 	rentingItems: RentingItem[];
 	rentImages: string[];
@@ -143,11 +145,21 @@ export type RentalRecord = {
 	returnLocation?: string;
 };
 
+export type RentalRecordEditableFields = {
+	recordTitle?: string;
+	recordNotes?: string;
+	rentingItems?: RentingItem[];
+	recordStatus?: string;
+	returnedAt?: string;
+	returnImages?: string[];
+	returnLocation?: string;
+};
+
 export type Verification = {
 	verificationId: string;
 	record: string | RentalRecord; // Rental record id
 	createdAt: string | Date;
-	verifiedAt?: string | Date;
+	updatedAt?: string | Date;
 	verifiedBy?: string | User;
 	isRecordSerious?: boolean;
 	verificationComments?: string;
@@ -256,8 +268,12 @@ export const mapRejectionType = (status: string) => {
 			return status;
 	}
 };
-export const mapPaymentAmount = (status: string) => {
-	switch (status) {
+export const mapPaymentAmount = (record: RentalRecord) => {
+	if ((record.returnedAt as Date) < (record.expectedReturnAt as Date)) {
+		return 5;
+	}
+
+	switch (record.recordStatus) {
 		case 'rent_rejected':
 			return 5;
 

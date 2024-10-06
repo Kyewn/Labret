@@ -17,12 +17,18 @@ import {Check, X} from 'lucide-react';
 export const ImageProofCaptureModal = () => {
 	const {appState, appDispatch} = useAppContext();
 	const {handleCloseNormalCamera, mediaStreams} = appState;
-	const {imageProofCaptureDisclosure, selectedItemState, imageProofsState, dirtyFormState} =
-		useScanContext() as ReturnType<typeof useInitialScanContext>;
+	const {
+		imageProofCaptureDisclosure,
+		selectedItemState,
+		imagesState,
+		imageProofsState,
+		dirtyFormState
+	} = useScanContext() as ReturnType<typeof useInitialScanContext>;
 	const {isOpen, onClose} = imageProofCaptureDisclosure;
 	const [selectedItem] = selectedItemState;
 	const [, setIsDirtyForm] = dirtyFormState;
 	const [, setImageProofs] = imageProofsState;
+	const [, setImages] = imagesState;
 
 	const handleClose = () => {
 		handleCloseNormalCamera();
@@ -35,9 +41,9 @@ export const ImageProofCaptureModal = () => {
 		appDispatch({type: 'SET_PAGE_LOADING', payload: true});
 		const imageCapture = new ImageCapture(mediaStreams[0].getVideoTracks()[0]);
 		const imageProof = await imageCapture.takePhoto().then((blob) => {
-			const url = URL.createObjectURL(blob);
-			return url;
+			return blob;
 		});
+		setImages((prev) => [...prev, imageProof]);
 		setImageProofs((prev) => {
 			const newProof = {
 				itemId: (selectedItem.item as Item).itemId,

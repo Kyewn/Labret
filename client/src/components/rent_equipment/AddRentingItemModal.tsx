@@ -58,7 +58,6 @@ export const AddRentingItemModal: React.FC<{
 				remainingQuantity: currItem.remainingQuantity
 			};
 		});
-	console.log(cbItems);
 	const [maxQuantity, setMaxQuantity] = useState<number>();
 	const {watch, register, setValue} = useForm<NewRentingItemFormValues>();
 	const {item, rentQuantity} = watch();

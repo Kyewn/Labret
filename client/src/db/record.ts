@@ -1,7 +1,13 @@
 import {db} from '@/db/firebase-init';
 import {getAllBaseItems} from '@/db/item';
 import {getAllUsers} from '@/db/user';
-import {AddRecordFormValues, Item, RentalRecord, User} from '@/utils/data';
+import {
+	AddRecordFormValues,
+	Item,
+	RentalRecord,
+	RentalRecordEditableFields,
+	User
+} from '@/utils/data';
 import {addDoc, collection, deleteDoc, getDocs, updateDoc} from 'firebase/firestore';
 
 export const recordCollection = collection(db, 'records');
@@ -25,6 +31,7 @@ export const getAllRecords = async () => {
 
 		return {
 			...record,
+			recordId: doc.id,
 			renter: parsedRenter,
 			rentingItems: parsedRentingItems,
 			rentedAt: new Date(rentedAt),

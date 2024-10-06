@@ -160,8 +160,7 @@ def predict_items(cvImages):
     for (i, result) in enumerate(results):
         names = result.names
         raw_item_list = result.boxes.cpu().data.numpy()
-        plotted_img = result.plot(line_width=1, font_size=1)
-        cv.imwrite("C:/Users/brian/Desktop/plot.png", plotted_img)
+        # plotted_img = result.plot(line_width=1, font_size=1)
 
         for item in raw_item_list:
             detectedItemId = names[item[-1]]

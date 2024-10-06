@@ -5,18 +5,60 @@ import {Camera} from '@/components/ui/Camera/Camera';
 import {getUser} from '@/db/user';
 import {useAppContext} from '@/utils/context/AppContext';
 import {User} from '@/utils/data';
-import {predictFaces} from '@/utils/utils';
+import {predictFaces, ToastType} from '@/utils/utils';
 import {Box, Center, CircularProgress, Flex, Image, Text, VStack} from '@chakra-ui/react';
 import {useEffect, useState} from 'react';
 import {Helmet} from 'react-helmet-async';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 const face_conf_threshold = 0.7;
 
+type LocationState = {
+	toastType: ToastType;
+};
+
 export function MainMenu() {
-	const {appState, appDispatch} = useAppContext();
+	const {appState, appDispatch, appUtils} = useAppContext();
 	const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 	const [isReadingFace, setIsReadingFace] = useState(false);
 	const {user, detectedUser, detectedUserImageURL, mediaStreams} = appState;
+
+	const navigate = useNavigate();
+	const location = useLocation();
+	const {toastType} = (location.state as LocationState) || {};
+	const {toast} = appUtils;
+
+	useEffect(() => {
+		if (toastType) {
+			// state clears needs to be done manually
+			navigate(location.pathname, {});
+			if (toastType === ToastType.userCreationSuccess) {
+				toast({
+					title: 'User creation successful',
+					description: 'User is pending for review.',
+					duration: 5000,
+					isClosable: true,
+					status: 'success'
+				});
+			} else if (toastType === ToastType.recordCreationSuccess) {
+				toast({
+					title: 'Record creation successful',
+					description: 'Record is pending for review.',
+					duration: 5000,
+					isClosable: true,
+					status: 'success'
+				});
+			} else if (toastType === ToastType.returnRecordSuccess) {
+				toast({
+					title: 'Record return successful',
+					description: 'Return is pending for review.',
+					duration: 5000,
+					isClosable: true,
+					status: 'success'
+				});
+			}
+		}
+	}, [toast, toastType]);
 
 	useEffect(() => {
 		const handlePredictFace = async (

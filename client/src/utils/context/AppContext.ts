@@ -1,10 +1,12 @@
 import {User} from '@/utils/data';
-import {Dispatch, createContext, useContext} from 'react';
+import {useToast, UseToastOptions} from '@chakra-ui/toast';
+import {createContext, Dispatch, useContext} from 'react';
 
 type AppContextState = {
 	pageLoading: boolean;
 	loadingLabelType: string;
 	user: User | null;
+	toastOptions: UseToastOptions | null;
 	detectedUser: User | null;
 	detectedUserImageURL: string | null;
 	handleSubHeaderBack: () => void;
@@ -17,6 +19,7 @@ type AppContextState = {
 	handleRemoveFacePredict: () => void;
 };
 type AppContextActionType =
+	| 'SHOW_TOAST'
 	| 'SET_PAGE_LOADING'
 	| 'SET_PAGE_LOADING_LABEL_TYPE'
 	| 'SET_USER'
@@ -32,6 +35,7 @@ type AppContextActionType =
 	| 'SET_CLOSE_NORMAL_CAMERA'
 	| 'SET_REMOVE_FACE_PREDICT';
 type AppContextActionPayload =
+	| UseToastOptions
 	| User
 	| string
 	| boolean
@@ -49,6 +53,7 @@ export const appContextInitialState: AppContextState = {
 	pageLoading: false,
 	loadingLabelType: 'default',
 	user: null,
+	toastOptions: null,
 	detectedUser: null,
 	detectedUserImageURL: null,
 	handleSubHeaderBack: () => {},
@@ -65,6 +70,8 @@ export const appContextReducer = (
 	action: AppContextAction
 ): AppContextState => {
 	switch (action.type) {
+		case 'SHOW_TOAST':
+			return {...state, toastOptions: action.payload as UseToastOptions};
 		case 'SET_PAGE_LOADING':
 			return {...state, pageLoading: action.payload as boolean};
 		case 'SET_PAGE_LOADING_LABEL_TYPE':
@@ -106,6 +113,18 @@ export const appContextReducer = (
 			return state;
 	}
 };
-export const AppContext = createContext<AppContextValue | null>(null);
 
-export const useAppContext = () => useContext(AppContext) as AppContextValue;
+export const useInitialAppUtils = () => {
+	const toast = useToast();
+
+	return {
+		toast
+	};
+};
+
+export const AppContext = createContext<
+	(AppContextValue & {appUtils: ReturnType<typeof useInitialAppUtils>}) | null
+>(null);
+
+export const useAppContext = () =>
+	useContext(AppContext) as AppContextValue & {appUtils: ReturnType<typeof useInitialAppUtils>};
