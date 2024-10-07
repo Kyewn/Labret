@@ -138,6 +138,7 @@ export const ComboBox: React.FC<Props> = ({
 						setValue?.(name, existingItemLabel);
 						handleChange?.(existingItemLabel);
 					}
+
 					setSearchText('');
 				}
 
@@ -156,10 +157,12 @@ export const ComboBox: React.FC<Props> = ({
 									key={'combo-box-input'}
 									value={searchText}
 									onChange={(e) => {
-										isCreateNewOnNoneEnabled &&
-											!!e.target.value.length &&
-											setValue?.(name, e.target.value);
-										setSearchText(e.target.value);
+										const newValue = e.target.value;
+										if (isCreateNewOnNoneEnabled && !!newValue.length) {
+											setValue?.(name, newValue);
+											setSearchText(newValue);
+											handleChange?.(newValue);
+										}
 									}}
 									placeholder={placeholder || 'Search...'}
 								/>

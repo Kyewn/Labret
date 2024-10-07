@@ -52,7 +52,7 @@ export const EditableNumberInput: React.FC<Props> = ({
 					defaultValue={value}
 					onChange={(valueStr, value) => {
 						handleChange?.(valueStr, value);
-						handleMEContextChange?.({name: value});
+						handleMEContextChange?.({[name]: value});
 					}}
 				>
 					<NumberInputField

@@ -32,10 +32,13 @@ export const ItemAvailabilityItemModal: React.FC<{
 	const [selectedItem] = selectedDataState;
 	const [, setRelatedRecordSorting] = relatedRecordSortingState;
 
-	const relatedRecords = records?.filter((record) =>
-		record.rentingItems.some(
-			(rentingItem) => (rentingItem.item as Item).itemId === selectedItem?.itemId
-		)
+	const relatedRecords = records?.filter(
+		(record) =>
+			record.recordStatus !== 'completed' &&
+			record.recordStatus !== 'paid' &&
+			record.rentingItems.some(
+				(rentingItem) => (rentingItem.item as Item).itemId === selectedItem?.itemId
+			)
 	);
 	const data: ItemAvailabilityRecordInfoValues[] =
 		relatedRecords?.map((record) => {

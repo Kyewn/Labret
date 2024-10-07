@@ -101,6 +101,7 @@ export const ItemTableItemModal: React.FC<{
 			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 		};
 		multiEditableContext.onSubmit(async (nNewData) => await mHandleEdit(nNewData as Item));
+		reset();
 	};
 
 	const getStatusColor = (status: string) => {
@@ -231,9 +232,9 @@ export const ItemTableItemModal: React.FC<{
 													initValue={(selectedItem as Item | undefined)?.itemCategory}
 													value={itemCategory || (selectedItem as Item | undefined)?.itemCategory}
 													isEditing={multiEditableContext.isEditing}
-													handleChange={(item) =>
-														multiEditableContext.onChange({itemCategory: item as string})
-													}
+													handleChange={(item) => {
+														multiEditableContext.onChange({itemCategory: item as string});
+													}}
 													setValue={setValue as UseFormSetValue<FormValues>}
 												/>
 												<EditableDate

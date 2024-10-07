@@ -68,16 +68,18 @@ export const useInitialItemAvailabilityTableContext = () => {
 					) &&
 					record.expectedReturnAt
 			);
-			const earliestDate = relatedRecords.reduce((acc, record) => {
-				const currReturnDate = acc.expectedReturnAt as Date;
-				const returnDate = record.expectedReturnAt as Date;
-				if (returnDate < currReturnDate) return record;
-				return acc;
-			}).expectedReturnAt;
+			const earliestDate = relatedRecords.length
+				? relatedRecords.reduce((acc, record) => {
+						const currReturnDate = acc.expectedReturnAt as Date;
+						const returnDate = record.expectedReturnAt as Date;
+						if (returnDate < currReturnDate) return record;
+						return acc;
+				  }).expectedReturnAt
+				: undefined;
 
 			return {
 				...item,
-				earliestReturnBy: earliestDate as Date
+				earliestReturnBy: earliestDate as Date | undefined
 			};
 		});
 

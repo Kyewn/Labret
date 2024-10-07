@@ -979,7 +979,8 @@ export const getItemAvailabilityTableColumns: () => ColumnDef<ItemAvailabilityRe
 					</Button>
 				);
 			},
-			cell: ({row}) => formatDate(row.original.earliestReturnBy as Date),
+			cell: ({row}) =>
+				row.original.earliestReturnBy ? formatDate(row.original.earliestReturnBy as Date) : 'None',
 			enableColumnFilter: true,
 			filterFn: 'withinDateRange'
 		}
