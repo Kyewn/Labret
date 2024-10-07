@@ -22,8 +22,9 @@ import {UseFormRegister, UseFormSetValue, useForm} from 'react-hook-form';
 
 export const AddRentingItemModal: React.FC<{
 	title: string;
-	handleConfirm?: (item: RentingItem) => void;
-}> = ({title, handleConfirm}) => {
+	getRemainingQuantityAtRecordCreationTime?: (item: Item) => number;
+	handleConfirm?: (item: RentingItem, specificRemainingQuantity?: number) => void;
+}> = ({title, handleConfirm, getRemainingQuantityAtRecordCreationTime}) => {
 	const [items, setItems] = useState<Item[]>([]);
 	const {addDisclosure, scanResultState} = useScanContext() as ReturnType<
 		typeof useInitialScanContext
@@ -34,7 +35,8 @@ export const AddRentingItemModal: React.FC<{
 		.filter((item) => {
 			const currItem = item as Item;
 			// Find item remaining quantity in db
-			const dbRemainingQuantity = currItem.remainingQuantity as number;
+			const dbRemainingQuantity =
+				getRemainingQuantityAtRecordCreationTime?.(item) || (currItem.remainingQuantity as number);
 			// Find scan result quantity, set 0 if not found in scan result
 			const rentingItemQuantity =
 				(scanResult?.find((scannedItem) => (scannedItem.item as Item).itemId === currItem.itemId)
@@ -86,16 +88,25 @@ export const AddRentingItemModal: React.FC<{
 	useEffect(() => {
 		if (item) {
 			setMaxQuantity(() => {
-				if (rentQuantity && item.remainingQuantity && rentQuantity > item.remainingQuantity) {
-					setValue('rentQuantity', item.remainingQuantity);
+				if (
+					rentQuantity &&
+					item.remainingQuantity &&
+					rentQuantity >
+						(getRemainingQuantityAtRecordCreationTime?.(item) || item.remainingQuantity)
+				) {
+					setValue(
+						'rentQuantity',
+						getRemainingQuantityAtRecordCreationTime?.(item) || item.remainingQuantity
+					);
 				}
 				const scannedQuantity = scanResult?.find(
 					(scannedItem) => (scannedItem.item as Item).itemId === item.itemId
 				)?.rentQuantity;
 
 				return scannedQuantity
-					? (((item.remainingQuantity as number) - (scannedQuantity as number)) as number)
-					: (item.remainingQuantity as number);
+					? (((getRemainingQuantityAtRecordCreationTime?.(item) ||
+							(item.remainingQuantity as number)) - (scannedQuantity as number)) as number)
+					: getRemainingQuantityAtRecordCreationTime?.(item) || (item.remainingQuantity as number);
 			});
 		}
 	}, [item]);
@@ -117,10 +128,13 @@ export const AddRentingItemModal: React.FC<{
 								onClick={() => {
 									item &&
 										rentQuantity &&
-										handleConfirm?.({
-											item,
-											rentQuantity
-										});
+										handleConfirm?.(
+											{
+												item,
+												rentQuantity
+											},
+											getRemainingQuantityAtRecordCreationTime?.(item)
+										);
 									handleClose();
 								}}
 							>

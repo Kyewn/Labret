@@ -14,7 +14,11 @@ import {
 } from '@chakra-ui/react';
 import {Check, X} from 'lucide-react';
 
-export const ImageProofCaptureModal = () => {
+type Props = {
+	captureBlobAsString?: boolean;
+};
+
+export const ImageProofCaptureModal: React.FC<Props> = ({captureBlobAsString = false}) => {
 	const {appState, appDispatch} = useAppContext();
 	const {handleCloseNormalCamera, mediaStreams} = appState;
 	const {
@@ -43,7 +47,10 @@ export const ImageProofCaptureModal = () => {
 		const imageProof = await imageCapture.takePhoto().then((blob) => {
 			return blob;
 		});
-		setImages((prev) => [...prev, imageProof]);
+		setImages((prev) => [
+			...prev,
+			captureBlobAsString ? URL.createObjectURL(imageProof) : imageProof
+		]);
 		setImageProofs((prev) => {
 			const newProof = {
 				itemId: (selectedItem.item as Item).itemId,

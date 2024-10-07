@@ -22,8 +22,9 @@ import {UseFormRegister, useForm} from 'react-hook-form';
 
 export const EditRentingItemModal: React.FC<{
 	title: string;
+	getRemainingQuantityAtRecordCreationTime?: (item: Item) => number;
 	handleConfirm?: (item: RentingItem) => void;
-}> = ({title, handleConfirm}) => {
+}> = ({title, handleConfirm, getRemainingQuantityAtRecordCreationTime}) => {
 	const {editDisclosure, selectedItemState} = useScanContext() as ReturnType<
 		typeof useInitialScanContext
 	>;
@@ -62,11 +63,20 @@ export const EditRentingItemModal: React.FC<{
 				if (
 					rentQuantity &&
 					updatedItemInfo.remainingQuantity &&
-					rentQuantity > updatedItemInfo.remainingQuantity
+					rentQuantity >
+						(getRemainingQuantityAtRecordCreationTime?.(updatedItemInfo) ||
+							updatedItemInfo.remainingQuantity)
 				) {
-					setValue('rentQuantity', updatedItemInfo.remainingQuantity);
+					setValue(
+						'rentQuantity',
+						getRemainingQuantityAtRecordCreationTime?.(updatedItemInfo) ||
+							updatedItemInfo.remainingQuantity
+					);
 				}
-				return updatedItemInfo.remainingQuantity as number;
+				return (
+					getRemainingQuantityAtRecordCreationTime?.(updatedItemInfo) ||
+					(updatedItemInfo.remainingQuantity as number)
+				);
 			});
 		}
 	}, [updatedItemInfo]);

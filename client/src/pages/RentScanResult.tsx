@@ -52,7 +52,7 @@ export function RentScanResult() {
 			<ScanContext.Provider value={scanContext}>
 				<Flex flex={1} h={'100%'}>
 					<Flex flex={0.5}>
-						<ImageGallery images={images} />
+						<ImageGallery images={images as Blob[]} />
 					</Flex>
 					<Flex flex={0.5} flexDirection={'column'} paddingX={5}>
 						<Flex w={'100%'} alignItems={'center'}>

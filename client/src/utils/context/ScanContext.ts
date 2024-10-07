@@ -49,7 +49,7 @@ export const useInitialScanContext = (type: string = 'rent') => {
 	// const scanResultState = useState<RentingItem[] | null>(null);
 	const scanResultState = useState<RentingItem[]>([]);
 	const readyToRedirectState = useState(false);
-	const imagesState = useState<Blob[]>([]);
+	const imagesState = useState<(string | Blob)[]>([]);
 	const imageProofsState = useState<EditImageProofValues[]>([]);
 	const selectedItemState = useState<RentingItem | null>(null);
 	const dirtyFormState = useState<boolean>(false);
@@ -68,9 +68,10 @@ export const useInitialScanContext = (type: string = 'rent') => {
 	const [images, setImages] = imagesState;
 	const [, setIsDirtyForm] = dirtyFormState;
 
-	const handleAddConfirm = (item: RentingItem) => {
+	const handleAddConfirm = (item: RentingItem, specificRemainingQuantity?: number) => {
 		const newItemQuantity = Number.parseInt(item.rentQuantity as string);
-		const remainingQuantity = (item.item as Item).remainingQuantity as number;
+		const remainingQuantity =
+			specificRemainingQuantity || ((item.item as Item).remainingQuantity as number);
 
 		setScanResult((prev) => {
 			const existingItem = prev.find(
@@ -173,7 +174,7 @@ export const useInitialScanContext = (type: string = 'rent') => {
 
 	const handleScan = async (scanType: string) => {
 		appDispatch({type: 'SET_PAGE_LOADING', payload: true});
-		const itemList = Object.entries((await predictItems(images)) || {});
+		const itemList = Object.entries((await predictItems(images as Blob[])) || {});
 		// Structure: {
 		// 		itemId: value;
 		// }

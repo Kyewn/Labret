@@ -55,7 +55,7 @@ export const UserHistoryItemModal: React.FC<{
 
 		switch (lcStatus) {
 			case 'pending':
-				return 'green';
+				return 'yellow';
 
 			case 'active':
 				return 'green';
