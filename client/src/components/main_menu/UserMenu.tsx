@@ -53,7 +53,8 @@ export const UserMenu = () => {
 		const unpaidRecordsLength = records.filter(
 			(record) =>
 				((record.renter as User).id == user?.id &&
-					(record.returnedAt as Date) > addDays(record.expectedReturnAt as Date, 1)) ||
+					(record.returnedAt as Date) > addDays(record.expectedReturnAt as Date, 1) &&
+					record.recordStatus != 'paid') ||
 				record.recordStatus === 'rent_rejected' ||
 				record.recordStatus === 'return_rejected'
 		).length;
@@ -127,9 +128,11 @@ export const UserMenu = () => {
 		);
 		const userDebtRecords = records.filter(
 			(record) =>
-				(record.returnedAt as Date) > addDays(record.expectedReturnAt as Date, 1) ||
-				record.recordStatus == 'rent_rejected' ||
-				record.recordStatus == 'return_rejected'
+				((record.renter as User).id == user?.id &&
+					(record.returnedAt as Date) > addDays(record.expectedReturnAt as Date, 1) &&
+					record.recordStatus != 'paid') ||
+				record.recordStatus === 'rent_rejected' ||
+				record.recordStatus === 'return_rejected'
 		);
 
 		// Check user not having 3 pending/rent status records

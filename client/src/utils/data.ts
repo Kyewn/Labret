@@ -163,14 +163,14 @@ export type Verification = {
 	verificationId: string;
 	record: string | RentalRecord; // Rental record id
 	createdAt: string | Date;
-	updatedAt?: string | Date;
+	verifiedAt?: string | Date;
 	verifiedBy?: string | User;
 	isRecordSerious?: boolean;
 	verificationComments?: string;
 };
 
 export type VerificationEditableFields = {
-	updatedAt?: string | FieldValue;
+	verifiedAt?: string | FieldValue;
 	verifiedBy?: string | FieldValue;
 	isRecordSerious?: boolean | FieldValue;
 	verificationComments?: string | FieldValue;

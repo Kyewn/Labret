@@ -52,7 +52,6 @@ export const useInitialItemTableContext = () => {
 	};
 
 	const refetch = async () => {
-		// TODO get db
 		const items = await getAllBaseItems();
 		setData(items);
 	};
@@ -132,7 +131,6 @@ export const useInitialItemTableContext = () => {
 	};
 
 	const handleSetActiveForRows = (items: Item[]) => {
-		// TODO
 		confirmDialogDisclosure.onOpen();
 
 		const handleEdit = async () => {

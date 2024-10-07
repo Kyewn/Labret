@@ -110,15 +110,17 @@ export const useInitialDebtTableContext = () => {
 			switch (tab) {
 				case 0: {
 					// Normal debt
-					const tableData = verifications.filter(
-						(verification) =>
-							(!verification.isRecordSerious &&
-								// Check if record is overdue (end of expectedReturnDate)
-								((verification.record as RentalRecord).returnedAt as Date) >
-									addDays((verification.record as RentalRecord).expectedReturnAt as Date, 1)) ||
-							(verification.record as RentalRecord).recordStatus == 'rent_rejected' ||
-							(verification.record as RentalRecord).recordStatus == 'return_rejected'
-					);
+					const tableData = verifications.filter((verification) => {
+						return (
+							!verification.isRecordSerious &&
+							// Check if record is overdue (end of expectedReturnDate)
+							((((verification.record as RentalRecord).returnedAt as Date) >
+								addDays((verification.record as RentalRecord).expectedReturnAt as Date, 1) &&
+								(verification.record as RentalRecord).recordStatus != 'paid') ||
+								(verification.record as RentalRecord).recordStatus == 'rent_rejected' ||
+								(verification.record as RentalRecord).recordStatus == 'return_rejected')
+						);
+					});
 					setTableData(tableData);
 					break;
 				}
@@ -152,7 +154,7 @@ export const useInitialDebtTableContext = () => {
 			try {
 				await editRecord((record as RentalRecord).recordId, {
 					recordStatus: 'paid',
-					returnedAt: new Date()
+					returnedAt: new Date().toISOString()
 				});
 
 				// Clear row selections
@@ -198,7 +200,7 @@ export const useInitialDebtTableContext = () => {
 			try {
 				await editRecord((record as RentalRecord).recordId, {
 					recordStatus: 'paid',
-					returnedAt: new Date()
+					returnedAt: new Date().toISOString()
 				});
 
 				// Clear row selections
@@ -239,8 +241,8 @@ export const useInitialDebtTableContext = () => {
 				for (const verification of verifications) {
 					const {record} = verification;
 					await editRecord((record as RentalRecord).recordId, {
-						status: 'paid',
-						returnedAt: new Date()
+						recordStatus: 'paid',
+						returnedAt: new Date().toISOString()
 					});
 				}
 
@@ -281,8 +283,8 @@ export const useInitialDebtTableContext = () => {
 				for (const verification of verifications) {
 					const {record} = verification;
 					await editRecord((record as RentalRecord).recordId, {
-						status: 'paid',
-						returnedAt: new Date()
+						recordStatus: 'paid',
+						returnedAt: new Date().toISOString()
 					});
 				}
 

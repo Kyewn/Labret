@@ -29,7 +29,8 @@ export const ReturnTable = () => {
 
 		handleVerifyReturn,
 		handleRejectReturn,
-		handleVerifyReturnForRows
+		handleVerifyReturnForRows,
+		handleRejectReturnForRows
 	} = verificationTableContext as ReturnType<typeof useInitialVerificationTableContext>;
 	const [, setSelectedData] = selectedDataState;
 	const [table] = returnTableState;
@@ -151,15 +152,31 @@ export const ReturnTable = () => {
 							{Object.entries(rowSelection || {}).length} of {tableData?.length} record(s) selected
 						</Text>
 						<Spacer />
-						<Button
-							onClick={() => {
-								const selectedVerifications = Object.keys(rowSelection).map((key) => {
-									const verification = table?.getRow(key).original;
-									return verification as Verification;
-								});
-								handleVerifyReturnForRows(selectedVerifications);
-							}}
-						/>
+						<ButtonGroup>
+							<Button
+								onClick={() => {
+									const selectedVerifications = Object.keys(rowSelection).map((key) => {
+										const verification = table?.getRow(key).original;
+										return verification as Verification;
+									});
+									handleVerifyReturnForRows(selectedVerifications);
+								}}
+							>
+								Verify
+							</Button>
+							<Button
+								variant={'outline'}
+								onClick={() => {
+									const selectedVerifications = Object.keys(rowSelection).map((key) => {
+										const verification = table?.getRow(key).original;
+										return verification as Verification;
+									});
+									handleRejectReturnForRows(selectedVerifications);
+								}}
+							>
+								Reject
+							</Button>
+						</ButtonGroup>
 					</Flex>
 				</HStack>
 			</Slide>
