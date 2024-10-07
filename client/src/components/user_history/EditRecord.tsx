@@ -209,7 +209,7 @@ export const EditRecord: React.FC = () => {
 					(verf) => (verf.record as RentalRecord).recordId == selectedRecord.recordId
 				) as Verification;
 				await editVerification(verification?.verificationId, {
-					updatedAt: deleteField(),
+					verifiedAt: deleteField(),
 					verifiedBy: deleteField(),
 					isRecordSerious: deleteField(),
 					verificationComments: deleteField()
@@ -241,7 +241,7 @@ export const EditRecord: React.FC = () => {
 						(verf) => (verf.record as RentalRecord).recordId == selectedRecord.recordId
 					) as Verification;
 					await editVerification(verification?.verificationId, {
-						updatedAt: deleteField(),
+						verifiedAt: deleteField(),
 						verifiedBy: deleteField(),
 						isRecordSerious: deleteField(),
 						verificationComments: deleteField()

@@ -88,7 +88,6 @@ export const useInitialVerificationTableContext = () => {
 	};
 	const refetch = async () => {
 		const verifications = await getAllVerifications();
-		console.log(verifications);
 
 		setInitData(() => {
 			switch (tab) {
@@ -128,8 +127,8 @@ export const useInitialVerificationTableContext = () => {
 				// TODO: Send general (reject or delete) email to user notifying verify
 				await editRecord((record as RentalRecord).recordId, {recordStatus: 'active'});
 				await editVerification(verification.verificationId, {
-					verifiedBy: user as User,
-					verifiedAt: new Date()
+					verifiedBy: (user as User).id,
+					verifiedAt: new Date().toISOString()
 				});
 				// Clear row selections
 				rentTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
@@ -174,13 +173,12 @@ export const useInitialVerificationTableContext = () => {
 			try {
 				// TODO: Send general (reject or delete) email to user notifying verify
 				await editRecord((record as RentalRecord).recordId, {recordStatus: 'rent_rejected'});
-				(verificationComments || isRecordSerious) &&
-					(await editVerification(verification.verificationId, {
-						...(verificationComments && {verificationComments}),
-						...(isRecordSerious && {isRecordSerious}),
-						verifiedBy: user as User,
-						verifiedAt: new Date()
-					}));
+				await editVerification(verification.verificationId, {
+					verificationComments: verificationComments?.length ? verificationComments : '',
+					isRecordSerious: isRecordSerious ? true : false,
+					verifiedBy: (user as User).id,
+					verifiedAt: new Date().toISOString()
+				});
 				// Clear row selections
 				rentTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
 				onClose();
@@ -229,7 +227,7 @@ export const useInitialVerificationTableContext = () => {
 					returnedAt: new Date().toISOString()
 				});
 				await editVerification(verification.verificationId, {
-					verifiedBy: user as User,
+					verifiedBy: (user as User).id,
 					verifiedAt: new Date().toISOString()
 				});
 				// Clear row selections
@@ -275,13 +273,12 @@ export const useInitialVerificationTableContext = () => {
 			try {
 				// TODO: Send general (reject or delete) email to user notifying verify
 				await editRecord((record as RentalRecord).recordId, {recordStatus: 'return_rejected'});
-				(verificationComments || isRecordSerious) &&
-					(await editVerification(verification.verificationId, {
-						...(verificationComments && {verificationComments}),
-						...(isRecordSerious && {isRecordSerious}),
-						verifiedBy: user as User,
-						verifiedAt: new Date()
-					}));
+				await editVerification(verification.verificationId, {
+					verificationComments: verificationComments?.length ? verificationComments : '',
+					isRecordSerious: isRecordSerious ? true : false,
+					verifiedBy: (user as User).id,
+					verifiedAt: new Date().toISOString()
+				});
 				// Clear row selections
 				returnTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
 				onClose();
@@ -321,10 +318,11 @@ export const useInitialVerificationTableContext = () => {
 			try {
 				for (const verification of verifications) {
 					const {record} = verification;
+					// TODO: Send general (reject or delete) email to user notifying verify
 					await editRecord((record as RentalRecord).recordId, {recordStatus: 'active'});
 					await editVerification(verification.verificationId, {
-						verifiedBy: user as User,
-						verifiedAt: new Date()
+						verifiedBy: (user as User).id,
+						verifiedAt: new Date().toISOString()
 					});
 				}
 
@@ -370,7 +368,7 @@ export const useInitialVerificationTableContext = () => {
 						returnedAt: new Date().toISOString()
 					});
 					await editVerification(verification.verificationId, {
-						verifiedBy: user as User,
+						verifiedBy: (user as User).id,
 						verifiedAt: new Date().toISOString()
 					});
 				}
@@ -400,6 +398,108 @@ export const useInitialVerificationTableContext = () => {
 				...(prev || {}),
 				description: `Are you sure you want to verify all selected records?`,
 				onConfirm: handleVerify
+			};
+		});
+	};
+
+	const handleRejectRentForRows = async (verifications: Verification[]) => {
+		verificationRejectConfirmDialogDisclosure.onOpen();
+
+		const handleReject = async () => {
+			try {
+				for (const verification of verifications) {
+					const {record} = verification;
+
+					const {verificationComments, isRecordSerious} = watch();
+					// TODO: Send general (reject or delete) email to user notifying verify
+					await editRecord((record as RentalRecord).recordId, {recordStatus: 'rent_rejected'});
+					await editVerification(verification.verificationId, {
+						verificationComments: verificationComments?.length ? verificationComments : '',
+						isRecordSerious: isRecordSerious ? true : false,
+						verifiedBy: (user as User).id,
+						verifiedAt: new Date().toISOString()
+					});
+				}
+				// Clear row selections
+				returnTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
+
+				onClose();
+				onInfoClose();
+				// Update data
+				refetch();
+				toast({
+					title: 'Record rejected',
+					description: `All selected rent records have been set to rejected.`,
+					status: 'success',
+					duration: 3000
+				});
+			} catch {
+				toast({
+					title: 'Failed to reject record',
+					description: `Some selected rent records could not be set to rejected, please try again.`,
+					status: 'error',
+					duration: 3000
+				});
+			}
+			// reset reject form values after each reject
+			reset();
+		};
+		setConfirmDialog((prev) => {
+			return {
+				...(prev || {}),
+				description: `Are you sure you want to reject these record(s)?`,
+				onConfirm: handleReject
+			};
+		});
+	};
+
+	const handleRejectReturnForRows = async (verifications: Verification[]) => {
+		verificationRejectConfirmDialogDisclosure.onOpen();
+
+		const handleReject = async () => {
+			try {
+				for (const verification of verifications) {
+					const {record} = verification;
+
+					const {verificationComments, isRecordSerious} = watch();
+					// TODO: Send general (reject or delete) email to user notifying verify
+					await editRecord((record as RentalRecord).recordId, {recordStatus: 'return_rejected'});
+					await editVerification(verification.verificationId, {
+						verificationComments: verificationComments?.length ? verificationComments : '',
+						isRecordSerious: isRecordSerious ? true : false,
+						verifiedBy: (user as User).id,
+						verifiedAt: new Date().toISOString()
+					});
+				}
+				// Clear row selections
+				returnTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
+
+				onClose();
+				onInfoClose();
+				// Update data
+				refetch();
+				toast({
+					title: 'Record rejected',
+					description: `All selected return records have been set to rejected.`,
+					status: 'success',
+					duration: 3000
+				});
+			} catch {
+				toast({
+					title: 'Failed to reject record',
+					description: `Some selected return records could not be set to rejected, please try again.`,
+					status: 'error',
+					duration: 3000
+				});
+			}
+			// reset reject form values after each reject
+			reset();
+		};
+		setConfirmDialog((prev) => {
+			return {
+				...(prev || {}),
+				description: `Are you sure you want to reject these record(s)?`,
+				onConfirm: handleReject
 			};
 		});
 	};
@@ -447,7 +547,9 @@ export const useInitialVerificationTableContext = () => {
 		handleVerifyReturn,
 		handleRejectReturn,
 		handleVerifyRentForRows,
-		handleVerifyReturnForRows
+		handleVerifyReturnForRows,
+		handleRejectRentForRows,
+		handleRejectReturnForRows
 	};
 };
 

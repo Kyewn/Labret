@@ -95,9 +95,6 @@ export const PublicHistoryItemModal: React.FC<{
 					<ModalBody p={5} display={'flex'} flexDirection={'column'}>
 						<Flex>
 							<HStack spacing={5}>
-								<Tag colorScheme={'orange'} fontWeight={'bold'}>
-									ID {(selectedRecord as RentalRecord | undefined)?.recordId}
-								</Tag>
 								{(selectedRecord as RentalRecord | undefined)?.recordStatus && (
 									<Tag
 										colorScheme={getStatusColor(
@@ -115,16 +112,6 @@ export const PublicHistoryItemModal: React.FC<{
 							<VStack flex={1} alignItems={'flex-start'} spacing={5}>
 								<HStack width={'100%'} flex={1} spacing={5} alignItems={'flex-start'}>
 									<VStack spacing={5} flex={1} alignItems={'flex-start'}>
-										<EditableField
-											name='recordTitle'
-											label={'Title'}
-											value={(selectedRecord as RentalRecord | undefined)?.recordTitle}
-										/>
-										<EditableField
-											name='notes'
-											label={'Notes'}
-											value={(selectedRecord as RentalRecord | undefined)?.recordNotes}
-										/>
 										<EditableDate
 											name='rentedAt'
 											label={'Rent Date'}

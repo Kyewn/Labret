@@ -13,7 +13,7 @@ export const getAllVerifications = async () => {
 		querySnapshot.docs.map(async (doc) => {
 			const verification = doc.data() as Verification;
 			const record = await getRecord(verification.record as string);
-			const {createdAt, updatedAt, verifiedBy} = verification;
+			const {createdAt, verifiedAt, verifiedBy} = verification;
 			const parsedVerifiedBy = verifiedBy ? await getUser(verifiedBy as string) : undefined;
 
 			return {
@@ -21,7 +21,7 @@ export const getAllVerifications = async () => {
 				verificationId: doc.id,
 				record,
 				createdAt: new Date(createdAt),
-				...(updatedAt && {updatedAt: new Date(updatedAt)}),
+				...(verifiedAt && {verifiedAt: new Date(verifiedAt)}),
 				...(verifiedBy && {verifiedBy: parsedVerifiedBy})
 			};
 		})
@@ -36,7 +36,7 @@ export const getVerification = async (verificationId: string) => {
 	)[0];
 	const verification = queryResult.data() as Verification;
 	const record = await getRecord(verification.record as string);
-	const {createdAt, updatedAt, verifiedBy} = verification;
+	const {createdAt, verifiedAt, verifiedBy} = verification;
 	const parsedVerifiedBy = verifiedBy ? await getUser(verifiedBy as string) : undefined;
 
 	return {
@@ -44,7 +44,7 @@ export const getVerification = async (verificationId: string) => {
 		verificationId,
 		record,
 		createdAt: new Date(createdAt),
-		...(updatedAt && {updatedAt: new Date(updatedAt)}),
+		...(verifiedAt && {verifiedAt: new Date(verifiedAt)}),
 		...(verifiedBy && {verifiedBy: parsedVerifiedBy})
 	};
 };
