@@ -1,3 +1,5 @@
+import {FieldValue} from 'firebase/firestore';
+
 export const UndefinedString = 'None';
 
 // App form types
@@ -38,6 +40,7 @@ export type ReturnFormValues = {
 };
 
 export type EditRentalRecordFormValues = {
+	recordStatus?: string;
 	recordTitle?: string;
 	recordNotes?: string;
 	expectedReturnAt?: Date;
@@ -153,6 +156,7 @@ export type RentalRecordEditableFields = {
 	returnedAt?: string;
 	returnImages?: string[];
 	returnLocation?: string;
+	expectedReturnAt?: string;
 };
 
 export type Verification = {
@@ -163,6 +167,13 @@ export type Verification = {
 	verifiedBy?: string | User;
 	isRecordSerious?: boolean;
 	verificationComments?: string;
+};
+
+export type VerificationEditableFields = {
+	updatedAt?: string | FieldValue;
+	verifiedBy?: string | FieldValue;
+	isRecordSerious?: boolean | FieldValue;
+	verificationComments?: string | FieldValue;
 };
 
 export type FormValues =
@@ -225,19 +236,15 @@ export const mapItemStatus = (status: string) => {
 export const mapRecordStatus = (status: string) => {
 	switch (status) {
 		case 'pending':
-			return 'Pending';
+		case 'rent_reverifying':
+			return 'New';
 
 		case 'active':
 			return 'Active';
 
 		case 'returning':
-			return 'Returning';
-
-		case 'rent_reverifying':
-			return 'Reverifying rent';
-
 		case 'return_reverifying':
-			return 'Reverifying return';
+			return 'Returning';
 
 		case 'completed':
 			return 'Completed';

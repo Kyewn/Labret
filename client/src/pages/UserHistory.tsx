@@ -10,15 +10,22 @@ import {
 	UserHistoryTableContext
 } from '@/utils/context/UserHistoryTableContext';
 import {paths} from '@/utils/paths';
+import {ToastType} from '@/utils/utils';
 import {Divider, Flex, Heading, HStack, Tab, TabList, Tabs} from '@chakra-ui/react';
 import {useEffect} from 'react';
 import {Helmet} from 'react-helmet-async';
-import {useNavigate} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
+
+export type LocationState = {
+	toastType: ToastType;
+};
 
 export function UserHistory() {
-	const {appDispatch} = useAppContext();
+	const {appDispatch, appUtils} = useAppContext();
+	const {toast} = appUtils;
+	const location = useLocation();
+	const {toastType} = (location.state as LocationState) || {};
 	const userHistoryTableContext = useInitialUserHistoryTableContext();
-
 	const {
 		initData,
 		tabState,
@@ -39,6 +46,48 @@ export function UserHistory() {
 		refetch();
 		appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 	};
+
+	// Check any toast buffer
+	useEffect(() => {
+		if (toastType) {
+			// state clears needs to be done manually
+			navigate(location.pathname, {});
+			if (toastType === ToastType.editRentSuccess) {
+				if (!toast.isActive(ToastType.editRentSuccess)) {
+					toast({
+						id: ToastType.editRentSuccess,
+						title: 'Edit successful',
+						description: 'Rent details have updated successfully.',
+						duration: 5000,
+						isClosable: true,
+						status: 'success'
+					});
+				}
+			} else if (toastType === ToastType.editReturnSuccess) {
+				if (!toast.isActive(ToastType.editReturnSuccess)) {
+					toast({
+						id: ToastType.editReturnSuccess,
+						title: 'Edit successful',
+						description: 'Return is pending for verification.',
+						duration: 5000,
+						isClosable: true,
+						status: 'success'
+					});
+				}
+			} else if (toastType === ToastType.reverifyReturnSuccess) {
+				if (!toast.isActive(ToastType.reverifyReturnSuccess)) {
+					toast({
+						id: ToastType.reverifyReturnSuccess,
+						title: 'Edit successful',
+						description: 'Return is pending for re-verification.',
+						duration: 5000,
+						isClosable: true,
+						status: 'success'
+					});
+				}
+			}
+		}
+	}, [toastType]);
 
 	useEffect(() => {
 		if (!initData) {

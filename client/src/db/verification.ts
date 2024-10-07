@@ -1,7 +1,7 @@
 import {db} from '@/db/firebase-init';
 import {getRecord} from '@/db/record';
 import {getUser} from '@/db/user';
-import {Verification} from '@/utils/data';
+import {Verification, VerificationEditableFields} from '@/utils/data';
 import {addDoc, collection, deleteDoc, getDocs, updateDoc} from 'firebase/firestore';
 
 export const verificationCollection = collection(db, 'verifications');

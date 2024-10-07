@@ -226,11 +226,11 @@ export const useInitialVerificationTableContext = () => {
 				// TODO: Send general (reject or delete) email to user notifying verify
 				await editRecord((record as RentalRecord).recordId, {
 					recordStatus: 'completed',
-					returnedAt: new Date()
+					returnedAt: new Date().toISOString()
 				});
 				await editVerification(verification.verificationId, {
 					verifiedBy: user as User,
-					verifiedAt: new Date()
+					verifiedAt: new Date().toISOString()
 				});
 				// Clear row selections
 				returnTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
@@ -321,7 +321,7 @@ export const useInitialVerificationTableContext = () => {
 			try {
 				for (const verification of verifications) {
 					const {record} = verification;
-					await editRecord((record as RentalRecord).recordId, {status: 'active'});
+					await editRecord((record as RentalRecord).recordId, {recordStatus: 'active'});
 					await editVerification(verification.verificationId, {
 						verifiedBy: user as User,
 						verifiedAt: new Date()
@@ -366,12 +366,12 @@ export const useInitialVerificationTableContext = () => {
 				for (const verification of verifications) {
 					const {record} = verification;
 					await editRecord((record as RentalRecord).recordId, {
-						status: 'completed',
-						returnedAt: new Date()
+						recordStatus: 'completed',
+						returnedAt: new Date().toISOString()
 					});
 					await editVerification(verification.verificationId, {
 						verifiedBy: user as User,
-						verifiedAt: new Date()
+						verifiedAt: new Date().toISOString()
 					});
 				}
 

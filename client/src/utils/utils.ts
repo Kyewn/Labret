@@ -6,7 +6,10 @@ import {twMerge} from 'tailwind-merge';
 export enum ToastType {
 	userCreationSuccess = 'userCreationSuccess',
 	recordCreationSuccess = 'recordCreationSuccess',
-	returnRecordSuccess = 'returnRecordSuccess'
+	returnRecordSuccess = 'returnRecordSuccess',
+	editRentSuccess = 'editRentSuccess',
+	editReturnSuccess = 'editReturnSuccess',
+	reverifyReturnSuccess = 'reverifyReturnSuccess'
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

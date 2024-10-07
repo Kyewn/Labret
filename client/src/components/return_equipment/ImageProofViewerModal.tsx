@@ -10,11 +10,13 @@ export const ImageProofViewerModal = () => {
 	const {isOpen, onClose} = imageProofDisclosure;
 	const [scanResult] = scanResultState;
 	const [selectedItem] = selectedItemState;
-	const oldImageProofBlob = scanResult.find(
+	const oldImageProof = scanResult.find(
 		(rentingItem) =>
 			(rentingItem.item as Item).itemId == (selectedItem?.item as Item | undefined)?.itemId
-	)?.proofOfReturn as Blob;
-	const oldImageProofUrl = oldImageProofBlob ? URL.createObjectURL(oldImageProofBlob) : undefined;
+	)?.proofOfReturn as string | Blob;
+	const oldImageProofUrl = (oldImageProof as Blob)?.arrayBuffer
+		? URL.createObjectURL(oldImageProof as Blob)
+		: (oldImageProof as string);
 
 	const newImageProofObj = imageProofs.find(
 		(proof) => proof.itemId === (selectedItem?.item as Item | undefined)?.itemId
