@@ -73,6 +73,7 @@ export const EditRentingItemModal: React.FC<{
 							updatedItemInfo.remainingQuantity
 					);
 				}
+
 				return (
 					getRemainingQuantityAtRecordCreationTime?.(updatedItemInfo) ||
 					(updatedItemInfo.remainingQuantity as number)

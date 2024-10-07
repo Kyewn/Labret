@@ -107,8 +107,10 @@ export const getItem = async (itemId: string) => {
 	// Calculate remaining quantity
 	const targetItemInRelatedRecords = records
 		.filter((record) => {
-			return record.rentingItems.some(
-				(rentingItem) => (rentingItem.item as Item).itemId === itemId
+			return (
+				record.recordStatus !== 'completed' &&
+				record.recordStatus != 'paid' &&
+				record.rentingItems.some((rentingItem) => (rentingItem.item as Item).itemId === itemId)
 			);
 		}) // relatedRecords
 		.map(
