@@ -1,7 +1,9 @@
 import {ConfirmDialogProps} from '@/components/ui/ConfirmDialog';
 import {editRecord} from '@/db/record';
 import {editVerification, getAllVerifications} from '@/db/verification';
+import {useAppContext} from '@/utils/context/AppContext';
 import {RentalRecord, User, Verification} from '@/utils/data';
+import {formatDateAndTime} from '@/utils/utils';
 import {useDisclosure, useToast} from '@chakra-ui/react';
 import {
 	ColumnFiltersState,
@@ -15,6 +17,9 @@ import {createContext, SyntheticEvent, useContext, useState} from 'react';
 
 // TABLE STRUCTURES
 export const useInitialDebtTableContext = () => {
+	const {
+		appState: {user}
+	} = useAppContext();
 	// Table data states
 	const tabState = useState<number>(0);
 	const initDataState = useState<Verification[] | undefined>(undefined);
@@ -141,7 +146,16 @@ export const useInitialDebtTableContext = () => {
 		});
 	};
 
-	const handleSetAsPaidNormal = async (e: SyntheticEvent, verification: Verification) => {
+	const handleSetAsPaidNormal = async (
+		e: SyntheticEvent,
+		verification: Verification,
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => {
 		e.stopPropagation();
 
 		const {record} = verification;
@@ -154,8 +168,13 @@ export const useInitialDebtTableContext = () => {
 			try {
 				await editRecord((record as RentalRecord).recordId, {
 					recordStatus: 'paid',
-					returnedAt: new Date().toISOString()
+					returnedAt: verifiedAt
 				});
+
+				const verifiedBy_name = (user as User).name;
+				const verifiedAt_formatted = formatDateAndTime(new Date(verifiedAt));
+
+				await handleSendEmail(verification, verifiedBy_name, verifiedAt_formatted);
 
 				// Clear row selections
 				normalDebtTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
@@ -187,7 +206,16 @@ export const useInitialDebtTableContext = () => {
 		});
 	};
 
-	const handleSetAsPaidHeavy = async (e: SyntheticEvent, verification: Verification) => {
+	const handleSetAsPaidHeavy = async (
+		e: SyntheticEvent,
+		verification: Verification,
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => {
 		e.stopPropagation();
 
 		const {record} = verification;
@@ -202,6 +230,11 @@ export const useInitialDebtTableContext = () => {
 					recordStatus: 'paid',
 					returnedAt: new Date().toISOString()
 				});
+
+				const verifiedBy_name = (user as User).name;
+				const verifiedAt_formatted = formatDateAndTime(new Date(verifiedAt));
+
+				await handleSendEmail(verification, verifiedBy_name, verifiedAt_formatted);
 
 				// Clear row selections
 				heavyDebtTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
@@ -233,7 +266,15 @@ export const useInitialDebtTableContext = () => {
 		});
 	};
 
-	const handleSetAsPaidForRowsNormal = async (verifications: Verification[]) => {
+	const handleSetAsPaidForRowsNormal = async (
+		verifications: Verification[],
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => {
 		confirmDialogDisclosure.onOpen();
 
 		const handleSetPaid = async () => {
@@ -244,6 +285,11 @@ export const useInitialDebtTableContext = () => {
 						recordStatus: 'paid',
 						returnedAt: new Date().toISOString()
 					});
+
+					const verifiedBy_name = (user as User).name;
+					const verifiedAt_formatted = formatDateAndTime(new Date(verifiedAt));
+
+					await handleSendEmail(verification, verifiedBy_name, verifiedAt_formatted);
 				}
 
 				// Clear row selections
@@ -275,7 +321,15 @@ export const useInitialDebtTableContext = () => {
 		});
 	};
 
-	const handleSetAsPaidForRowsHeavy = async (verifications: Verification[]) => {
+	const handleSetAsPaidForRowsHeavy = async (
+		verifications: Verification[],
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => {
 		confirmDialogDisclosure.onOpen();
 
 		const handleSetPaid = async () => {
@@ -286,6 +340,11 @@ export const useInitialDebtTableContext = () => {
 						recordStatus: 'paid',
 						returnedAt: new Date().toISOString()
 					});
+
+					const verifiedBy_name = (user as User).name;
+					const verifiedAt_formatted = formatDateAndTime(new Date(verifiedAt));
+
+					await handleSendEmail(verification, verifiedBy_name, verifiedAt_formatted);
 				}
 
 				// Clear row selections

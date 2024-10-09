@@ -39,7 +39,7 @@ export function SettleDebts() {
 	return (
 		<>
 			<Helmet>
-				<title>Verifications</title>
+				<title>Track debts</title>
 			</Helmet>
 
 			<DebtTableContext.Provider value={debtTableContext}>

@@ -1,14 +1,17 @@
 import {EditableComboBox} from '@/components/ui/EditableComboBox';
 import {EditableField} from '@/components/ui/EditableField';
 import {EditableNumberInput} from '@/components/ui/EditableNumberInput';
+import {ItemRegistered} from '@/components/ui/EmailComponents/ItemRegistered';
 import ImageManager from '@/components/ui/ImageManager';
 import {createItem, editItem} from '@/db/item';
+import {getAllAdmins} from '@/db/user';
 import {useAddItemContext, useInitialAddItemContext} from '@/utils/context/AddItemContext';
 import {useAppContext} from '@/utils/context/AppContext';
 import {AddItemFormValues, FormValues} from '@/utils/data';
 import {paths} from '@/utils/paths';
-import {convertBlobToBase64} from '@/utils/utils';
+import {convertBlobToBase64, formatDateAndTime} from '@/utils/utils';
 import {Button, ButtonGroup, Flex, HStack, Spacer, VStack, useToast} from '@chakra-ui/react';
+import {render} from '@react-email/components';
 import {getDoc} from 'firebase/firestore';
 import {useEffect} from 'react';
 import {UseFormRegister, UseFormSetValue} from 'react-hook-form';
@@ -63,7 +66,7 @@ const AddItemFormStep: React.FC = () => {
 		}
 
 		const item = await createItem(data, appUser?.id as string);
-		const itemData = (await getDoc(item)).data() as AddItemFormValues;
+		const itemData = (await getDoc(item)).data() as AddItemFormValues & {createdAt: string};
 		// Convert images to base64 strings
 		const imageStrings = await Promise.all(
 			images.map(async (img) => {
@@ -91,6 +94,34 @@ const AddItemFormStep: React.FC = () => {
 			return originalUrl.replace('undefined', info.image.id);
 		});
 		await editItem(item.id, {itemImages: imageUrls});
+
+		// Send notification email to other admins
+		const admins = await getAllAdmins();
+		const otherAdminEmails = admins
+			.filter((admin) => admin.id != appUser?.id && admin.status == 'active')
+			.map((admin) => admin.email);
+		const emailHtml = await render(
+			<ItemRegistered
+				newItemName={itemData.itemName as string}
+				authorName={appUser?.name as string}
+				createdAt={formatDateAndTime(new Date(itemData.createdAt))}
+			/>
+		);
+
+		for (const email of otherAdminEmails) {
+			await fetch('http://localhost:8002/send-email', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Access-Control-Allow-Origin': '*'
+				},
+				body: JSON.stringify({
+					subject: 'New Item Registration',
+					email,
+					html: emailHtml
+				})
+			});
+		}
 	};
 
 	const onSubmit = async (data: AddItemFormValues) => {

@@ -1045,13 +1045,38 @@ export const getItemAvailabilityRecordInfoColumns: () => ColumnDef<ItemAvailabil
 export const getRentVerificationColumns: (
 	openSelectionModal: () => void,
 	closeSelectionModal: () => void,
-	handleVerify: (e: SyntheticEvent, verification: Verification) => void,
-	handleReject: (e: SyntheticEvent, verification: Verification) => void
+	handleVerify: (
+		e: SyntheticEvent,
+		verification: Verification,
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => void,
+	handleReject: (
+		e: SyntheticEvent,
+		verification: Verification,
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => void,
+	handleSendEmail: (
+		emailType: 'verifyRent' | 'rejectRent',
+		verification: Verification,
+		verifiedBy: string,
+		verifiedAt: string
+	) => Promise<unknown>
 ) => ColumnDef<Verification>[] = (
 	openSelectionModal,
 	closeSelectionModal,
 	handleVerify,
-	handleReject
+	handleReject,
+	handleSendEmail
 ) => [
 	{
 		id: 'select',
@@ -1176,10 +1201,38 @@ export const getRentVerificationColumns: (
 
 			return (
 				<ButtonGroup>
-					<Button fontSize={'sm'} onClick={(e) => handleVerify(e, verification)}>
+					<Button
+						fontSize={'sm'}
+						onClick={(e) => {
+							const verifiedAt = new Date().toISOString();
+
+							handleVerify(
+								e,
+								verification,
+								verifiedAt,
+								async (verification: Verification, verifiedBy: string, verifiedAt: string) => {
+									await handleSendEmail('verifyRent', verification, verifiedBy, verifiedAt);
+								}
+							);
+						}}
+					>
 						Verify
 					</Button>
-					<Button variant={'secondary'} onClick={(e) => handleReject(e, verification)}>
+					<Button
+						variant={'secondary'}
+						onClick={(e) => {
+							const verifiedAt = new Date().toISOString();
+
+							handleReject(
+								e,
+								verification,
+								verifiedAt,
+								async (verification: Verification, verifiedBy: string, verifiedAt: string) => {
+									await handleSendEmail('rejectRent', verification, verifiedBy, verifiedAt);
+								}
+							);
+						}}
+					>
 						Reject
 					</Button>
 				</ButtonGroup>
@@ -1191,13 +1244,38 @@ export const getRentVerificationColumns: (
 export const getReturnVerificationColumns: (
 	openSelectionModal: () => void,
 	closeSelectionModal: () => void,
-	handleVerify: (e: SyntheticEvent, verification: Verification) => void,
-	handleReject: (e: SyntheticEvent, verification: Verification) => void
+	handleVerify: (
+		e: SyntheticEvent,
+		verification: Verification,
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => void,
+	handleReject: (
+		e: SyntheticEvent,
+		verification: Verification,
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => void,
+	handleSendEmail: (
+		emailType: 'verifyReturn' | 'rejectReturn',
+		verification: Verification,
+		verifiedBy: string,
+		verifiedAt: string
+	) => Promise<unknown>
 ) => ColumnDef<Verification>[] = (
 	openSelectionModal,
 	closeSelectionModal,
 	handleVerify,
-	handleReject
+	handleReject,
+	handleSendEmail
 ) => [
 	{
 		id: 'select',
@@ -1322,10 +1400,38 @@ export const getReturnVerificationColumns: (
 
 			return (
 				<ButtonGroup>
-					<Button fontSize={'sm'} onClick={(e) => handleVerify(e, verification)}>
+					<Button
+						fontSize={'sm'}
+						onClick={(e) => {
+							const verifiedAt = new Date().toISOString();
+
+							handleVerify(
+								e,
+								verification,
+								verifiedAt,
+								async (verification: Verification, verifiedBy: string, verifiedAt: string) => {
+									await handleSendEmail('verifyReturn', verification, verifiedBy, verifiedAt);
+								}
+							);
+						}}
+					>
 						Verify
 					</Button>
-					<Button variant={'secondary'} onClick={(e) => handleReject(e, verification)}>
+					<Button
+						variant={'secondary'}
+						onClick={(e) => {
+							const verifiedAt = new Date().toISOString();
+
+							handleReject(
+								e,
+								verification,
+								verifiedAt,
+								async (verification: Verification, verifiedBy: string, verifiedAt: string) => {
+									await handleSendEmail('rejectReturn', verification, verifiedBy, verifiedAt);
+								}
+							);
+						}}
+					>
 						Reject
 					</Button>
 				</ButtonGroup>
@@ -1337,13 +1443,28 @@ export const getReturnVerificationColumns: (
 export const getNormalDebtColumns: (
 	openSelectionModal: () => void,
 	closeSelectionModal: () => void,
-	handleSetAsPaid: (e: SyntheticEvent, verification: Verification) => void,
-	handleSetAsHeavy: (e: SyntheticEvent, verification: Verification) => void
+	handleSetAsPaid: (
+		e: SyntheticEvent,
+		verification: Verification,
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => void,
+	handleSetAsHeavy: (e: SyntheticEvent, verification: Verification) => void,
+	handleSendEmail: (
+		verification: Verification,
+		verifiedBy: string,
+		verifiedAt: string
+	) => Promise<unknown>
 ) => ColumnDef<Verification>[] = (
 	openSelectionModal,
 	closeSelectionModal,
 	handleSetAsPaid,
-	handleSetAsHeavy
+	handleSetAsHeavy,
+	handleSendEmail
 ) => [
 	{
 		id: 'select',
@@ -1447,7 +1568,19 @@ export const getNormalDebtColumns: (
 
 			return (
 				<ButtonGroup>
-					<Button fontSize={'sm'} onClick={(e) => handleSetAsPaid(e, verification)}>
+					<Button
+						fontSize={'sm'}
+						onClick={(e) => {
+							const verifiedAt = new Date().toISOString();
+							handleSetAsPaid(
+								e,
+								verification,
+								verifiedAt,
+								async (verification, verifiedBy, verifiedAt) =>
+									handleSendEmail(verification, verifiedBy, verifiedAt)
+							);
+						}}
+					>
 						Set As Paid
 					</Button>
 					<Button variant={'secondary'} onClick={(e) => handleSetAsHeavy(e, verification)}>
@@ -1462,13 +1595,28 @@ export const getNormalDebtColumns: (
 export const getHeavyDebtColumns: (
 	openSelectionModal: () => void,
 	closeSelectionModal: () => void,
-	handleSetAsPaid: (e: SyntheticEvent, verification: Verification) => void,
-	handleSetAsNormal: (e: SyntheticEvent, verification: Verification) => void
+	handleSetAsPaid: (
+		e: SyntheticEvent,
+		verification: Verification,
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => void,
+	handleSetAsNormal: (e: SyntheticEvent, verification: Verification) => void,
+	handleSendEmail: (
+		verification: Verification,
+		verifiedBy: string,
+		verifiedAt: string
+	) => Promise<unknown>
 ) => ColumnDef<Verification>[] = (
 	openSelectionModal,
 	closeSelectionModal,
 	handleSetAsPaid,
-	handleSetAsNormal
+	handleSetAsNormal,
+	handleSendEmail
 ) => [
 	{
 		id: 'select',
@@ -1566,7 +1714,19 @@ export const getHeavyDebtColumns: (
 
 			return (
 				<ButtonGroup>
-					<Button fontSize={'sm'} onClick={(e) => handleSetAsPaid(e, verification)}>
+					<Button
+						fontSize={'sm'}
+						onClick={(e) => {
+							const verifiedAt = new Date().toISOString();
+							handleSetAsPaid(
+								e,
+								verification,
+								verifiedAt,
+								async (verification, verifiedBy, verifiedAt) =>
+									handleSendEmail(verification, verifiedBy, verifiedAt)
+							);
+						}}
+					>
 						Set As Paid
 					</Button>
 					<Button variant={'secondary'} onClick={(e) => handleSetAsNormal(e, verification)}>

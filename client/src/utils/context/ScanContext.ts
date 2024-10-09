@@ -1,6 +1,6 @@
 import {getItem} from '@/db/item';
 import {createRecord, editRecord} from '@/db/record';
-import {createVerification} from '@/db/verification';
+import {createVerification, editVerification, getAllVerifications} from '@/db/verification';
 import {useAppContext} from '@/utils/context/AppContext';
 import {
 	EditImageProofValues,
@@ -8,11 +8,13 @@ import {
 	NewRentFormValues,
 	RentalRecord,
 	RentingItem,
-	ReturnFormValues
+	ReturnFormValues,
+	Verification
 } from '@/utils/data';
 import {paths} from '@/utils/paths';
 import {predictItems, ToastType} from '@/utils/utils';
 import {useDisclosure, useSteps, useToast} from '@chakra-ui/react';
+import {deleteField} from 'firebase/firestore';
 import {IKCore} from 'imagekitio-react';
 import {createContext, useContext, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
@@ -382,6 +384,18 @@ export const useInitialScanContext = (type: string = 'rent') => {
 				recordStatus: 'returning',
 				returnedAt: new Date().toISOString(),
 				...(returnNotes ? {recordNotes: returnNotes} : undefined)
+			});
+
+			// Remove rented verification status
+			const verifications = await getAllVerifications();
+			const verification = verifications.find(
+				(verf) => (verf.record as RentalRecord).recordId == recordId
+			) as Verification;
+			await editVerification(verification?.verificationId, {
+				verifiedAt: deleteField(),
+				verifiedBy: deleteField(),
+				isRecordSerious: deleteField(),
+				verificationComments: deleteField()
 			});
 
 			// Redirect to main page

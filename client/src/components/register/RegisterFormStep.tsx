@@ -1,13 +1,15 @@
 import {EditableField} from '@/components/ui/EditableField';
+import {AdminRegistered} from '@/components/ui/EmailComponents/AdminRegistered';
 import ImageManager from '@/components/ui/ImageManager';
 import {config} from '@/config';
-import {createAdmin, createUser, editUser, userCollection} from '@/db/user';
+import {createAdmin, createUser, editUser, getAllAdmins, userCollection} from '@/db/user';
 import {useAppContext} from '@/utils/context/AppContext';
 import {useInitialRegisterContext, useRegisterContext} from '@/utils/context/RegisterContext';
 import {AddUserFormValues, FormValues} from '@/utils/data';
 import {paths} from '@/utils/paths';
-import {convertBlobToBase64, ToastType} from '@/utils/utils';
+import {convertBlobToBase64, formatDateAndTime, ToastType} from '@/utils/utils';
 import {Button, ButtonGroup, Center, Flex, HStack, Spacer, Text, VStack} from '@chakra-ui/react';
+import {render} from '@react-email/components';
 import {getDoc, getDocs} from 'firebase/firestore';
 import {useEffect} from 'react';
 import {UseFormRegister} from 'react-hook-form';
@@ -62,7 +64,7 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 			: (appUser?.id as string);
 		const user =
 			page == 'register' ? await createUser(data) : await createAdmin(data, currentAdmin);
-		const userData = (await getDoc(user)).data() as AddUserFormValues;
+		const userData = (await getDoc(user)).data() as AddUserFormValues & {createdAt: string};
 		// Convert images to base64 strings
 		const imageStrings = await Promise.all(
 			images.map(async (img) => {
@@ -90,6 +92,39 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 			return originalUrl.replace('undefined', info.image.id);
 		});
 		await editUser(user.id, {imageUrls});
+
+		if (page == 'registerAdmin') {
+			// Send notification email to other admins
+			const admins = await getAllAdmins();
+			const otherAdminEmails = admins
+				.filter(
+					(admin) => admin.id != appUser?.id && admin.id != user.id && admin.status == 'active'
+				)
+				.map((admin) => admin.email);
+			const emailHtml = await render(
+				<AdminRegistered
+					newAdminName={data.name}
+					authorName={appUser?.name as string}
+					createdAt={formatDateAndTime(new Date(userData.createdAt))}
+				/>
+			);
+
+			for (const email of otherAdminEmails) {
+				await fetch('http://localhost:8002/send-email', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Access-Control-Allow-Origin': '*'
+					},
+					body: JSON.stringify({
+						subject: 'New Admin Registration',
+						email,
+						html: emailHtml
+					})
+				});
+			}
+		}
+
 		navigate(paths.main.root, {
 			state: {
 				toastType: ToastType.userCreationSuccess

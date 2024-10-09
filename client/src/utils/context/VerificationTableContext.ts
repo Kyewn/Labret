@@ -3,6 +3,7 @@ import {editRecord} from '@/db/record';
 import {editVerification, getAllVerifications} from '@/db/verification';
 import {useAppContext} from '@/utils/context/AppContext';
 import {EditVerificationFormValues, RentalRecord, User, Verification} from '@/utils/data';
+import {formatDateAndTime} from '@/utils/utils';
 import {useDisclosure, useToast} from '@chakra-ui/react';
 import {
 	ColumnFiltersState,
@@ -114,7 +115,16 @@ export const useInitialVerificationTableContext = () => {
 		});
 	};
 
-	const handleVerifyRent = async (e: SyntheticEvent, verification: Verification) => {
+	const handleVerifyRent = async (
+		e: SyntheticEvent,
+		verification: Verification,
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => {
 		e.stopPropagation();
 		const {record} = verification;
 		const {renter} = record as RentalRecord;
@@ -126,16 +136,24 @@ export const useInitialVerificationTableContext = () => {
 			try {
 				// TODO: Send general (reject or delete) email to user notifying verify
 				await editRecord((record as RentalRecord).recordId, {recordStatus: 'active'});
+				const verifiedBy = (user as User).id;
+
+				const verifiedBy_name = (user as User).name;
+				const verifiedAt_formatted = formatDateAndTime(new Date(verifiedAt));
+
 				await editVerification(verification.verificationId, {
-					verifiedBy: (user as User).id,
-					verifiedAt: new Date().toISOString()
+					verifiedBy,
+					verifiedAt
 				});
+				await handleSendEmail(verification, verifiedBy_name, verifiedAt_formatted);
+
 				// Clear row selections
 				rentTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
 				onClose();
 				onInfoClose();
 				// Update data
 				refetch();
+
 				toast({
 					title: 'Record verified',
 					description: `Record of ${name} have been verified.`,
@@ -160,7 +178,16 @@ export const useInitialVerificationTableContext = () => {
 		});
 	};
 
-	const handleRejectRent = async (e: SyntheticEvent, verification: Verification) => {
+	const handleRejectRent = async (
+		e: SyntheticEvent,
+		verification: Verification,
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => {
 		e.stopPropagation();
 		const {record} = verification;
 		const {renter} = record as RentalRecord;
@@ -173,12 +200,18 @@ export const useInitialVerificationTableContext = () => {
 			try {
 				// TODO: Send general (reject or delete) email to user notifying verify
 				await editRecord((record as RentalRecord).recordId, {recordStatus: 'rent_rejected'});
+
 				await editVerification(verification.verificationId, {
 					verificationComments: verificationComments?.length ? verificationComments : '',
 					isRecordSerious: isRecordSerious ? true : false,
 					verifiedBy: (user as User).id,
-					verifiedAt: new Date().toISOString()
+					verifiedAt
 				});
+				const verifiedBy_name = (user as User).name;
+				const verifiedAt_formatted = formatDateAndTime(new Date(verifiedAt));
+
+				await handleSendEmail(verification, verifiedBy_name, verifiedAt_formatted);
+
 				// Clear row selections
 				rentTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
 				onClose();
@@ -211,7 +244,16 @@ export const useInitialVerificationTableContext = () => {
 		});
 	};
 
-	const handleVerifyReturn = async (e: SyntheticEvent, verification: Verification) => {
+	const handleVerifyReturn = async (
+		e: SyntheticEvent,
+		verification: Verification,
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => {
 		e.stopPropagation();
 		const {record} = verification;
 		const {renter} = record as RentalRecord;
@@ -226,23 +268,33 @@ export const useInitialVerificationTableContext = () => {
 					recordStatus: 'completed',
 					returnedAt: new Date().toISOString()
 				});
+
+				const verifiedBy = (user as User).id;
+
+				const verifiedBy_name = (user as User).name;
+				const verifiedAt_formatted = formatDateAndTime(new Date(verifiedAt));
+
 				await editVerification(verification.verificationId, {
-					verifiedBy: (user as User).id,
-					verifiedAt: new Date().toISOString()
+					verifiedBy,
+					verifiedAt
 				});
+				await handleSendEmail(verification, verifiedBy_name, verifiedAt_formatted);
+
 				// Clear row selections
 				returnTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
 				onClose();
 				onInfoClose();
 				// Update data
 				refetch();
+				console.log('3');
 				toast({
 					title: 'Record verified',
 					description: `Record of ${name} have been verified.`,
 					status: 'success',
 					duration: 3000
 				});
-			} catch {
+			} catch (e) {
+				console.log(e);
 				toast({
 					title: 'Failed to verify record',
 					description: `Record of ${name} could not be verified, please try again.`,
@@ -260,7 +312,16 @@ export const useInitialVerificationTableContext = () => {
 		});
 	};
 
-	const handleRejectReturn = async (e: SyntheticEvent, verification: Verification) => {
+	const handleRejectReturn = async (
+		e: SyntheticEvent,
+		verification: Verification,
+		verifiedAt: string,
+		handleSendEmail: (
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => {
 		e.stopPropagation();
 		const {record} = verification;
 		const {renter} = record as RentalRecord;
@@ -273,12 +334,17 @@ export const useInitialVerificationTableContext = () => {
 			try {
 				// TODO: Send general (reject or delete) email to user notifying verify
 				await editRecord((record as RentalRecord).recordId, {recordStatus: 'return_rejected'});
+
 				await editVerification(verification.verificationId, {
 					verificationComments: verificationComments?.length ? verificationComments : '',
 					isRecordSerious: isRecordSerious ? true : false,
 					verifiedBy: (user as User).id,
-					verifiedAt: new Date().toISOString()
+					verifiedAt
 				});
+				const verifiedBy_name = (user as User).name;
+				const verifiedAt_formatted = formatDateAndTime(new Date(verifiedAt));
+				await handleSendEmail(verification, verifiedBy_name, verifiedAt_formatted);
+
 				// Clear row selections
 				returnTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
 				onClose();
@@ -311,7 +377,16 @@ export const useInitialVerificationTableContext = () => {
 		});
 	};
 
-	const handleVerifyRentForRows = async (verifications: Verification[]) => {
+	const handleVerifyRentForRows = async (
+		verifications: Verification[],
+		verifiedAt: string,
+		handleSendEmail: (
+			emailType: 'verifyRent' | 'rejectRent',
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => {
 		confirmDialogDisclosure.onOpen();
 
 		const handleVerify = async () => {
@@ -320,10 +395,15 @@ export const useInitialVerificationTableContext = () => {
 					const {record} = verification;
 					// TODO: Send general (reject or delete) email to user notifying verify
 					await editRecord((record as RentalRecord).recordId, {recordStatus: 'active'});
+
 					await editVerification(verification.verificationId, {
 						verifiedBy: (user as User).id,
-						verifiedAt: new Date().toISOString()
+						verifiedAt
 					});
+
+					const verifiedBy_name = (user as User).name;
+					const verifiedAt_formatted = formatDateAndTime(new Date(verifiedAt));
+					await handleSendEmail('verifyRent', verification, verifiedBy_name, verifiedAt_formatted);
 				}
 
 				// Clear row selections
@@ -355,7 +435,16 @@ export const useInitialVerificationTableContext = () => {
 		});
 	};
 
-	const handleVerifyReturnForRows = async (verifications: Verification[]) => {
+	const handleVerifyReturnForRows = async (
+		verifications: Verification[],
+		verifiedAt: string,
+		handleSendEmail: (
+			emailType: 'verifyReturn' | 'rejectReturn',
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => {
 		// TODO
 		confirmDialogDisclosure.onOpen();
 
@@ -367,10 +456,20 @@ export const useInitialVerificationTableContext = () => {
 						recordStatus: 'completed',
 						returnedAt: new Date().toISOString()
 					});
+
 					await editVerification(verification.verificationId, {
 						verifiedBy: (user as User).id,
-						verifiedAt: new Date().toISOString()
+						verifiedAt
 					});
+
+					const verifiedBy_name = (user as User).name;
+					const verifiedAt_formatted = formatDateAndTime(new Date(verifiedAt));
+					await handleSendEmail(
+						'verifyReturn',
+						verification,
+						verifiedBy_name,
+						verifiedAt_formatted
+					);
 				}
 
 				// Clear row selections
@@ -402,7 +501,16 @@ export const useInitialVerificationTableContext = () => {
 		});
 	};
 
-	const handleRejectRentForRows = async (verifications: Verification[]) => {
+	const handleRejectRentForRows = async (
+		verifications: Verification[],
+		verifiedAt: string,
+		handleSendEmail: (
+			emailType: 'verifyRent' | 'rejectRent',
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => {
 		verificationRejectConfirmDialogDisclosure.onOpen();
 
 		const handleReject = async () => {
@@ -413,12 +521,17 @@ export const useInitialVerificationTableContext = () => {
 					const {verificationComments, isRecordSerious} = watch();
 					// TODO: Send general (reject or delete) email to user notifying verify
 					await editRecord((record as RentalRecord).recordId, {recordStatus: 'rent_rejected'});
+
 					await editVerification(verification.verificationId, {
 						verificationComments: verificationComments?.length ? verificationComments : '',
 						isRecordSerious: isRecordSerious ? true : false,
 						verifiedBy: (user as User).id,
-						verifiedAt: new Date().toISOString()
+						verifiedAt
 					});
+
+					const verifiedBy_name = (user as User).name;
+					const verifiedAt_formatted = formatDateAndTime(new Date(verifiedAt));
+					await handleSendEmail('rejectRent', verification, verifiedBy_name, verifiedAt_formatted);
 				}
 				// Clear row selections
 				returnTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
@@ -453,7 +566,16 @@ export const useInitialVerificationTableContext = () => {
 		});
 	};
 
-	const handleRejectReturnForRows = async (verifications: Verification[]) => {
+	const handleRejectReturnForRows = async (
+		verifications: Verification[],
+		verifiedAt: string,
+		handleSendEmail: (
+			emailType: 'verifyReturn' | 'rejectReturn',
+			verification: Verification,
+			verifiedBy: string,
+			verifiedAt: string
+		) => Promise<unknown>
+	) => {
 		verificationRejectConfirmDialogDisclosure.onOpen();
 
 		const handleReject = async () => {
@@ -464,12 +586,22 @@ export const useInitialVerificationTableContext = () => {
 					const {verificationComments, isRecordSerious} = watch();
 					// TODO: Send general (reject or delete) email to user notifying verify
 					await editRecord((record as RentalRecord).recordId, {recordStatus: 'return_rejected'});
+
 					await editVerification(verification.verificationId, {
 						verificationComments: verificationComments?.length ? verificationComments : '',
 						isRecordSerious: isRecordSerious ? true : false,
 						verifiedBy: (user as User).id,
 						verifiedAt: new Date().toISOString()
 					});
+
+					const verifiedBy_name = (user as User).name;
+					const verifiedAt_formatted = formatDateAndTime(new Date(verifiedAt));
+					await handleSendEmail(
+						'rejectReturn',
+						verification,
+						verifiedBy_name,
+						verifiedAt_formatted
+					);
 				}
 				// Clear row selections
 				returnTableState[0]?.toggleAllRowsSelected(false); // Clear selected rows (if any)
