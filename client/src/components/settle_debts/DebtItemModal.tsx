@@ -1,10 +1,11 @@
 import {ScannedItem} from '@/components/rent_equipment/ScannedItem';
 import {EditableDate} from '@/components/ui/EditableDate';
 import {EditableField} from '@/components/ui/EditableField';
+import {RecordPaid} from '@/components/ui/EmailComponents/RecordPaid';
 import ImageManager from '@/components/ui/ImageManager';
 import {SingleImageViewerModal} from '@/components/ui/SingleImageViewerModal';
 import {useDebtTableContext, useInitialDebtTableContext} from '@/utils/context/DebtTableContext';
-import {Item, mapRecordStatus, RentalRecord, Verification} from '@/utils/data';
+import {Item, mapRecordStatus, RentalRecord, User, Verification} from '@/utils/data';
 
 import {
 	Box,
@@ -22,6 +23,7 @@ import {
 	useDisclosure,
 	VStack
 } from '@chakra-ui/react';
+import {render} from '@react-email/components';
 import {useState} from 'react';
 
 export const DebtItemModal: React.FC<{
@@ -84,6 +86,32 @@ export const DebtItemModal: React.FC<{
 		);
 	};
 
+	const handleSendEmail = async (
+		verification: Verification,
+		verifiedBy: string,
+		verifiedAt: string
+	) => {
+		// Send notification email to user
+		const recordName = (verification.record as RentalRecord).recordTitle;
+		const email = ((verification.record as RentalRecord).renter as User).email;
+
+		const emailHtml = await render(
+			<RecordPaid recordName={recordName} authorName={verifiedBy} createdAt={verifiedAt} />
+		);
+		await fetch('http://localhost:8002/send-email', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Access-Control-Allow-Origin': '*'
+			},
+			body: JSON.stringify({
+				subject: 'Record set to Paid',
+				email,
+				html: emailHtml
+			})
+		});
+	};
+
 	return (
 		<>
 			<SingleImageViewerModal disclosure={itemImageProofDisclosure} imageUrl={selectedItemImage} />
@@ -109,7 +137,6 @@ export const DebtItemModal: React.FC<{
 									</Tag>
 								)}
 								<Spacer />
-
 								<ButtonGroup spacing={3}>
 									<Button
 										variant='outline'
@@ -125,11 +152,37 @@ export const DebtItemModal: React.FC<{
 											: 'Change to Heavy'}
 									</Button>
 									<Button
-										onClick={(e) =>
+										onClick={
 											selectedRecord &&
 											(selectedRecord as Verification | undefined)?.isRecordSerious
-												? handleSetAsPaidHeavy(e, selectedRecord as Verification)
-												: handleSetAsPaidNormal(e, selectedRecord as Verification)
+												? (e) => {
+														const verifiedAt = new Date().toISOString();
+
+														handleSetAsPaidHeavy(
+															e,
+															selectedRecord as Verification,
+															verifiedAt,
+															async (
+																verification: Verification,
+																verifiedBy: string,
+																verifiedAt: string
+															) => handleSendEmail(verification, verifiedBy, verifiedAt)
+														);
+												  }
+												: (e) => {
+														const verifiedAt = new Date().toISOString();
+
+														handleSetAsPaidNormal(
+															e,
+															selectedRecord as Verification,
+															verifiedAt,
+															async (
+																verification: Verification,
+																verifiedBy: string,
+																verifiedAt: string
+															) => handleSendEmail(verification, verifiedBy, verifiedAt)
+														);
+												  }
 										}
 									>
 										Set As Paid

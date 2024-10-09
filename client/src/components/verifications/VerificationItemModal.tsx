@@ -1,13 +1,15 @@
 import {ScannedItem} from '@/components/rent_equipment/ScannedItem';
 import {EditableDate} from '@/components/ui/EditableDate';
 import {EditableField} from '@/components/ui/EditableField';
+import {RecordRejected} from '@/components/ui/EmailComponents/RecordRejected';
+import {RecordVerified} from '@/components/ui/EmailComponents/RecordVerified';
 import ImageManager from '@/components/ui/ImageManager';
 import {SingleImageViewerModal} from '@/components/ui/SingleImageViewerModal';
 import {
 	useInitialVerificationTableContext,
 	useVerificationTableContext
 } from '@/utils/context/VerificationTableContext';
-import {Item, mapRecordStatus, RentalRecord, Verification} from '@/utils/data';
+import {Item, mapRecordStatus, RentalRecord, User, Verification} from '@/utils/data';
 
 import {
 	Box,
@@ -25,6 +27,7 @@ import {
 	useDisclosure,
 	VStack
 } from '@chakra-ui/react';
+import {render} from '@react-email/components';
 import {useState} from 'react';
 
 export const VerificationItemModal: React.FC<{
@@ -87,6 +90,103 @@ export const VerificationItemModal: React.FC<{
 		);
 	};
 
+	const handleSendEmail = async (
+		emailType: 'verifyRent' | 'verifyReturn' | 'rejectRent' | 'rejectReturn',
+		verification: Verification,
+		verifiedBy: string,
+		verifiedAt: string
+	) => {
+		// Send notification email to user
+		const recordName = (verification.record as RentalRecord).recordTitle;
+		const email = ((verification.record as RentalRecord).renter as User).email;
+
+		if (emailType == 'verifyRent') {
+			const emailHtml = await render(
+				<RecordVerified
+					recordType='rent'
+					recordName={recordName}
+					authorName={verifiedBy}
+					createdAt={verifiedAt}
+				/>
+			);
+			await fetch('http://localhost:8002/send-email', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Access-Control-Allow-Origin': '*'
+				},
+				body: JSON.stringify({
+					subject: 'Pending rent verified',
+					email,
+					html: emailHtml
+				})
+			});
+		} else if (emailType == 'verifyReturn') {
+			const emailHtml = await render(
+				<RecordVerified
+					recordType='return'
+					recordName={recordName}
+					authorName={verifiedBy}
+					createdAt={verifiedAt}
+				/>
+			);
+			await fetch('http://localhost:8002/send-email', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Access-Control-Allow-Origin': '*'
+				},
+				body: JSON.stringify({
+					subject: 'Pending return verified',
+					email,
+					html: emailHtml
+				})
+			});
+		} else if (emailType == 'rejectRent') {
+			const emailHtml = await render(
+				<RecordRejected
+					recordType='rent'
+					recordName={recordName}
+					authorName={verifiedBy}
+					createdAt={verifiedAt}
+				/>
+			);
+			await fetch('http://localhost:8002/send-email', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Access-Control-Allow-Origin': '*'
+				},
+				body: JSON.stringify({
+					subject: 'Pending rent rejected',
+					email,
+					html: emailHtml
+				})
+			});
+		} else if (emailType == 'rejectReturn') {
+			const emailHtml = await render(
+				<RecordRejected
+					recordType='return'
+					recordName={recordName}
+					authorName={verifiedBy}
+					createdAt={verifiedAt}
+				/>
+			);
+			await fetch('http://localhost:8002/send-email', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Access-Control-Allow-Origin': '*'
+				},
+				body: JSON.stringify({
+					subject: 'Pending return rejected',
+					email,
+					html: emailHtml
+				})
+			});
+		}
+	};
+
 	return (
 		<>
 			<SingleImageViewerModal disclosure={itemImageProofDisclosure} imageUrl={selectedItemImage} />
@@ -116,27 +216,115 @@ export const VerificationItemModal: React.FC<{
 								<ButtonGroup spacing={3}>
 									<Button
 										variant='outline'
-										onClick={(e) =>
+										onClick={
 											(selectedRecord &&
 												(selectedRecord?.record as RentalRecord | undefined)?.recordStatus ===
 													'returning') ||
 											(selectedRecord?.record as RentalRecord | undefined)?.recordStatus ===
 												'return_reverifying'
-												? handleRejectReturn(e, selectedRecord as Verification)
-												: handleRejectRent(e, selectedRecord as Verification)
+												? (e) => {
+														if (selectedRecord) {
+															const verifiedAt = new Date().toISOString();
+
+															handleRejectReturn(
+																e,
+																selectedRecord,
+																verifiedAt,
+																async (
+																	verification: Verification,
+																	verifiedBy: string,
+																	verifiedAt: string
+																) => {
+																	await handleSendEmail(
+																		'rejectReturn',
+																		verification,
+																		verifiedBy,
+																		verifiedAt
+																	);
+																}
+															);
+														}
+												  }
+												: (e) => {
+														if (selectedRecord) {
+															const verifiedAt = new Date().toISOString();
+
+															handleRejectRent(
+																e,
+																selectedRecord as Verification,
+																verifiedAt,
+																async (
+																	verification: Verification,
+																	verifiedBy: string,
+																	verifiedAt: string
+																) => {
+																	await handleSendEmail(
+																		'rejectRent',
+																		verification,
+																		verifiedBy,
+																		verifiedAt
+																	);
+																}
+															);
+														}
+												  }
 										}
 									>
 										Reject
 									</Button>
 									<Button
-										onClick={(e) =>
+										onClick={
 											(selectedRecord &&
 												(selectedRecord?.record as RentalRecord | undefined)?.recordStatus ===
 													'returning') ||
 											(selectedRecord?.record as RentalRecord | undefined)?.recordStatus ===
 												'return_reverifying'
-												? handleVerifyReturn(e, selectedRecord as Verification)
-												: handleVerifyRent(e, selectedRecord as Verification)
+												? (e) => {
+														if (selectedRecord) {
+															const verifiedAt = new Date().toISOString();
+
+															handleVerifyReturn(
+																e,
+																selectedRecord as Verification,
+																verifiedAt,
+																async (
+																	verification: Verification,
+																	verifiedBy: string,
+																	verifiedAt: string
+																) => {
+																	await handleSendEmail(
+																		'verifyReturn',
+																		verification,
+																		verifiedBy,
+																		verifiedAt
+																	);
+																}
+															);
+														}
+												  }
+												: (e) => {
+														if (selectedRecord) {
+															const verifiedAt = new Date().toISOString();
+
+															handleVerifyRent(
+																e,
+																selectedRecord as Verification,
+																verifiedAt,
+																async (
+																	verification: Verification,
+																	verifiedBy: string,
+																	verifiedAt: string
+																) => {
+																	await handleSendEmail(
+																		'verifyRent',
+																		verification,
+																		verifiedBy,
+																		verifiedAt
+																	);
+																}
+															);
+														}
+												  }
 										}
 									>
 										Verify

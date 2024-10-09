@@ -43,6 +43,10 @@ export const TermsConditionsModal: React.FC<Props> = ({disclosure}) => {
 									15 will be refunded.
 								</ListItem>
 								<ListItem>
+									The renter is solely responsible for all record information provided and bear all
+									consequences if the record is considered as deviant.
+								</ListItem>
+								<ListItem>
 									Refunds may not be returned to renters that are found deceptive and guilty of
 									misconduct. Special cases of large losses will be handled separately. Please
 									notify lab admins if there are any mistakes done by the system.

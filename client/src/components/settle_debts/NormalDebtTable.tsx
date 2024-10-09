@@ -1,9 +1,11 @@
 import {NormalDebtTableFilters} from '@/components/settle_debts/NormalDebtTableFilters';
 import {DataTable} from '@/components/ui/DataTable/DataTable';
+import {RecordPaid} from '@/components/ui/EmailComponents/RecordPaid';
 import {getNormalDebtColumns} from '@/utils/columns';
 import {useDebtTableContext, useInitialDebtTableContext} from '@/utils/context/DebtTableContext';
-import {Verification} from '@/utils/data';
+import {RentalRecord, User, Verification} from '@/utils/data';
 import {Button, ButtonGroup, Flex, HStack, IconButton, Slide, Spacer, Text} from '@chakra-ui/react';
+import {render} from '@react-email/components';
 import {ChevronDown, SquareCheck} from 'lucide-react';
 import {useEffect, useMemo, useRef, useState} from 'react';
 
@@ -57,11 +59,43 @@ export const NormalDebtTable = () => {
 		pageBottomRef.current?.scrollIntoView({behavior: 'instant'});
 	}, [pageIndex]);
 
+	const handleSendEmail = async (
+		verification: Verification,
+		verifiedBy: string,
+		verifiedAt: string
+	) => {
+		// Send notification email to user
+		const recordName = (verification.record as RentalRecord).recordTitle;
+		const email = ((verification.record as RentalRecord).renter as User).email;
+
+		const emailHtml = await render(
+			<RecordPaid recordName={recordName} authorName={verifiedBy} createdAt={verifiedAt} />
+		);
+		await fetch('http://localhost:8002/send-email', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Access-Control-Allow-Origin': '*'
+			},
+			body: JSON.stringify({
+				subject: 'Record set to Paid',
+				email,
+				html: emailHtml
+			})
+		});
+	};
+
 	return (
 		<>
 			<NormalDebtTableFilters />
 			<DataTable
-				columns={getNormalDebtColumns(onOpen, onClose, handleSetAsPaidNormal, handleSetAsHeavy)}
+				columns={getNormalDebtColumns(
+					onOpen,
+					onClose,
+					handleSetAsPaidNormal,
+					handleSetAsHeavy,
+					handleSendEmail
+				)}
 				data={tableData || []}
 				paginationState={paginationState_normalDebtTable}
 				rowSelectionState={rowSelectionState_normalDebtTable}
@@ -151,7 +185,8 @@ export const NormalDebtTable = () => {
 										const verification = table?.getRow(key).original;
 										return verification as Verification;
 									});
-									handleSetAsPaidForRowsNormal(selectedVerifications);
+									const verifiedAt = new Date().toISOString();
+									handleSetAsPaidForRowsNormal(selectedVerifications, verifiedAt, handleSendEmail);
 								}}
 							>
 								Set As Paid

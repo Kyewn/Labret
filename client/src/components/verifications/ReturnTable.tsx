@@ -1,12 +1,15 @@
 import {DataTable} from '@/components/ui/DataTable/DataTable';
+import {RecordRejected} from '@/components/ui/EmailComponents/RecordRejected';
+import {RecordVerified} from '@/components/ui/EmailComponents/RecordVerified';
 import {ReturnVerificationFilters} from '@/components/verifications/ReturnVerificationsFilters';
 import {getReturnVerificationColumns} from '@/utils/columns';
 import {
 	useInitialVerificationTableContext,
 	useVerificationTableContext
 } from '@/utils/context/VerificationTableContext';
-import {Verification} from '@/utils/data';
+import {RentalRecord, User, Verification} from '@/utils/data';
 import {Button, ButtonGroup, Flex, HStack, IconButton, Slide, Spacer, Text} from '@chakra-ui/react';
+import {render} from '@react-email/components';
 import {ChevronDown, SquareCheck} from 'lucide-react';
 import {useEffect, useMemo, useRef, useState} from 'react';
 
@@ -50,6 +53,62 @@ export const ReturnTable = () => {
 		onInfoOpen();
 	};
 
+	// For verify/reject executed by UI (clicks)
+	const handleSendEmail = async (
+		emailType: 'verifyReturn' | 'rejectReturn',
+		verification: Verification,
+		verifiedBy: string,
+		verifiedAt: string
+	) => {
+		// Send notification email to user
+		const recordName = (verification.record as RentalRecord).recordTitle;
+		const email = ((verification.record as RentalRecord).renter as User).email;
+
+		if (emailType == 'verifyReturn') {
+			const emailHtml = await render(
+				<RecordVerified
+					recordType='return'
+					recordName={recordName}
+					authorName={verifiedBy}
+					createdAt={verifiedAt}
+				/>
+			);
+			await fetch('http://localhost:8002/send-email', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Access-Control-Allow-Origin': '*'
+				},
+				body: JSON.stringify({
+					subject: 'Pending return verified',
+					email,
+					html: emailHtml
+				})
+			});
+		} else {
+			const emailHtml = await render(
+				<RecordRejected
+					recordType='return'
+					recordName={recordName}
+					authorName={verifiedBy}
+					createdAt={verifiedAt}
+				/>
+			);
+			await fetch('http://localhost:8002/send-email', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Access-Control-Allow-Origin': '*'
+				},
+				body: JSON.stringify({
+					subject: 'Pending return rejected',
+					email,
+					html: emailHtml
+				})
+			});
+		}
+	};
+
 	// Update pagination state as they change
 	useEffect(() => {
 		setCanNext(table?.getCanNextPage() || false);
@@ -68,7 +127,8 @@ export const ReturnTable = () => {
 					onOpen,
 					onClose,
 					handleVerifyReturn,
-					handleRejectReturn
+					handleRejectReturn,
+					handleSendEmail
 				)}
 				data={tableData || []}
 				paginationState={paginationState_returnTable}
@@ -159,7 +219,9 @@ export const ReturnTable = () => {
 										const verification = table?.getRow(key).original;
 										return verification as Verification;
 									});
-									handleVerifyReturnForRows(selectedVerifications);
+									const verifiedAt = new Date().toISOString();
+
+									handleVerifyReturnForRows(selectedVerifications, verifiedAt, handleSendEmail);
 								}}
 							>
 								Verify
@@ -171,7 +233,9 @@ export const ReturnTable = () => {
 										const verification = table?.getRow(key).original;
 										return verification as Verification;
 									});
-									handleRejectReturnForRows(selectedVerifications);
+									const verifiedAt = new Date().toISOString();
+
+									handleRejectReturnForRows(selectedVerifications, verifiedAt, handleSendEmail);
 								}}
 							>
 								Reject

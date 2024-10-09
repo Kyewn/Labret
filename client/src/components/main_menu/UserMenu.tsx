@@ -83,7 +83,9 @@ export const UserMenu = () => {
 			const records = await getAllRecords();
 			getNoOfUnpaidDebts(records);
 		};
-		handleInit();
+		if (user?.type === 'user') {
+			handleInit();
+		}
 	}, []);
 
 	const handleRentClick = () => {
@@ -182,7 +184,7 @@ export const UserMenu = () => {
 	return (
 		<>
 			<UserProfileModal disclosure={profileDisclosure} />
-			<UserDebtModal disclosure={debtDisclosure} />
+			{user?.type === 'user' && <UserDebtModal disclosure={debtDisclosure} />}
 			<Flex flexDirection={'column'} flex={0.7} overflowX={'hidden'} overflowY={'auto'}>
 				<VStack alignItems={'flex-start'}>
 					<Button
@@ -273,7 +275,7 @@ export const UserMenu = () => {
 										iconW={10}
 										iconH={10}
 										onClick={handleSettleDebtsClick}
-										label='Settle Debts'
+										label='Track Debts'
 										variant='outline'
 									/>
 								</>

@@ -109,8 +109,13 @@ def imageppFace(cvImage):
     # cv.imshow("image_edge", image_edge)
     # Get strong edges
     _, image_thresh = cv.threshold(image_edge, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
+    image_blank = np.zeros_like(image_thresh)
+    contours = cv.findContours(image_thresh, cv.RETR_CCOMP , cv.CHAIN_APPROX_SIMPLE)
+    #Filter blob areas < 20 pixels
+    strongBlobs = [contour for contour in contours[0] if cv.contourArea(contour) > 20]
+    image_strongBlobs = cv.drawContours(image_blank, strongBlobs, -1, (255, 255, 255), -1)
 
-    image_final = cv.cvtColor(image_thresh, cv.COLOR_GRAY2BGR)
+    image_final = cv.cvtColor(image_strongBlobs , cv.COLOR_GRAY2BGR)
     return image_final
 
 @predict.route('/predict-item', methods=['POST'])

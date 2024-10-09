@@ -1,12 +1,15 @@
 import {DataTable} from '@/components/ui/DataTable/DataTable';
+import {RecordRejected} from '@/components/ui/EmailComponents/RecordRejected';
+import {RecordVerified} from '@/components/ui/EmailComponents/RecordVerified';
 import {RentVerificationFilters} from '@/components/verifications/RentVerificationsFilters';
 import {getRentVerificationColumns} from '@/utils/columns';
 import {
 	useInitialVerificationTableContext,
 	useVerificationTableContext
 } from '@/utils/context/VerificationTableContext';
-import {Verification} from '@/utils/data';
+import {RentalRecord, User, Verification} from '@/utils/data';
 import {Button, ButtonGroup, Flex, HStack, IconButton, Slide, Spacer, Text} from '@chakra-ui/react';
+import {render} from '@react-email/components';
 import {ChevronDown, SquareCheck} from 'lucide-react';
 import {useEffect, useMemo, useRef, useState} from 'react';
 
@@ -50,6 +53,62 @@ export const RentTable = () => {
 		onInfoOpen();
 	};
 
+	// For verify/reject executed by UI (clicks)
+	const handleSendEmail = async (
+		emailType: 'verifyRent' | 'rejectRent',
+		verification: Verification,
+		verifiedBy: string,
+		verifiedAt: string
+	) => {
+		// Send notification email to user
+		const recordName = (verification.record as RentalRecord).recordTitle;
+		const email = ((verification.record as RentalRecord).renter as User).email;
+
+		if (emailType == 'verifyRent') {
+			const emailHtml = await render(
+				<RecordVerified
+					recordType='rent'
+					recordName={recordName}
+					authorName={verifiedBy}
+					createdAt={verifiedAt}
+				/>
+			);
+			await fetch('http://localhost:8002/send-email', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Access-Control-Allow-Origin': '*'
+				},
+				body: JSON.stringify({
+					subject: 'Pending rent verified',
+					email,
+					html: emailHtml
+				})
+			});
+		} else {
+			const emailHtml = await render(
+				<RecordRejected
+					recordType='rent'
+					recordName={recordName}
+					authorName={verifiedBy}
+					createdAt={verifiedAt}
+				/>
+			);
+			await fetch('http://localhost:8002/send-email', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Access-Control-Allow-Origin': '*'
+				},
+				body: JSON.stringify({
+					subject: 'Pending rent rejected',
+					email,
+					html: emailHtml
+				})
+			});
+		}
+	};
+
 	// Update pagination state as they change
 	useEffect(() => {
 		setCanNext(table?.getCanNextPage() || false);
@@ -64,7 +123,13 @@ export const RentTable = () => {
 		<>
 			<RentVerificationFilters />
 			<DataTable
-				columns={getRentVerificationColumns(onOpen, onClose, handleVerifyRent, handleRejectRent)}
+				columns={getRentVerificationColumns(
+					onOpen,
+					onClose,
+					handleVerifyRent,
+					handleRejectRent,
+					handleSendEmail
+				)}
 				data={tableData || []}
 				paginationState={paginationState_rentTable}
 				rowSelectionState={rowSelectionState_rentTable}
@@ -154,7 +219,8 @@ export const RentTable = () => {
 										const verification = table?.getRow(key).original;
 										return verification as Verification;
 									});
-									handleVerifyRentForRows(selectedVerifications);
+									const verifiedAt = new Date().toISOString();
+									handleVerifyRentForRows(selectedVerifications, verifiedAt, handleSendEmail);
 								}}
 							>
 								Verify
@@ -166,7 +232,9 @@ export const RentTable = () => {
 										const verification = table?.getRow(key).original;
 										return verification as Verification;
 									});
-									handleRejectRentForRows(selectedVerifications);
+									const verifiedAt = new Date().toISOString();
+
+									handleRejectRentForRows(selectedVerifications, verifiedAt, handleSendEmail);
 								}}
 							>
 								Reject

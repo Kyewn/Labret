@@ -1,11 +1,13 @@
-import { HeavyDebtTableFilters } from '@/components/settle_debts/HeavyDebtTableFilters.tsx';
-import { DataTable } from '@/components/ui/DataTable/DataTable';
-import { getHeavyDebtColumns } from '@/utils/columns';
-import { useDebtTableContext, useInitialDebtTableContext } from '@/utils/context/DebtTableContext';
-import { Verification } from '@/utils/data';
-import { Button, ButtonGroup, Flex, HStack, IconButton, Slide, Spacer, Text } from '@chakra-ui/react';
-import { ChevronDown, SquareCheck } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import {HeavyDebtTableFilters} from '@/components/settle_debts/HeavyDebtTableFilters.tsx';
+import {DataTable} from '@/components/ui/DataTable/DataTable';
+import {RecordPaid} from '@/components/ui/EmailComponents/RecordPaid';
+import {getHeavyDebtColumns} from '@/utils/columns';
+import {useDebtTableContext, useInitialDebtTableContext} from '@/utils/context/DebtTableContext';
+import {RentalRecord, User, Verification} from '@/utils/data';
+import {Button, ButtonGroup, Flex, HStack, IconButton, Slide, Spacer, Text} from '@chakra-ui/react';
+import {render} from '@react-email/components';
+import {ChevronDown, SquareCheck} from 'lucide-react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 
 export const HeavyDebtTable = () => {
 	const debtTableContext = useDebtTableContext();
@@ -57,11 +59,43 @@ export const HeavyDebtTable = () => {
 		pageBottomRef.current?.scrollIntoView({behavior: 'instant'});
 	}, [pageIndex]);
 
+	const handleSendEmail = async (
+		verification: Verification,
+		verifiedBy: string,
+		verifiedAt: string
+	) => {
+		// Send notification email to user
+		const recordName = (verification.record as RentalRecord).recordTitle;
+		const email = ((verification.record as RentalRecord).renter as User).email;
+
+		const emailHtml = await render(
+			<RecordPaid recordName={recordName} authorName={verifiedBy} createdAt={verifiedAt} />
+		);
+		await fetch('http://localhost:8002/send-email', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Access-Control-Allow-Origin': '*'
+			},
+			body: JSON.stringify({
+				subject: 'Record set to Paid',
+				email,
+				html: emailHtml
+			})
+		});
+	};
+
 	return (
 		<>
 			<HeavyDebtTableFilters />
 			<DataTable
-				columns={getHeavyDebtColumns(onOpen, onClose, handleSetAsPaidHeavy, handleSetAsNormal)}
+				columns={getHeavyDebtColumns(
+					onOpen,
+					onClose,
+					handleSetAsPaidHeavy,
+					handleSetAsNormal,
+					handleSendEmail
+				)}
 				data={tableData || []}
 				paginationState={paginationState_heavyDebtTable}
 				rowSelectionState={rowSelectionState_heavyDebtTable}
@@ -151,7 +185,9 @@ export const HeavyDebtTable = () => {
 										const verification = table?.getRow(key).original;
 										return verification as Verification;
 									});
-									handleSetAsPaidForRowsHeavy(selectedVerifications);
+									const verifiedAt = new Date().toISOString();
+
+									handleSetAsPaidForRowsHeavy(selectedVerifications, verifiedAt, handleSendEmail);
 								}}
 							>
 								Set As Paid
