@@ -41,7 +41,6 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 	const {
 		imagesState,
 		formState: {isSubmitting, errors},
-		trigger,
 		register,
 		watch,
 		handleSubmit,
@@ -62,7 +61,7 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 	}, []);
 
 	const handleCreateUser = async (data: AddUserFormValues) => {
-		const {password, confirmPassword} = data;
+		const {name, email, password, confirmPassword} = data;
 
 		if (password !== confirmPassword) {
 			toast({
@@ -91,12 +90,14 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 		const user =
 			page == 'register'
 				? await createUser({
-						...data,
+						name,
+						email,
 						password: encryptedPassword
 				  })
 				: await createAdmin(
 						{
-							...data,
+							name,
+							email,
 							password: encryptedPassword
 						},
 						currentAdmin
@@ -267,10 +268,6 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 													message: 'Password do not match pattern.'
 												}
 											}}
-											// eslint-disable-next-line @typescript-eslint/no-unused-vars
-											handleChange={(_) => {
-												trigger('confirmPassword');
-											}}
 										/>
 										<EditableField
 											valueType='password'
@@ -292,7 +289,6 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 											aria-label='Passwords must match'
 											placement='bottom'
 											hasArrow
-											isDisabled={password === confirmPassword}
 										>
 											<InfoIcon width={100} />
 										</Tooltip>
