@@ -7,10 +7,21 @@ import {useAppContext} from '@/utils/context/AppContext';
 import {useInitialRegisterContext, useRegisterContext} from '@/utils/context/RegisterContext';
 import {AddUserFormValues, FormValues} from '@/utils/data';
 import {paths} from '@/utils/paths';
-import {convertBlobToBase64, formatDateAndTime, ToastType} from '@/utils/utils';
-import {Button, ButtonGroup, Center, Flex, HStack, Spacer, Text, VStack} from '@chakra-ui/react';
+import {convertBlobToBase64, encryptPassword, formatDateAndTime, ToastType} from '@/utils/utils';
+import {
+	Button,
+	ButtonGroup,
+	Center,
+	Flex,
+	HStack,
+	Spacer,
+	Text,
+	Tooltip,
+	VStack
+} from '@chakra-ui/react';
 import {render} from '@react-email/components';
 import {getDoc, getDocs} from 'firebase/firestore';
+import {InfoIcon} from 'lucide-react';
 import {useEffect} from 'react';
 import {UseFormRegister} from 'react-hook-form';
 import {useNavigate} from 'react-router-dom';
@@ -30,6 +41,7 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 	const {
 		imagesState,
 		formState: {isSubmitting, errors},
+		trigger,
 		register,
 		watch,
 		handleSubmit,
@@ -37,7 +49,7 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 	} = useRegisterContext() as ReturnType<typeof useInitialRegisterContext>;
 	const [images] = imagesState;
 	const navigate = useNavigate();
-	const {name, email} = watch();
+	const {name, email, password, confirmPassword} = watch();
 	const {toast} = appUtils;
 
 	useEffect(() => {
@@ -50,6 +62,19 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 	}, []);
 
 	const handleCreateUser = async (data: AddUserFormValues) => {
+		const {password, confirmPassword} = data;
+
+		if (password !== confirmPassword) {
+			toast({
+				title: 'Error',
+				description: 'Passwords do not match. Please try again.',
+				status: 'error',
+				duration: 5000,
+				isClosable: true
+			});
+			return;
+		}
+
 		// Create firebase user
 		const userDocs = await getDocs(userCollection);
 		const existingUser = userDocs.docs.find((doc) => doc.data().email === data.email);
@@ -58,12 +83,24 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 			UserAlreadyExistsError.name = 'UserAlreadyExists';
 			throw UserAlreadyExistsError;
 		}
-
 		const currentAdmin = config.isCreateAdminBySystemEnabled
 			? (appUser?.id as string) || 'system' // "system" only used when creating system admin without any other admins
 			: (appUser?.id as string);
+		const encryptedPassword = await encryptPassword(password);
+
 		const user =
-			page == 'register' ? await createUser(data) : await createAdmin(data, currentAdmin);
+			page == 'register'
+				? await createUser({
+						...data,
+						password: encryptedPassword
+				  })
+				: await createAdmin(
+						{
+							...data,
+							password: encryptedPassword
+						},
+						currentAdmin
+				  );
 		const userData = (await getDoc(user)).data() as AddUserFormValues & {createdAt: string};
 		// Convert images to base64 strings
 		const imageStrings = await Promise.all(
@@ -180,37 +217,86 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 					<form id='form' onSubmit={handleSubmit(onSubmit)} style={{flex: 1}}>
 						<VStack>
 							<Center>
-								<VStack>
-									<EditableField
-										name={'name'}
-										label='Name'
-										value={name}
-										isEditing={true}
-										register={register as UseFormRegister<FormValues>}
-										errorMessage={errors.name?.message}
-										rules={{
-											required: 'Name is required',
-											pattern: {
-												value: /^[a-zA-Z\s]*$/,
-												message: 'Invalid name'
-											}
-										}}
-									/>
-									<EditableField
-										name={'email'}
-										label='Email'
-										value={email}
-										isEditing={true}
-										register={register as UseFormRegister<FormValues>}
-										errorMessage={errors.email?.message}
-										rules={{
-											required: 'Email is required',
-											pattern: {
-												value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-												message: 'Invalid email'
-											}
-										}}
-									/>
+								<VStack spacing={5} alignItems={'flex-start'}>
+									<HStack spacing={5}>
+										<EditableField
+											name={'name'}
+											label='Name'
+											value={name}
+											isEditing={true}
+											register={register as UseFormRegister<FormValues>}
+											errorMessage={errors.name?.message}
+											rules={{
+												required: 'Name is required',
+												pattern: {
+													value: /^[a-zA-Z\s]*$/,
+													message: 'Invalid name'
+												}
+											}}
+										/>
+										<EditableField
+											name={'email'}
+											label='Email'
+											value={email}
+											isEditing={true}
+											register={register as UseFormRegister<FormValues>}
+											errorMessage={errors.email?.message}
+											rules={{
+												required: 'Email is required',
+												pattern: {
+													value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+													message: 'Invalid email'
+												}
+											}}
+										/>
+									</HStack>
+									<HStack spacing={5} justifyContent={'center'}>
+										<EditableField
+											valueType='password'
+											name={'password'}
+											label='Password'
+											value={password}
+											isEditing={true}
+											register={register as UseFormRegister<FormValues>}
+											errorMessage={errors.password?.message}
+											rules={{
+												required: 'Password is required',
+												pattern: {
+													value:
+														/^(?=.*\d)(?=.*[.!@#$%^&.])(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
+													message: 'Password do not match pattern.'
+												}
+											}}
+											// eslint-disable-next-line @typescript-eslint/no-unused-vars
+											handleChange={(_) => {
+												trigger('confirmPassword');
+											}}
+										/>
+										<EditableField
+											valueType='password'
+											name={'confirmPassword'}
+											label='Confirm Password'
+											value={confirmPassword}
+											isEditing={true}
+											register={register as UseFormRegister<FormValues>}
+											errorMessage={errors.confirmPassword?.message}
+											rules={{
+												required: 'Confirm password is required',
+												validate: (value) => value === password || 'Passwords do not match'
+											}}
+										/>
+										<Tooltip
+											label='
+											Passwords should contain at least 8 alphanumeric characters, one numeric and special character.
+											'
+											aria-label='Passwords must match'
+											placement='bottom'
+											hasArrow
+											isDisabled={password === confirmPassword}
+										>
+											<InfoIcon width={100} />
+										</Tooltip>
+									</HStack>
 								</VStack>
 							</Center>
 

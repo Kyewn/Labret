@@ -36,6 +36,7 @@ const MainHeader: React.FC = () => {
 	const {isOpen, onClose, onOpen} = useDisclosure();
 	const {colorMode, toggleColorMode} = useColorMode();
 	const {appState} = useAppContext();
+	const {user} = appState;
 
 	const {handleCloseExistingPeerConnection, handleRemoveFacePredict} = appState;
 
@@ -61,33 +62,46 @@ const MainHeader: React.FC = () => {
 										</Text>
 									</ListItem>
 								</Link>
-								{/* FIXME Only when user is admin */}
-								<Link to={paths.sub.registerAdmin} onClick={handleCloseMainMenuCamera}>
-									<ListItem>
-										<ListIcon as={UserCog2} w={5} h={5} />
-										<Text display={'inline-block'} fontWeight={700}>
-											Register Admin
-										</Text>
-									</ListItem>
-								</Link>
-								{/* FIXME Only when user is locked in */}
-								<Link to={paths.sub.users} onClick={handleCloseMainMenuCamera}>
-									<ListItem>
-										<ListIcon as={BookUser} w={5} h={5} />
-										<Text display={'inline-block'} fontWeight={700}>
-											View Users
-										</Text>
-									</ListItem>
-								</Link>
-								{/* FIXME Only when user is admin */}
-								<Link to={paths.sub.admins} onClick={handleCloseMainMenuCamera}>
-									<ListItem>
-										<ListIcon as={Glasses} w={5} h={5} />
-										<Text display={'inline-block'} fontWeight={700}>
-											View Admins
-										</Text>
-									</ListItem>
-								</Link>
+								{
+									/* FIXME Only when user is admin */
+									user?.type == 'admin' && (
+										<Link to={paths.sub.registerAdmin} onClick={handleCloseMainMenuCamera}>
+											<ListItem>
+												<ListIcon as={UserCog2} w={5} h={5} />
+												<Text display={'inline-block'} fontWeight={700}>
+													Register Admin
+												</Text>
+											</ListItem>
+										</Link>
+									)
+								}
+
+								{
+									/* FIXME Only when user is admin */
+									user?.type == 'admin' && (
+										<Link to={paths.sub.users} onClick={handleCloseMainMenuCamera}>
+											<ListItem>
+												<ListIcon as={BookUser} w={5} h={5} />
+												<Text display={'inline-block'} fontWeight={700}>
+													View Users
+												</Text>
+											</ListItem>
+										</Link>
+									)
+								}
+								{
+									/* FIXME Only when user is admin */
+									user?.type == 'admin' && (
+										<Link to={paths.sub.admins} onClick={handleCloseMainMenuCamera}>
+											<ListItem>
+												<ListIcon as={Glasses} w={5} h={5} />
+												<Text display={'inline-block'} fontWeight={700}>
+													View Admins
+												</Text>
+											</ListItem>
+										</Link>
+									)
+								}
 								<Link
 									to={'https://github.com/Kyewn/Labret/'}
 									target='_blank'

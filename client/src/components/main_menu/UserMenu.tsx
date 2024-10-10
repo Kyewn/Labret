@@ -52,11 +52,11 @@ export const UserMenu = () => {
 	const getNoOfUnpaidDebts = (records: RentalRecord[]) => {
 		const unpaidRecordsLength = records.filter(
 			(record) =>
-				((record.renter as User).id == user?.id &&
-					(record.returnedAt as Date) > addDays(record.expectedReturnAt as Date, 1) &&
+				(record.renter as User).id == user?.id &&
+				(((record.returnedAt as Date) > addDays(record.expectedReturnAt as Date, 1) &&
 					record.recordStatus != 'paid') ||
-				record.recordStatus === 'rent_rejected' ||
-				record.recordStatus === 'return_rejected'
+					record.recordStatus === 'rent_rejected' ||
+					record.recordStatus === 'return_rejected')
 		).length;
 		setNoOfUnpaidDebts(unpaidRecordsLength);
 	};
@@ -86,7 +86,7 @@ export const UserMenu = () => {
 		if (user?.type === 'user') {
 			handleInit();
 		}
-	}, []);
+	}, [user]);
 
 	const handleRentClick = () => {
 		handleCloseExistingPeerConnection();
@@ -130,11 +130,11 @@ export const UserMenu = () => {
 		);
 		const userDebtRecords = records.filter(
 			(record) =>
-				((record.renter as User).id == user?.id &&
-					(record.returnedAt as Date) > addDays(record.expectedReturnAt as Date, 1) &&
+				(record.renter as User).id == user?.id &&
+				(((record.returnedAt as Date) > addDays(record.expectedReturnAt as Date, 1) &&
 					record.recordStatus != 'paid') ||
-				record.recordStatus === 'rent_rejected' ||
-				record.recordStatus === 'return_rejected'
+					record.recordStatus === 'rent_rejected' ||
+					record.recordStatus === 'return_rejected')
 		);
 
 		// Check user not having 3 pending/rent status records

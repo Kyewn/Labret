@@ -107,3 +107,33 @@ export const predictItems = async (itemBlobs: Blob[]) => {
 
 	return parsedData;
 };
+
+export const encryptPassword = async (password: string) => {
+	const encryptJson = await fetch('http://localhost:8000/encrypt-password', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Access-Control-Allow-Origin': '*'
+		},
+		body: JSON.stringify({
+			password
+		})
+	});
+	const {encryptedPassword} = (await encryptJson.json()) as {encryptedPassword: string};
+	return encryptedPassword;
+};
+
+export const decryptPassword = async (encryptedPassword: string) => {
+	const decryptedJson = await fetch('http://localhost:8000/decrypt-password', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Access-Control-Allow-Origin': '*'
+		},
+		body: JSON.stringify({
+			encryptedPassword
+		})
+	});
+	const {decryptedPassword} = (await decryptedJson.json()) as {decryptedPassword: string};
+	return decryptedPassword;
+};

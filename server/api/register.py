@@ -7,10 +7,14 @@ from dotenv import load_dotenv
 import os
 import cv2 as cv
 from api.predict import convertBase64ToCvImage
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
 
 load_dotenv()
 
 register = Blueprint('register', __name__)
+cipher_key = bytes(f"{os.getenv('CIPHER_KEY')}", encoding='utf-8')
+cipher_iv = b"9876512340abcdef"
 
 @register.route('/register', methods=['POST'])
 def register_user():
@@ -56,4 +60,36 @@ def register_user():
     return jsonify({
         'message': 'User registered successfully',
         'uploadedImageInfos': uploadedImgInfos
+    })
+
+@register.route('/encrypt-password', methods=['POST'])
+def encrypt_password():
+    cipher = AES.new(cipher_key, AES.MODE_CBC, iv=cipher_iv)
+
+    password = request.get_json()["password"]
+    b_password = password.encode('utf-8')
+    padded_password = pad(b_password, AES.block_size)
+
+    enc_password = cipher.encrypt(padded_password)
+    hex_password = enc_password.hex()
+
+    return jsonify({
+        'message': 'Password encryption successful',
+        "encryptedPassword": hex_password
+    })
+
+@register.route('/decrypt-password', methods=['POST'])
+def decrypt_password():
+    cipher = AES.new(cipher_key, AES.MODE_CBC, iv=cipher_iv)
+
+    hex_password = request.get_json()["encryptedPassword"]
+    enc_password = bytes.fromhex(hex_password)
+    padded_password = cipher.decrypt(enc_password)
+
+    b_password = unpad(padded_password, AES.block_size)
+    password = b_password.decode('utf-8')
+
+    return jsonify({
+        'message': 'Password decryption successful',
+        "decryptedPassword": password
     })

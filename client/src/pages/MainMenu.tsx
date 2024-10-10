@@ -1,4 +1,5 @@
 import {FaceLogin} from '@/components/main_menu/FaceLogin';
+import {PasswordLogin} from '@/components/main_menu/PasswordLogin';
 import {PublicMenu} from '@/components/main_menu/PublicMenu';
 import {UserMenu} from '@/components/main_menu/UserMenu';
 import {Camera} from '@/components/ui/Camera/Camera';
@@ -6,7 +7,8 @@ import {getUser} from '@/db/user';
 import {useAppContext} from '@/utils/context/AppContext';
 import {User} from '@/utils/data';
 import {predictFaces, ToastType} from '@/utils/utils';
-import {Box, Center, CircularProgress, Flex, Image, Text, VStack} from '@chakra-ui/react';
+import {Box, Center, Flex, Image, Link} from '@chakra-ui/react';
+import {KeyRoundIcon} from 'lucide-react';
 import {useEffect, useState} from 'react';
 import {Helmet} from 'react-helmet-async';
 import {useLocation, useNavigate} from 'react-router-dom';
@@ -21,6 +23,7 @@ export function MainMenu() {
 	const {appState, appDispatch, appUtils} = useAppContext();
 	const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 	const [isReadingFace, setIsReadingFace] = useState(false);
+	const [usePasswordLogin, setUsePasswordLogin] = useState(false);
 	const {user, detectedUser, detectedUserImageURL, mediaStreams} = appState;
 
 	const navigate = useNavigate();
@@ -66,7 +69,9 @@ export function MainMenu() {
 			detectedUser: User | null,
 			detectedUserImageURL: string | null
 		) => {
+			// If user is already logged in, stop face prediction
 			if (user) return;
+
 			if (!detectedUser && !detectedUserImageURL && !intervalId) {
 				// Predict faces heartbeat
 				const id = setInterval(async () => {
@@ -101,23 +106,35 @@ export function MainMenu() {
 					type: 'SET_REMOVE_FACE_PREDICT',
 					payload: () => {
 						clearInterval(id);
+						setIsReadingFace(false);
 						setIntervalId(null);
 					}
 				});
 			} else if (detectedUser && intervalId) {
 				clearInterval(intervalId);
+				setIsReadingFace(false);
 				setIntervalId(null);
 			}
 		};
 
 		if (!mediaStreams?.length) return;
 
+		// If user use password login, stop face prediction
+		if (usePasswordLogin && intervalId && detectedUser) {
+			clearInterval(intervalId);
+			setIsReadingFace(false);
+			setIntervalId(null);
+			return;
+		} else if (usePasswordLogin) {
+			return;
+		}
+
 		handlePredictFace(mediaStreams, detectedUser, detectedUserImageURL);
 
 		return () => {
 			setIsReadingFace(false);
 		};
-	}, [mediaStreams, detectedUser, detectedUserImageURL, intervalId, user]);
+	}, [mediaStreams, detectedUser, detectedUserImageURL, intervalId, user, usePasswordLogin]);
 
 	return (
 		<>
@@ -134,19 +151,27 @@ export function MainMenu() {
 				)}
 			</Box>
 			<Flex flexDirection={'column'} flex={0.4} p={6}>
+				{!user && !usePasswordLogin && (
+					<Flex justifyContent={'flex-end'}>
+						<Box display={'flex'} gap={2} alignItems={'center'}>
+							<KeyRoundIcon size={24} color={'darkgray'} />
+							<Link
+								fontSize={'sm'}
+								fontWeight={'bolder'}
+								color={'lrBrown.500'}
+								onClick={() => setUsePasswordLogin(true)}
+							>
+								Login with password
+							</Link>
+						</Box>
+					</Flex>
+				)}
 				{user ? (
 					<UserMenu />
-				) : isReadingFace ? (
-					<Flex justifyContent={'center'} flexDirection={'column'} flex={0.7}>
-						<VStack>
-							<CircularProgress isIndeterminate color='lrBrown.700' trackColor='lrBrown.400' />
-							<Text fontWeight={'700'} color={'lrBrown.700'}>
-								Reading face...
-							</Text>
-						</VStack>
-					</Flex>
+				) : usePasswordLogin ? (
+					<PasswordLogin setUsePasswordLogin={setUsePasswordLogin} />
 				) : (
-					<FaceLogin />
+					<FaceLogin isReadingFace={isReadingFace} />
 				)}
 				<PublicMenu />
 			</Flex>
