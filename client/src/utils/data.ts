@@ -7,6 +7,8 @@ export const UndefinedString = 'None';
 export type AddUserFormValues = {
 	name: string;
 	email: string;
+	password: string;
+	confirmPassword?: string;
 };
 
 export type AddItemFormValues = {
@@ -85,6 +87,7 @@ export type User = {
 	id: string;
 	name: string;
 	email: string;
+	password: string;
 	status: string;
 	type: string;
 	createdAt: string | Date;

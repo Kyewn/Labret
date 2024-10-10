@@ -50,7 +50,7 @@ export const UserDebtModal: React.FC<{
 	const userData = tableData?.filter(
 		(data) => ((data.record as RentalRecord).renter as User).id == user?.id
 	);
-	const totalOutstanding = tableData?.reduce(
+	const totalOutstanding = userData?.reduce(
 		(acc, curr) => acc + mapPaymentAmount(curr.record as RentalRecord),
 		0
 	);
