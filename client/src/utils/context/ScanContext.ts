@@ -405,7 +405,6 @@ export const useInitialScanContext = (type: string = 'rent') => {
 				}
 			});
 		} catch (error) {
-			console.log(error);
 			toast({
 				title: 'Record could not be returned',
 				description: 'Please try again.',

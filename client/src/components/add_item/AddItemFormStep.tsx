@@ -156,7 +156,6 @@ const AddItemFormStep: React.FC = () => {
 			});
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
-			console.log(err);
 			appDispatch({
 				type: 'SET_PAGE_LOADING',
 				payload: false

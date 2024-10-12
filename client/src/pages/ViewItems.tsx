@@ -29,20 +29,29 @@ export function ViewItems() {
 			});
 			appDispatch({type: 'SET_PAGE_LOADING', payload: true});
 			const result = await fetch('http://localhost:8000/train-item-lts-model');
+			const {mAP50, mAP50_95} = await result.json();
 
-			// if (result > 0.7) {
-			// 	toast({
-			// 		title: 'Model training successful',
-			// 		description: 'Model mAP:',
-			// 		status: 'success'
-			// 	});
-			// } else {
-			// 	toast({
-			// 		title: 'Model training insufficient',
-			// 		description: 'Model mAP:',
-			// 		status: 'info'
-			// 	});
-			// }
+			if (mAP50_95 > 0.7 || mAP50 > 0.7) {
+				toast({
+					title: 'Item model training successful',
+					description: `Model mAP50: ${Number(mAP50 * 100).toPrecision(
+						3
+					)}%, Model mAP50_95: ${Number(mAP50_95 * 100).toPrecision(3)}`,
+					status: 'success',
+					duration: null,
+					isClosable: true
+				});
+			} else {
+				toast({
+					title: 'Insufficient item model training',
+					description: `Model mAP50: ${Number(mAP50 * 100).toPrecision(
+						3
+					)}%, Model mAP50_95: ${Number(mAP50_95 * 100).toPrecision(3)}`,
+					status: 'warning',
+					duration: null,
+					isClosable: true
+				});
+			}
 
 			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 			appDispatch({
@@ -58,7 +67,9 @@ export function ViewItems() {
 			toast({
 				title: 'Training interrupted',
 				description: 'Something went wrong during face training, please try again.',
-				status: 'error'
+				status: 'error',
+				duration: null,
+				isClosable: true
 			});
 		}
 	};
@@ -94,7 +105,7 @@ export function ViewItems() {
 							>
 								<Link
 									style={{width: 'unset'}}
-									to={'https://app.roboflow.com/oowus-workspace/labret-face/annotate'}
+									to={'https://app.roboflow.com/oowus-workspace/labret-item-seg/annotate'}
 									target='_blank'
 									onClick={() => setIsAnnotationButtonClicked(true)}
 								>

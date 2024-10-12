@@ -179,6 +179,8 @@ export const UserMenu = () => {
 
 	const handleLogout = () => {
 		appDispatch({type: 'SET_USER', payload: null});
+		// main menu camera needs to be rerendered everytime user logs out
+		navigate(0);
 	};
 
 	return (
