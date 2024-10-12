@@ -286,7 +286,6 @@ export const useInitialVerificationTableContext = () => {
 				onInfoClose();
 				// Update data
 				refetch();
-				console.log('3');
 				toast({
 					title: 'Record verified',
 					description: `Record of ${name} have been verified.`,
@@ -294,7 +293,6 @@ export const useInitialVerificationTableContext = () => {
 					duration: 3000
 				});
 			} catch (e) {
-				console.log(e);
 				toast({
 					title: 'Failed to verify record',
 					description: `Record of ${name} could not be verified, please try again.`,

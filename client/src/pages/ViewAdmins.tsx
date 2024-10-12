@@ -77,7 +77,27 @@ export function ViewAdmins() {
 				payload: 'training'
 			});
 			appDispatch({type: 'SET_PAGE_LOADING', payload: true});
-			await fetch('http://localhost:8000/train-face-lts-model');
+			const result = await fetch('http://localhost:8000/train-face-lts-model');
+			const {acc_top1} = await result.json();
+
+			if (acc_top1 > 0.7) {
+				toast({
+					title: 'Face model training successful',
+					description: `Model accuracy: ${Number(acc_top1 * 100).toPrecision(3)}%`,
+					status: 'success',
+					duration: null,
+					isClosable: true
+				});
+			} else {
+				toast({
+					title: 'Insufficient face model training',
+					description: `Model accuracy: ${Number(acc_top1 * 100).toPrecision(3)}%`,
+					status: 'warning',
+					duration: null,
+					isClosable: true
+				});
+			}
+
 			appDispatch({type: 'SET_PAGE_LOADING', payload: false});
 			appDispatch({
 				type: 'SET_PAGE_LOADING_LABEL_TYPE',
@@ -93,7 +113,8 @@ export function ViewAdmins() {
 				title: 'Training interrupted',
 				description: 'Something went wrong during face training, please try again.',
 				status: 'error',
-				duration: 3000
+				duration: null,
+				isClosable: true
 			});
 		}
 	};
@@ -112,28 +133,7 @@ export function ViewAdmins() {
 	useEffect(() => {
 		if (!data) {
 			handleRefetch();
-		} /*  else {
-			const oldestDate = data.length
-				? new Date(
-						data.reduce((currOld, curr) => {
-							return new Date(curr.createdAt) < new Date(currOld.createdAt) ? curr : currOld;
-						}).createdAt
-				  )
-				: undefined;
-
-			if (!oldestDate) return;
-
-			oldestDate.setHours(0, 0, 0, 0);
-			// Overwrite default date filter to include past registration dates
-			setFilters((prev) => {
-				const otherFilters = prev.filter((f) => f.id !== 'createdAt');
-				return [...otherFilters, {id: 'createdAt', value: {from: oldestDate}}];
-			});
-			setInitialFilterValue((prev) => {
-				const otherFilters = prev.filter((f) => f.id !== 'createdAt');
-				return [...otherFilters, {id: 'createdAt', value: {from: oldestDate}}];
-			});
-		} */
+		}
 	}, [data]);
 
 	// Update pagination state as they change
@@ -145,10 +145,6 @@ export function ViewAdmins() {
 	useEffect(() => {
 		pageBottomRef.current?.scrollIntoView({behavior: 'instant'});
 	}, [pageIndex]);
-
-	// reqs
-	// - Confirmation modal (accept/reject/delete)
-	// - Retrain func
 
 	return (
 		<>

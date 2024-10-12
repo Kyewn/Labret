@@ -30,9 +30,9 @@ def train_face_lts_model():
     # Train model   
     pathlib.Path(f"{serverPath}/train/").mkdir(parents=True, exist_ok=True)
     model = YOLO(f"{serverPath}/yolov8n-cls.pt")
-    model.train(data=downloadPath, project=f"{serverPath.as_posix()}/train/", name="face", exist_ok=True, workers=0,
-                epochs=300,
-                patience=100,
+    result = model.train(data=downloadPath, project=f"{serverPath.as_posix()}/train/", name="face", exist_ok=True, workers=0,
+                epochs=1000,
+                patience=300,
                 batch=-1, 
                 imgsz=640,
                 translate=0.3,
@@ -43,8 +43,12 @@ def train_face_lts_model():
     
     # Save best model
     shutil.copy2(f"{serverPath.as_posix()}/train/face/weights/best.pt", f"{serverPath.as_posix()}/train/bestFace.pt")
+    
+    # Get accuracy
+    acc_top1 = result.results_dict['metrics/accuracy_top1']
 
     return jsonify({
+        'acc_top1': acc_top1,
         'message': 'Training successful',
     })
 

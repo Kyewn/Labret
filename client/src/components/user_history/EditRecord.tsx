@@ -262,7 +262,6 @@ export const EditRecord: React.FC = () => {
 				}
 			});
 		} catch (error) {
-			console.log(error);
 			toast({
 				title: 'Record could not be created',
 				description: 'Please try again.',
