@@ -31,13 +31,15 @@ def train_face_lts_model():
     pathlib.Path(f"{serverPath}/train/").mkdir(parents=True, exist_ok=True)
     model = YOLO(f"{serverPath}/yolov8n-cls.pt")
     result = model.train(data=downloadPath, project=f"{serverPath.as_posix()}/train/", name="face", exist_ok=True, workers=0,
-                epochs=1000,
-                patience=300,
+                epochs=300,
+                patience=100,
                 batch=-1, 
                 imgsz=640,
                 translate=0.3,
                 degrees=90,
                 hsv_h=0.5,
+                hsv_s=0.5,
+                hsv_v=0.5,
                 seed=42
                 )
     

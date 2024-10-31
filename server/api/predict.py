@@ -93,29 +93,33 @@ def predict_faces(cvImages):
 
 def imageppFace(cvImage):
     # Face preprocessing
-    ksize = 3
+    # Color quantization
+    # kmeansN = 50 
+    # image_gray = cv.cvtColor(cvImage, cv.COLOR_BGR2GRAY)
+    # image_gray = cv.medianBlur(image_gray, 7)
+
+    # image_kmeans = image_gray.reshape(-1).astype(np.float32)
+    # criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+    # _, labels, centers = cv.kmeans(image_kmeans, kmeansN, None, criteria, 10, cv.KMEANS_RANDOM_CENTERS)
+    # image_quantized = centers[labels.flatten()].reshape(image_gray.shape).astype(np.uint8)
+    # image_final = cv.cvtColor(image_quantized , cv.COLOR_GRAY2BGR)
     # Sharpen
     image_gray = cv.cvtColor(cvImage, cv.COLOR_BGR2GRAY)
-    image_gblur = cv.GaussianBlur(image_gray, (ksize, ksize), 5)
+    image_median = cv.medianBlur(image_gray, 9)
 
     # Edge detection        
     # Laplacian alot of noise
-    # Remove noise with median filter
-    image_edge = cv.Laplacian(image_gblur, cv.CV_8U, ksize=5)
-    image_edge = cv.medianBlur(image_edge, ksize)
-    # TODO
-    # cv.imshow("image_gblur", image_gblur)
+    image_edge = cv.Laplacian(image_median, cv.CV_8U, ksize=5)
 
-    # cv.imshow("image_edge", image_edge)
     # Get strong edges
     _, image_thresh = cv.threshold(image_edge, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
     image_blank = np.zeros_like(image_thresh)
     contours = cv.findContours(image_thresh, cv.RETR_CCOMP , cv.CHAIN_APPROX_SIMPLE)
-    #Filter blob areas < 20 pixels
-    strongBlobs = [contour for contour in contours[0] if cv.contourArea(contour) > 20]
+    #Filter blob areas < 2 pixels
+    strongBlobs = [contour for contour in contours[0] if cv.contourArea(contour) > 2]
     image_strongBlobs = cv.drawContours(image_blank, strongBlobs, -1, (255, 255, 255), -1)
-
     image_final = cv.cvtColor(image_strongBlobs , cv.COLOR_GRAY2BGR)
+    
     return image_final
 
 @predict.route('/predict-item', methods=['POST'])
@@ -184,12 +188,8 @@ def predict_items(cvImages):
 
 def imageppItem(cvImage):
     # Item preprocessing
-    # image_gray = cv.cvtColor(cvImage, cv.COLOR_BGR2GRAY)
-    # image_norm = cv.normalize(image_gray, None, 0, 255, cv.NORM_MINMAX)
-    # image_bilateral = cv.bilateralFilter(cvImage, 15, 10, 50)
-    # image_final = cv.cvtColor(image_bilateral, cv.COLOR_GRAY2BGR)
-    image_bilateral = cv.bilateralFilter(cvImage, 15, 10, 50)
-    image_final = image_bilateral
+    image_median = cv.medianBlur(cvImage, 7)
+    image_final = image_median
     return image_final
 
 def convertBase64ToCvImage(base64Image):

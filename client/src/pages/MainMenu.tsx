@@ -1,17 +1,17 @@
-import {FaceLogin} from '@/components/main_menu/FaceLogin';
-import {PasswordLogin} from '@/components/main_menu/PasswordLogin';
-import {PublicMenu} from '@/components/main_menu/PublicMenu';
-import {UserMenu} from '@/components/main_menu/UserMenu';
-import {Camera} from '@/components/ui/Camera/Camera';
-import {getUser} from '@/db/user';
-import {useAppContext} from '@/utils/context/AppContext';
-import {User} from '@/utils/data';
-import {predictFaces, ToastType} from '@/utils/utils';
-import {Box, Center, Flex, Image, Link} from '@chakra-ui/react';
-import {KeyRoundIcon} from 'lucide-react';
-import {useEffect, useState} from 'react';
-import {Helmet} from 'react-helmet-async';
-import {useLocation, useNavigate} from 'react-router-dom';
+import { FaceLogin } from '@/components/main_menu/FaceLogin';
+import { PasswordLogin } from '@/components/main_menu/PasswordLogin';
+import { PublicMenu } from '@/components/main_menu/PublicMenu';
+import { UserMenu } from '@/components/main_menu/UserMenu';
+import { Camera } from '@/components/ui/Camera/Camera';
+import { getUser } from '@/db/user';
+import { useAppContext } from '@/utils/context/AppContext';
+import { User } from '@/utils/data';
+import { predictFaces, ToastType } from '@/utils/utils';
+import { Box, Center, Flex, Image, Link } from '@chakra-ui/react';
+import { KeyRoundIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const face_conf_threshold = 0.7;
 
@@ -69,13 +69,13 @@ export function MainMenu() {
 			detectedUser: User | null,
 			detectedUserImageURL: string | null
 		) => {
-			// If user is already logged in, stop face prediction
-			if (user) return;
-
 			if (!detectedUser && !detectedUserImageURL && !intervalId) {
 				// Predict faces heartbeat
 				const id = setInterval(async () => {
 					try {
+						// If user is already logged in || using password login, stop face prediction
+						if (user || usePasswordLogin) return;
+
 						const imageCapture = new ImageCapture(streams[0].getVideoTracks()[0]);
 						const photoBlob = await imageCapture.takePhoto().then((blob) => {
 							return blob;
@@ -86,14 +86,26 @@ export function MainMenu() {
 
 						const {labels, scores} = parsedResult;
 
-						if (!labels.length) return;
+						if (!labels.length || labels[0] == 'labretFaceBG') {
+							setIsReadingFace(false);
+							return;
+						}
 
 						// Old model may throw error reading deleted user labels
 						const predictedUser = await getUser(labels[0]);
+
+						// If user is still pending verification, stop face prediction
+						if (predictedUser.status === 'pending') {
+							setIsReadingFace(false);
+							return;
+						}
+
 						if (predictedUser && scores[0] > face_conf_threshold) {
 							appDispatch({type: 'SET_DETECTED_USER', payload: predictedUser});
 							const currPhotoURL = URL.createObjectURL(photoBlob);
 							appDispatch({type: 'SET_DETECTED_USER_IMAGE_URL', payload: currPhotoURL});
+						} else {
+							setIsReadingFace(false);
 						}
 					} catch {
 						console.log('Error in face prediction');
