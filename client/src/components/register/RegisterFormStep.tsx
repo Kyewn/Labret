@@ -284,7 +284,7 @@ const RegisterFormStep: React.FC<{page: 'register' | 'registerAdmin'}> = ({page}
 										/>
 										<Tooltip
 											label='
-											Passwords should contain at least 8 alphanumeric characters, one numeric and special character.
+											Passwords should contain at least 8 alphanumeric characters, 1 capital letter, 1 number and 1 special character.
 											'
 											aria-label='Passwords must match'
 											placement='bottom'
