@@ -18,6 +18,13 @@ face_conf_threshold = 0.7
 
 @predict.route('/predict-face', methods=['POST'])
 def predict_face_api():
+    modelPath = serverPath / "train" / "bestFace.pt"
+    # Return null if no model
+    if (not modelPath.exists()):
+        return jsonify({
+        'message': 'Prediction failed, did not give any results',
+    })
+
     data = request.get_json()
     
     # Supply list in request for future multi image prediction
@@ -60,9 +67,6 @@ def predict_face_api():
 
 def predict_faces(cvImages):
     modelPath = serverPath / "train" / "bestFace.pt"
-    # Return null if no model
-    if (not modelPath.exists()):
-        return None
 
     ppImages = []
     predictResults = []
@@ -124,6 +128,13 @@ def imageppFace(cvImage):
 
 @predict.route('/predict-item', methods=['POST'])
 def predict_item_api():
+    modelPath = serverPath / "train" / "bestItem.pt"
+    # Return null if no model
+    if (not modelPath.exists()):
+        return jsonify({
+        'message': 'Prediction failed, did not give any results',
+    })
+    
     data = request.get_json()
 
     # Supply list in request for future multi image prediction
@@ -150,9 +161,6 @@ def predict_item_api():
 
 def predict_items(cvImages):
     modelPath = serverPath / "train" / "bestItem.pt"
-    # Return null if no model
-    if (not modelPath.exists()):
-        return None
 
     ppImages = []
 
