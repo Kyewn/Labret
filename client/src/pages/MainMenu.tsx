@@ -1,17 +1,17 @@
-import { FaceLogin } from '@/components/main_menu/FaceLogin';
-import { PasswordLogin } from '@/components/main_menu/PasswordLogin';
-import { PublicMenu } from '@/components/main_menu/PublicMenu';
-import { UserMenu } from '@/components/main_menu/UserMenu';
-import { Camera } from '@/components/ui/Camera/Camera';
-import { getUser } from '@/db/user';
-import { useAppContext } from '@/utils/context/AppContext';
-import { User } from '@/utils/data';
-import { predictFaces, ToastType } from '@/utils/utils';
-import { Box, Center, Flex, Image, Link } from '@chakra-ui/react';
-import { KeyRoundIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { useLocation, useNavigate } from 'react-router-dom';
+import {FaceLogin} from '@/components/main_menu/FaceLogin';
+import {PasswordLogin} from '@/components/main_menu/PasswordLogin';
+import {PublicMenu} from '@/components/main_menu/PublicMenu';
+import {UserMenu} from '@/components/main_menu/UserMenu';
+import {Camera} from '@/components/ui/Camera/Camera';
+import {getUser} from '@/db/user';
+import {useAppContext} from '@/utils/context/AppContext';
+import {User} from '@/utils/data';
+import {predictFaces, ToastType} from '@/utils/utils';
+import {Box, Center, Flex, Image, Link} from '@chakra-ui/react';
+import {KeyRoundIcon} from 'lucide-react';
+import {useEffect, useState} from 'react';
+import {Helmet} from 'react-helmet-async';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 const face_conf_threshold = 0.7;
 
@@ -122,7 +122,7 @@ export function MainMenu() {
 						setIntervalId(null);
 					}
 				});
-			} else if (detectedUser && intervalId) {
+			} else if ((detectedUser && intervalId) || (user && intervalId)) {
 				clearInterval(intervalId);
 				setIsReadingFace(false);
 				setIntervalId(null);

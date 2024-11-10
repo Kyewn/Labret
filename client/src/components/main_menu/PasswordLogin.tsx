@@ -13,7 +13,7 @@ type Props = {
 
 export const PasswordLogin: React.FC<Props> = ({setUsePasswordLogin}) => {
 	const {appState, appDispatch, appUtils} = useAppContext();
-	const {handleCloseExistingPeerConnection} = appState;
+	const {detectedUserImageURL, handleCloseExistingPeerConnection} = appState;
 	const [users, setUsers] = useState<User[]>([]);
 	const {toast} = appUtils;
 	const {
@@ -55,8 +55,11 @@ export const PasswordLogin: React.FC<Props> = ({setUsePasswordLogin}) => {
 		appDispatch({type: 'SET_USER', payload: targetUser});
 		appDispatch({type: 'SET_DETECTED_USER', payload: null});
 		appDispatch({type: 'SET_DETECTED_USER_IMAGE_URL', payload: null});
-		handleCloseExistingPeerConnection();
 		setUsePasswordLogin(false);
+		// Close only when there is detected face image, otherwise it will close the camera as it wasnt rerendered
+		if (detectedUserImageURL) {
+			handleCloseExistingPeerConnection();
+		}
 	};
 
 	useEffect(() => {
