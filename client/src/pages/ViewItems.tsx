@@ -66,7 +66,7 @@ export function ViewItems() {
 			});
 			toast({
 				title: 'Training interrupted',
-				description: 'Something went wrong during face training, please try again.',
+				description: 'Something went wrong during item model training, please try again.',
 				status: 'error',
 				duration: null,
 				isClosable: true
