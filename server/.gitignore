@@ -1,6 +1,7 @@
 venv
 __pycache__/
 images/
-train/
+train/face
+train/item
 .env
 serviceAccountKey.json
