@@ -61,7 +61,7 @@ def download_face_model_dataset_from_roboflow():
    
     # Get dataset from roboflow with lts version no.
     try:
-        ltsVersion = rfLabretFaceProject.get_version_information()[0].get("id")[-1]
+        ltsVersion = rfLabretFaceProject.get_version_information()[0].get("id").split("/")[-1]
     except IndexError:
          return jsonify({
             'message': 'VersionNotFoundError',

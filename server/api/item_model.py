@@ -88,7 +88,7 @@ def download_item_model_dataset_from_roboflow():
    
     # Get dataset from roboflow with lts version no.
     try: 
-        ltsVersion = rfLabretItemProject.get_version_information()[0].get("id")[-1]
+        ltsVersion = rfLabretItemProject.get_version_information()[0].get("id").split("/")[-1]
     except IndexError:
          return jsonify({
             'message': 'VersionNotFoundError',
