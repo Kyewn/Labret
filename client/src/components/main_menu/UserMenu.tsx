@@ -133,6 +133,7 @@ export const UserMenu = () => {
 			(record) =>
 				(record.renter as User).id == user?.id &&
 				(((record.returnedAt as Date) > addDays(record.expectedReturnAt as Date, 1) &&
+					record.recordStatus != 'completed' &&
 					record.recordStatus != 'paid') ||
 					record.recordStatus === 'rent_rejected' ||
 					record.recordStatus === 'return_rejected')
