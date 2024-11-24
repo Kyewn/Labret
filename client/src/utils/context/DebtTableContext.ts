@@ -121,6 +121,7 @@ export const useInitialDebtTableContext = () => {
 							// Check if record is overdue (end of expectedReturnDate)
 							((((verification.record as RentalRecord).returnedAt as Date) >
 								addDays((verification.record as RentalRecord).expectedReturnAt as Date, 1) &&
+								(verification.record as RentalRecord).recordStatus != 'completed' &&
 								(verification.record as RentalRecord).recordStatus != 'paid') ||
 								(verification.record as RentalRecord).recordStatus == 'rent_rejected' ||
 								(verification.record as RentalRecord).recordStatus == 'return_rejected')
