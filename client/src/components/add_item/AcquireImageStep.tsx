@@ -91,7 +91,7 @@ const AcquireImageStep: React.FC = () => {
 							<Tooltip
 								placement='right-start'
 								hasArrow
-								label={`Please be aware that these images will be used for training the system's item detection model, so images should be meaningful for identifying the item. You need to take at least 5 item images to continue to the next section, more images makes the model more accurate in detecting the time.`}
+								label={`Please be aware that these images will be used for training the system's item detection model, so images should be meaningful for identifying the item. You need to take at least 10 item images to continue to the next section, more images makes the model more accurate in detecting the item.`}
 							>
 								<Icon as={Info} />
 							</Tooltip>

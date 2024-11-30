@@ -90,11 +90,13 @@ export const VisionScanner: React.FC<Props> = ({backLabel, title, handleScan}) =
 					color='lrBrown.700'
 					trackColor='lrBrown.400'
 				/>
-				<Text fontWeight={'700'} color={'lrBrown.700'} textAlign={'center'}>
+				<Text fontWeight={'700'} fontSize={'14'} color={'lrBrown.700'} textAlign={'center'}>
 					Place your equipment in front of the camera and make sure they are visible. Press the
-					button to start scanning.
+					button to start scanning. Do not include the same items after you already captured their
+					image.
 				</Text>
-				<Text fontWeight={'700'} color={'lrBrown.700'} textAlign={'center'}>
+
+				<Text fontWeight={'700'} fontSize={'14'} color={'lrBrown.700'} textAlign={'center'}>
 					Take multiple photos if there are too many equipment to fit into the screen.
 				</Text>
 				<Center>

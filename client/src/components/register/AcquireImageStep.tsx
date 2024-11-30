@@ -81,7 +81,7 @@ const AcquireImageStep: React.FC = () => {
 							<Tooltip
 								placement='right-start'
 								hasArrow
-								label={`Please be aware that these images will be used for training the system's facial recognition model, so images should be meaningful for identifying the user. You need to take at least 5 face images to continue to the next section, more images makes the model more accurate in detecting your face.`}
+								label={`Please be aware that these images will be used for training the system's facial recognition model, so images should be meaningful for identifying the user. You need to take at least 10 face images to continue to the next section, more images makes the model more accurate in detecting your face.`}
 							>
 								<Icon as={Info} />
 							</Tooltip>

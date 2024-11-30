@@ -526,7 +526,7 @@ export const EditRecord: React.FC = () => {
 									Cancel
 								</Button>
 								<Button type='submit' form='form'>
-									Edit
+									Save
 								</Button>
 							</ButtonGroup>
 						</Box>
