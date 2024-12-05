@@ -265,7 +265,9 @@ export const UserHistoryItemModal: React.FC<{
 							<VStack flex={0.7} spacing={5} alignItems={'flex-start'}>
 								{renderRentItems()}
 								{relatedVerification &&
-									(selectedRecord?.recordStatus == 'rent_rejected' ||
+									(selectedRecord?.recordStatus == 'completed' ||
+										selectedRecord?.recordStatus == 'paid' ||
+										selectedRecord?.recordStatus == 'rent_rejected' ||
 										selectedRecord?.recordStatus == 'return_rejected') && (
 										<Box width={'100%'}>
 											<Box py={5} width={'100%'} position={'relative'}>
@@ -287,13 +289,15 @@ export const UserHistoryItemModal: React.FC<{
 														)?.name
 													}
 												/>
-												<EditableField
-													name='verifiedAt'
-													label={'Verified at'}
-													value={formatDate(
-														(relatedVerification as Verification | undefined)?.verifiedAt as Date
-													)}
-												/>
+												{(relatedVerification as Verification | undefined)?.verifiedAt && (
+													<EditableField
+														name='verifiedAt'
+														label={'Verified at'}
+														value={formatDate(
+															(relatedVerification as Verification | undefined)?.verifiedAt as Date
+														)}
+													/>
+												)}
 												<EditableField
 													name='verificationComments'
 													label={'Verification comments'}
