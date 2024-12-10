@@ -36,11 +36,15 @@ export const getAllAdmins = async () => {
 							imageUrls: []
 					  }
 					: (querySnapshot.docs.find((doc) => doc.id === user.createdBy)?.data() as User);
+			const authorId = querySnapshot.docs.find((doc) => doc.id === user.createdBy)?.id;
 			return {
 				...(doc.data() as Omit<User, 'id' | 'createdAt'>),
 				id: doc.id,
 				createdAt: new Date(user.createdAt) as Date,
-				createdBy: authorAdmin as User
+				createdBy: {
+					...(authorAdmin as User),
+					id: authorId
+				}
 			};
 		})
 		.filter((user) => user.type === 'admin');
